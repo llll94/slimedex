@@ -11,7 +11,7 @@
 //   - votos 👍/👎 viram placar; combinação da comunidade muito negativada (CONTESTADA) é descartada
 const fs = require('fs'), path = require('path');
 
-const MIN_PESSOAS = 2;
+const MIN_PESSOAS = 1; // 1 = a descoberta de uma pessoa já entra (a revisão do PR e os votos 👎 seguram erros)
 const TESTE = '00000000-0000-0000-0000-000000000000'; // autor dos envios de teste
 const contestada = v => v && v.d >= 3 && v.d >= 2 * v.u; // mesma regra do app
 

@@ -21,7 +21,7 @@ const TXT = {
     form_err: 'Escolha o resultado e os dois slimes da lista',
     form_tip: 'Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR',
-    send_info: 'Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for confirmado por mais de uma pessoa entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
+    send_info: 'Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
     send_empty: 'Você ainda não tem nada para enviar.', send_same: 'Isso já foi enviado. Cadastre ou vote em algo novo para enviar de novo.',
     send_btn: 'Enviar', sending: 'Enviando…', sent_ok: 'Enviado, obrigado! Vai aparecer pra todo mundo depois da revisão diária.', sent: 'Enviado',
     send_fail: 'Não consegui enviar: {e}', retry: 'Tentar de novo',
@@ -55,7 +55,7 @@ const TXT = {
 <li>Importe/exporte CSV no formato da planilha da comunidade ou faça backup em JSON</li></ul>
 <h4>Base colaborativa</h4><ul>
 <li><b>⋯ → Enviar minhas descobertas</b> manda suas combinações, chances, votos e nomes</li>
-<li>Uma vez por dia, o que 2 ou mais pessoas confirmarem entra para todo mundo (selo <b>comunidade</b>)</li>
+<li>Uma vez por dia os envios são revisados e o que for aprovado entra para todo mundo (selo <b>comunidade</b>); os 👎 tiram o que estiver errado</li>
 <li>Nada pessoal é enviado — só um código aleatório deste PC</li></ul>`,
     info_foot: 'Slimedex v{v} · dados da World of Slime Wiki e da comunidade · código aberto em github.com/llll94/slimedex',
     err: {}
@@ -81,7 +81,7 @@ const TXT = {
     form_err: 'Pick the result and both slimes from the list',
     form_tip: 'To add many at once, use ⋯ → Import with a CSV in the spreadsheet format (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s)',
-    send_info: 'It goes to the collaborative database. Once a day submissions are reviewed, and whatever is confirmed by more than one person is added for everyone. Nothing personal is sent — only a random code for this PC.',
+    send_info: 'It goes to the collaborative database. Once a day submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
     send_empty: "You don't have anything to send yet.", send_same: 'This was already sent. Add or vote on something new to send again.',
     send_btn: 'Send', sending: 'Sending…', sent_ok: 'Sent, thank you! It will show up for everyone after the daily review.', sent: 'Sent',
     send_fail: 'Could not send: {e}', retry: 'Try again',
@@ -115,7 +115,7 @@ const TXT = {
 <li>Import/export CSV in the community spreadsheet format, or back up everything as JSON</li></ul>
 <h4>Collaborative database</h4><ul>
 <li><b>⋯ → Send my discoveries</b> uploads your combinations, chances, votes and names</li>
-<li>Once a day, whatever 2 or more people confirm is added for everyone (<b>community</b> badge)</li>
+<li>Once a day submissions are reviewed and approved ones are added for everyone (<b>community</b> badge); 👎 votes remove wrong ones</li>
 <li>Nothing personal is sent — only a random code for this PC</li></ul>`,
     info_foot: 'Slimedex v{v} · data from the World of Slime Wiki and the community · open source at github.com/llll94/slimedex',
     err: { 'limite diário de envios atingido': 'daily upload limit reached', 'muitos envios agora, tente mais tarde': 'too many uploads right now, try again later',
