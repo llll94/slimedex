@@ -1,7 +1,7 @@
 {
   "name": "slime-overlay",
-  "version": "1.1.0",
-  "description": "Overlay de consulta da Slimepédia (World of Slime): busca rápida por Ctrl+Tab, combinações e locais de cada slime.",
+  "version": "1.2.0",
+  "description": "Slimedex — overlay de consulta para World of Slime: busca rápida por Ctrl+Tab, combinações, chances e elementos de cada slime.",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
@@ -16,8 +16,8 @@
     "electron@33.4.11": true
   },
   "build": {
-    "appId": "io.github.slimepedia.overlay",
-    "productName": "Slimepedia",
+    "appId": "io.github.llll94.slimedex",
+    "productName": "Slimedex",
     "files": [
       "main.js",
       "preload.js",
@@ -32,7 +32,7 @@
       "icon": "icon.png"
     },
     "portable": {
-      "artifactName": "Slimepedia-${version}-portable.exe"
+      "artifactName": "Slimedex-${version}-portable.exe"
     }
   }
 }

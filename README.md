@@ -1,24 +1,26 @@
 <p align="center"><img src="icon.png" width="96" alt=""></p>
 
-# Slimepédia overlay
+# Slimedex
 
 [![VirusTotal 1/68](https://img.shields.io/badge/VirusTotal-1%2F68_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
-Overlay para Windows que mostra a Slimepédia do **World of Slime** por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
+Overlay para Windows com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
 
 > Projeto de fã, sem vínculo com os desenvolvedores do jogo. Dados e imagens vêm da [World of Slime Wiki](https://world-of-slime-wiki.vercel.app).
 
 ## Como usar
 
-1. Baixe o `Slimepedia-x.y.z-portable.exe` na aba [Releases](../../releases) e execute (não precisa instalar).
+1. Baixe o `Slimedex-x.y.z-portable.exe` na aba [Releases](../../releases) e execute (não precisa instalar).
 2. Um ícone de livro aparece no canto da tela, sempre por cima das outras janelas.
 
 | Ação | Como |
 |---|---|
 | Abrir / fechar | **Ctrl+Tab** (de qualquer lugar) ou clique no ícone |
 | Buscar | digite o nome, número, elemento ou local |
-| Navegar | **↓ / ↑** e **Enter** para abrir a ficha · **Esc** fecha |
+| Navegar | **↓ / ↑** e **Enter** para abrir a ficha |
+| Voltar | tecla **V**, botão **voltar do mouse** ou **← voltar** |
+| Fechar | **Esc**, **Ctrl+Tab** ou clique fora do painel |
 | Mover o ícone | arraste (a posição é lembrada) |
 | Sair | botão direito no ícone da bandeja → **Sair** |
 
@@ -60,13 +62,14 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.2.0 | `C87790E346D46E6732DB5964D6731BBC809B20D588588C6A9A7E60EBA9912AC3` | _em análise_ |
 | 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection) |
 | 1.0.0 | `0B0CA238299E3430D662F3733EA6FCCFCB9EE3669C3FE1F02899E1F3902EF2DB` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection) |
 
 > **Sobre o alerta único:** nas duas versões, o único alerta é da McAfee, com uma detecção do tipo `Ti!<começo do hash>` (ex.: `Ti!0B0CA238299E` na 1.0.0). Ela não identifica vírus nenhum: é a regra de **reputação** da McAfee ("Threat Intelligence"), que marca qualquer executável novo, pouco baixado e sem assinatura digital — repare que o "nome" da detecção é só o começo do hash do próprio arquivo, e por isso ela reaparece a cada versão nova. Todos os outros antivírus e o Windows Defender não acusam nada, e o código-fonte completo está neste repositório.
 
 ```powershell
-Get-FileHash .\Slimepedia-1.1.0-portable.exe -Algorithm SHA256
+Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o arquivo se chamava Slimepedia-…
 ```
 
 O app não acessa a internet além de carregar as imagens da wiki, não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
@@ -78,7 +81,7 @@ Requer [Node.js](https://nodejs.org) 18+.
 ```bash
 npm install
 npm start          # roda em modo desenvolvimento
-npm run dist       # gera dist/Slimepedia-x.y.z-portable.exe
+npm run dist       # gera dist/Slimedex-x.y.z-portable.exe
 ```
 
 | Arquivo | O que é |

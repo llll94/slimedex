@@ -1,4 +1,4 @@
--- Slimepédia — base colaborativa: envios feitos pelo app ("Enviar minhas descobertas"),
+-- Slimedex — base colaborativa: envios feitos pelo app ("Enviar minhas descobertas"),
 -- com nomes PT, chances, combinações novas e votos 👍/👎 em combinações existentes.
 -- O público (chave publishable/anon) só consegue INSERIR. Ninguém lê, edita ou apaga envios de outros.
 -- O merge diário (GitHub Actions) usa a chave secreta para ler e marcar o que foi processado.

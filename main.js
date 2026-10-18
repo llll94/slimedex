@@ -1,6 +1,6 @@
 const {app,BrowserWindow,Tray,Menu,screen,ipcMain,nativeImage,globalShortcut,dialog}=require('electron');
 const path=require('path'),fs=require('fs'),crypto=require('crypto');
-const ICON=[64,64],PANEL=[550,480],HOTKEY='Control+Tab'; // 550px: 90% das linhas de combinação cabem sem quebrar (medido)
+const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação em 2 linhas; 100% dos "Como obter" e ~93% dos "Usado em" cabem (medido)
 let win,tray,off=null,aberto=false,dialogo=false; // dialogo: janela de importar/exportar aberta
 function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?PANEL:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
@@ -17,9 +17,9 @@ const JSON_F=[{name:'JSON',extensions:['json']}];
 function gravaJson(f,d){fs.writeFileSync(f+'.tmp',JSON.stringify(d,null,1));fs.renameSync(f+'.tmp',f)}
 ipcMain.handle('meus-ler',()=>{try{return JSON.parse(fs.readFileSync(MEUS(),'utf8'))}catch{return null}});
 ipcMain.handle('meus-salvar',(_,d)=>{gravaJson(MEUS(),d);return true});
-ipcMain.handle('meus-exportar',async(_,d)=>{const r=await comDialogo(()=>dialog.showSaveDialog(win,{defaultPath:'slimepedia-meus-dados.json',filters:JSON_F}));
+ipcMain.handle('meus-exportar',async(_,d)=>{const r=await comDialogo(()=>dialog.showSaveDialog(win,{defaultPath:'slimedex-meus-dados.json',filters:JSON_F}));
   if(r.canceled||!r.filePath)return false;gravaJson(r.filePath,d);return true});
-ipcMain.handle('meus-exportar-csv',async(_,txt)=>{const r=await comDialogo(()=>dialog.showSaveDialog(win,{defaultPath:'slimepedia-minhas-combinacoes.csv',filters:[{name:'CSV',extensions:['csv']}]}));
+ipcMain.handle('meus-exportar-csv',async(_,txt)=>{const r=await comDialogo(()=>dialog.showSaveDialog(win,{defaultPath:'slimedex-minhas-combinacoes.csv',filters:[{name:'CSV',extensions:['csv']}]}));
   if(r.canceled||!r.filePath)return false;fs.writeFileSync(r.filePath,'﻿'+txt);return true}); // BOM: Excel abre acentos certo
 // base colaborativa (Supabase): a chave publishable é pública e só permite INSERIR envios (ver supabase/schema.sql)
 const SUPA={url:'https://pwletsegcprygxgoduvp.supabase.co',key:'sb_publishable_surQfAXMk00rQglRSzdQ9g_ejYsAQS8'};
@@ -32,7 +32,7 @@ ipcMain.handle('enviar',async(_,payload)=>{
     if(r.ok)return{ok:true};let m='';try{m=(await r.json()).message}catch{}return{ok:false,erro:m||'HTTP '+r.status}}
   catch{return{ok:false,erro:'sem conexão com a internet'}}});
 // base da comunidade (gerada pelo merge diário no GitHub): baixa a mais nova; sem internet usa a última baixada ou a que vem no app
-const COMUNIDADE='https://raw.githubusercontent.com/llll94/slimepedia-overlay/main/comunidade.json';
+const COMUNIDADE='https://raw.githubusercontent.com/llll94/slimedex/main/comunidade.json';
 ipcMain.handle('comunidade',async()=>{const cache=path.join(app.getPath('userData'),'comunidade.json');
   try{const r=await fetch(COMUNIDADE,{signal:AbortSignal.timeout(6000)});
     if(r.ok){const t=await r.text(),d=JSON.parse(t);if(d&&typeof d=='object'){fs.writeFileSync(cache,t);return d}}}catch{}
@@ -46,8 +46,10 @@ app.whenReady().then(()=>{
   win=new BrowserWindow({width:ICON[0],height:ICON[1],x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,webPreferences:{preload:path.join(__dirname,'preload.js')}});
   win.setAlwaysOnTop(true,'screen-saver');win.loadFile('overlay.html');
   win.on('blur',()=>{if(aberto&&!dialogo)win.webContents.send('fechar')}); // clicou fora: recolhe para o ícone
+  // botão "voltar" do mouse: no Windows ele chega como comando de app (não como clique), mesmo sem foco
+  win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
   tray=new Tray(nativeImage.createFromPath(path.join(__dirname,'icon.png')).resize({width:16}));
-  tray.setToolTip('Slimepédia (Ctrl+Tab)');tray.setContextMenu(Menu.buildFromTemplate([{label:'Sair',click:()=>app.quit()}]));
+  tray.setToolTip('Slimedex (Ctrl+Tab)');tray.setContextMenu(Menu.buildFromTemplate([{label:'Sair',click:()=>app.quit()}]));
   ipcMain.on('size',(_,o)=>size(o));
   // arrastar o ícone: guarda a distância do cursor ao canto da janela e acompanha o cursor
   ipcMain.on('drag-start',()=>{const c=screen.getCursorScreenPoint(),[x,y]=win.getPosition();off={x:c.x-x,y:c.y-y}});
