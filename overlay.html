@@ -218,7 +218,7 @@ function envio(){cur=null;sel=-1;marca({t:'envio'});
 function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
  <p>${t('my_counts',{n,p,c,v})}</p>
- <p class="mu">${esc(t('my_where'))}</p>
+ <p class="mu">${esc(t('my_where',{p:PASTA?PASTA+(ov.plataforma==='win32'?'\\':'/')+'meus-dados.json':''}))}</p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
@@ -236,7 +236,7 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
   const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&K[c.r]&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
 // ---- ajuda: atalhos, como voltar, recursos e idioma ----
-let VERSAO='';
+let VERSAO='',PASTA='';
 function info(){cur=null;sel=-1;marca({t:'info'});
  bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
@@ -274,14 +274,15 @@ ico.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved)open()};
 ov.onToggle(f=>f&&!pn.hidden?close():open()); // Ctrl+Tab
 ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
-ov.onVoltar(()=>{if(!pn.hidden)voltar()}); // botão voltar do mouse (vem do main como app-command)
+ov.onVoltar(()=>{if(!pn.hidden)voltar()}); // botão voltar do mouse no Windows (vem do main como app-command)
+if(ov.plataforma==='darwin')addEventListener('mouseup',e=>{if(e.button===3&&!pn.hidden){e.preventDefault();voltar()}}); // no Mac chega como clique
 // teclado fora de campos de texto: V = voltar, Esc = fechar, outra letra = começa a buscar
 addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)return;const t=e.target;
  if(t.tagName=='INPUT'||t.tagName=='TEXTAREA'||t.isContentEditable)return;
  if(e.key=='v'||e.key=='V'){e.preventDefault();voltar()}
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
-estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>VERSAO=v).catch(()=>{});
+estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>VERSAO=v).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
 ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 </script></body></html>

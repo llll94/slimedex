@@ -1,0 +1,54 @@
+name: Build macOS
+
+on:
+  release:
+    types: [published]     # ao publicar um release, gera os .dmg e anexa nele
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag do release para anexar os .dmg (vazio = só gera os arquivos, sem anexar)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  mac:
+    runs-on: macos-14
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Gerar .dmg (Apple Silicon e Intel)
+        run: npx electron-builder --mac --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'   # sem certificado Apple: só a assinatura ad-hoc do afterPack
+
+      - name: Conferir assinatura e hashes
+        run: |
+          for app in dist/mac*/Slimedex.app; do echo "== $app"; codesign -dv "$app" 2>&1 | grep -E "Signature|Identifier|Format"; done
+          shasum -a 256 dist/*.dmg | tee dist/SHA256-mac.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: slimedex-mac
+          path: |
+            dist/*.dmg
+            dist/SHA256-mac.txt
+
+      - name: Anexar ao release
+        if: env.TAG != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" dist/*.dmg --clobber

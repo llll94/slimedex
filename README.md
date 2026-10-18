@@ -5,13 +5,15 @@
 [![VirusTotal 1/67](https://img.shields.io/badge/VirusTotal-1%2F67_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/8d80e04130dccfe7941f22374b148b45309b274a958a364c080c16b4aa68ce8a/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
-Overlay para Windows com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
+Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
 
 > Projeto de fã, sem vínculo com os desenvolvedores do jogo. Dados e imagens vêm da [World of Slime Wiki](https://world-of-slime-wiki.vercel.app).
 
 ## Como usar
 
-1. Baixe o `Slimedex-x.y.z-portable.exe` na aba [Releases](../../releases) e execute (não precisa instalar).
+1. Baixe na aba [Releases](../../releases):
+   - **Windows:** `Slimedex-x.y.z-portable.exe` — é só executar, não precisa instalar;
+   - **macOS:** `Slimedex-x.y.z-mac-arm64.dmg` (Mac com chip Apple, M1 em diante) ou `Slimedex-x.y.z-mac-x64.dmg` (Mac Intel) — abra o .dmg e arraste o Slimedex para Aplicativos.
 2. Um ícone de livro aparece no canto da tela, sempre por cima das outras janelas.
 
 | Ação | Como |
@@ -57,6 +59,16 @@ Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances
 
 > **Atenção:** enquanto o app está aberto, o atalho Ctrl+Tab fica reservado para ele (não troca abas no navegador).
 > Para o painel aparecer por cima do jogo, use o modo **janela sem borda** (borderless) em vez de tela cheia exclusiva.
+
+### Primeira vez no macOS
+
+O app não é notarizado pela Apple (isso exige uma conta paga de desenvolvedor), então na primeira vez o macOS avisa que não pode verificar o app:
+
+1. Tente abrir o Slimedex normalmente e feche o aviso;
+2. Vá em **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em **Abrir mesmo assim**;
+3. Confirme. Das próximas vezes ele abre direto.
+
+No Mac o Slimedex fica fora do Dock: o ícone aparece na barra de menu e o painel abre por cima do jogo, inclusive em tela cheia. O atalho é o mesmo, **Control+Tab**. Os `.dmg` são gerados automaticamente no GitHub Actions ([`build-mac.yml`](.github/workflows/build-mac.yml)) a partir deste código.
 
 ## Segurança do executável
 

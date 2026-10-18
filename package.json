@@ -1,12 +1,13 @@
 {
   "name": "slime-overlay",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Slimedex — overlay de consulta para World of Slime: busca rápida por Ctrl+Tab, combinações, chances e elementos de cada slime.",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win portable"
+    "dist": "electron-builder --win portable",
+    "dist:mac": "electron-builder --mac"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -34,6 +35,24 @@
     },
     "portable": {
       "artifactName": "Slimedex-${version}-portable.exe"
+    },
+    "afterPack": "scripts/assinar-adhoc.js",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon-mac.png",
+      "category": "public.app-category.games",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "artifactName": "Slimedex-${version}-mac-${arch}.${ext}"
     }
   }
 }

@@ -1,6 +1,7 @@
 const {app,BrowserWindow,Tray,Menu,screen,ipcMain,nativeImage,globalShortcut,dialog}=require('electron');
 const path=require('path'),fs=require('fs'),crypto=require('crypto');
 const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação em 2 linhas; 100% dos "Como obter" e ~93% dos "Usado em" cabem (medido)
+const MAC=process.platform==='darwin';
 let win,tray,off=null,aberto=false,dialogo=false; // dialogo: janela de importar/exportar aberta
 function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?PANEL:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
@@ -43,9 +44,11 @@ ipcMain.handle('meus-importar',async()=>{const r=await comDialogo(()=>dialog.sho
   if(r.canceled||!r.filePaths[0])return null;const f=r.filePaths[0];return{ext:path.extname(f).slice(1).toLowerCase(),texto:fs.readFileSync(f,'utf8').replace(/^﻿/,'')}});
 function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 app.whenReady().then(()=>{
+  if(MAC&&app.dock)app.dock.hide(); // Mac: overlay fica fora do Dock (só ícone na barra de menu)
   const wa=screen.getPrimaryDisplay().workArea,p=carrega()||{x:wa.x+wa.width-ICON[0]-48,y:wa.y+506}; // padrão: 48px da borda direita, 506px do topo
   win=new BrowserWindow({width:ICON[0],height:ICON[1],x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,webPreferences:{preload:path.join(__dirname,'preload.js')}});
   win.setAlwaysOnTop(true,'screen-saver');win.loadFile('overlay.html');
+  if(MAC){win.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});win.setFullScreenable(false)} // Mac: aparece sobre o jogo em tela cheia
   win.on('blur',()=>{if(aberto&&!dialogo)win.webContents.send('fechar')}); // clicou fora: recolhe para o ícone
   // botão "voltar" do mouse: no Windows ele chega como comando de app (não como clique), mesmo sem foco
   win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
@@ -53,13 +56,14 @@ app.whenReady().then(()=>{
   tray.setToolTip('Slimedex (Ctrl+Tab)');menuBandeja('pt');
   ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
   ipcMain.handle('versao',()=>app.getVersion());
+  ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
   ipcMain.on('size',(_,o)=>size(o));
   // arrastar o ícone: guarda a distância do cursor ao canto da janela e acompanha o cursor
   ipcMain.on('drag-start',()=>{const c=screen.getCursorScreenPoint(),[x,y]=win.getPosition();off={x:c.x-x,y:c.y-y}});
   ipcMain.on('drag-move',()=>{if(!off)return;const c=screen.getCursorScreenPoint();win.setPosition(c.x-off.x,c.y-off.y)});
   ipcMain.on('drag-end',()=>{if(off)salva();off=null});
   // atalho global: abre o painel já com foco na busca; se já estiver aberto e em foco, fecha
-  if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();win.focus()}win.webContents.send('toggle',f)}))
+  if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus()}win.webContents.send('toggle',f)}))
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);
 });
 app.on('will-quit',()=>globalShortcut.unregisterAll());
