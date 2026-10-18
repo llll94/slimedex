@@ -1,7 +1,17 @@
 {
- "gerado": "2026-10-18T13:50:01.090Z",
- "pessoas": 1,
+ "gerado": "2026-10-18T15:08:19.830Z",
+ "pessoas": 2,
  "combos": [
+  {
+   "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Ghost_Magic",
+   "r": "SL_Ghost_Magic",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_Bat_WindDark",
+   "m": "",
+   "l": "",
+   "ch": 8.8,
+   "n": 1
+  },
   {
    "id": "c:SL_Honet_WindElectric+SL_Rat_PoisonDark>SL_Bat_WindDark",
    "r": "SL_Bat_WindDark",
@@ -11,9 +21,32 @@
    "l": "22",
    "ch": null,
    "n": 1
+  },
+  {
+   "id": "c:SL_Honet_WindElectric+SL_Tricky_Light>SL_Bushtit_WindLight",
+   "r": "SL_Bushtit_WindLight",
+   "a": "SL_Tricky_Light",
+   "b": "SL_Honet_WindElectric",
+   "m": "Pena de Fluffy (Fluffy's Feather)",
+   "l": "22",
+   "ch": 100,
+   "n": 1
   }
  ],
- "pc": {},
- "pt": {},
- "votos": {}
+ "pc": {
+  "SL_ElecChicken_WindElectric|SL_Wisp_LightElectric||": {
+   "ch": 95,
+   "n": 1
+  }
+ },
+ "pt": {
+  "SL_Bass_WaterGround": "Bass de Lama",
+  "SL_Crow_WindDark": "Crow",
+  "SL_Eel_WaterPower": "Enguia",
+  "SL_Ghost_Magic": "Spooky",
+  "SL_HermitCrab_WaterPower": "Sora",
+  "SL_HermitCrab_WaterSteel": "Sora de Aço"
+ },
+ "votos": {},
+ "num": {}
 }
