@@ -5,7 +5,7 @@
 [![VirusTotal 1/67](https://img.shields.io/badge/VirusTotal-1%2F67_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
-Overlay para Windows que mostra a Slimepédia do **World of Slime** por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações) e em que ele é usado.
+Overlay para Windows que mostra a Slimepédia do **World of Slime** por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
 
 > Projeto de fã, sem vínculo com os desenvolvedores do jogo. Dados e imagens vêm da [World of Slime Wiki](https://world-of-slime-wiki.vercel.app).
 
@@ -24,6 +24,21 @@ Overlay para Windows que mostra a Slimepédia do **World of Slime** por cima do 
 
 Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 
+### Na ficha de cada slime
+
+- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance.
+- **Usado em** — combinações em que ele é ingrediente.
+- **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
+- **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
+- **✎ nome em PT-BR** — dá um nome em português ao slime; a busca passa a achar pelos dois.
+
+### Seus dados (botão ⋯)
+
+O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDATA%\slime-overlay\meus-dados.json`, e não se perde ao atualizar o `.exe`. Pelo botão **⋯** dá para:
+
+- **Importar CSV** no formato da planilha da comunidade (`Result, ID, Level, Slime 1, Slime 2, Material, Chance`) — combinações que já existem não duplicam, só ganham a chance se estiver faltando;
+- **Exportar** suas combinações em CSV (mesmo formato) ou fazer backup de tudo em JSON, e **importar** de volta.
+
 > **Atenção:** enquanto o app está aberto, o atalho Ctrl+Tab fica reservado para ele (não troca abas no navegador).
 > Para o painel aparecer por cima do jogo, use o modo **janela sem borda** (borderless) em vez de tela cheia exclusiva.
 
@@ -33,15 +48,16 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | _em análise_ |
 | 1.0.0 | `0B0CA238299E3430D662F3733EA6FCCFCB9EE3669C3FE1F02899E1F3902EF2DB` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection) |
 
 > **Sobre o 1/67:** o único alerta é da McAfee, com a detecção `Ti!0B0CA238299E`. Ela não identifica vírus nenhum: é a regra de **reputação** da McAfee ("Threat Intelligence"), que marca qualquer executável novo, pouco baixado e sem assinatura digital — repare que o "nome" da detecção é só o começo do hash do próprio arquivo. Os outros 66 antivírus e o Windows Defender não acusam nada, e o código-fonte completo está neste repositório.
 
 ```powershell
-Get-FileHash .\Slimepedia-1.0.0-portable.exe -Algorithm SHA256
+Get-FileHash .\Slimepedia-1.1.0-portable.exe -Algorithm SHA256
 ```
 
-O app não acessa a internet além de carregar as imagens da wiki, não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone e o histórico em `%APPDATA%\slime-overlay`.
+O app não acessa a internet além de carregar as imagens da wiki, não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
 
 ## Rodar a partir do código
 
@@ -55,9 +71,9 @@ npm run dist       # gera dist/Slimepedia-x.y.z-portable.exe
 
 | Arquivo | O que é |
 |---|---|
-| `main.js` | janela, ícone da bandeja, atalho global, posição |
-| `overlay.html` | interface (busca, lista, ficha) |
-| `data.js` / `data.json` | base de slimes e combinações |
+| `main.js` | janela, ícone da bandeja, atalho global, posição, leitura/gravação dos seus dados |
+| `overlay.html` | interface (busca, lista, ficha, nova combinação, importar/exportar) |
+| `data.js` / `data.json` | base de slimes, combinações, materiais e tabela de elementos |
 
 ## Licença
 
