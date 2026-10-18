@@ -2,6 +2,21 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.5.2",
+      "pt": [
+        "Botão ✎ em cada combinação para corrigir material, nível ou chance — vale no seu app e dá para desfazer",
+        "Botão ⇄ para juntar uma combinação sua com outra igual da lista",
+        "Quando uma combinação que você cadastrou já existe na base ou na comunidade, ela aparece numa linha só, juntando o que cada uma tem",
+        "A troca de idioma agora fica no botão ⋯ (Meus dados)"
+      ],
+      "en": [
+        "✎ button on every combination to fix material, level or chance — it applies on your app and can be undone",
+        "⇄ button to merge one of your combinations with a matching one in the list",
+        "When a combination you added already exists in the database or the community, it shows as a single line combining what each one has",
+        "The language switch is now in the ⋯ button (My data)"
+      ]
+    },
+    {
       "v": "1.5.1",
       "pt": [
         "Agora dá para adicionar o número do slime (o da Slimepedia do jogo) na ficha — ele aparece na lista, entra na busca e vai junto quando você envia suas descobertas"

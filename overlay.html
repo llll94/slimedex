@@ -84,6 +84,7 @@ let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base no
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let M={pt:{},pc:{},combos:[],votos:{},num:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
+const chaveC=c=>[c.a,c.b].sort().join('+')+'>'+c.r; // mesmos slimes e resultado
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
 const dn=s=>LANG==='pt'?(s.pt||s.nm):s.nm,nm=k=>K[k]?dn(K[k]):k;
 const alt=s=>LANG==='pt'?(s.pt?s.nm:''):(s.pt||''); // nome no outro idioma, se houver
@@ -94,6 +95,18 @@ function monta(){
  const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b])
   .map(c=>({id:c.id,r:c.r,a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
  C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true}))];
+ // combinação sua igual a uma da base/comunidade vira uma linha só, com o que cada uma tem de informação
+ // c.alvo = presa a uma combinação da base/comunidade: modo 'editar' substitui os campos, 'juntar' só completa o que falta;
+ // sem alvo, junta sozinha com a igual (mesmos slimes, mesmo resultado, material compatível)
+ const matIgual=(x,y)=>!x||!y||norm(matN(x))===norm(matN(y)),idxC=new Map(),porCid=new Map();
+ C.forEach(c=>{if(!c.meu&&c.r){const k=chaveC(c);(idxC.get(k)||idxC.set(k,[]).get(k)).push(c);porCid.set(cid(c),c)}});
+ C=C.filter(c=>{if(!c.meu||!c.r)return true;let alvo,modo=c.modo||'juntar';
+  if(c.alvo){alvo=porCid.get(c.alvo);if(!alvo||alvo.meuId)return true} // a original sumiu: mostra como sua
+  else{alvo=(idxC.get(chaveC(c))||[]).find(o=>!o.meuId&&matIgual(o.m,c.m));if(!alvo)return true;modo='juntar'}
+  if(modo==='editar'){alvo.m=c.m||'';alvo.l=c.l||'';if(!(cid(alvo) in M.pc))alvo.ch=c.ch??null;alvo.editado=true}
+  else{if(!alvo.m&&c.m)alvo.m=c.m;if((alvo.l==null||alvo.l==='')&&c.l)alvo.l=c.l;if(!(cid(alvo) in M.pc)&&c.ch!=null)alvo.ch=c.ch} // sua chance vale, salvo % editado na linha
+  alvo.meuId=c.id;return false});
+ C.forEach(c=>{if(c.meu&&c.r){const o=C.find(x=>x!==c&&x.r&&chaveC(x)===chaveC(c));c.gemeo=o?cid(o):null}}); // igual que não juntou sozinha (⇄)
  C.forEach(c=>{const v=cvt[cid(c)];if(v&&typeof v=='object'){c.v={u:v.u|0,d:v.d|0};c.cz=c.v.d>=3&&c.v.d>=2*c.v.u}}); // placar e "contestada"
  made={};used={};
  C.forEach(c=>{if(c.r)(made[c.r]=made[c.r]||[]).push(c);new Set([c.a,c.b]).forEach(k=>(used[k]=used[k]||[]).push(c))});
@@ -138,7 +151,8 @@ const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(
  [c.m?esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
  `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
- `${c.meu?` <span class="meu">${t('mine')}</span> <span class="del" data-del="${esc(c.id)}" title="${esc(t('del_title'))}">🗑</span>`:''}`+
+ `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
+ ` <span class="lk sm" data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}">✎</span>${c.meu&&c.gemeo?` <span class="lk sm" data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
  `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}</div></div>`;
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
 function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys(T);
@@ -160,6 +174,11 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <h4>${t('used',{n:u.length})}</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
  ${elems(s)}`;bd.scrollTop=keep?top:0;
  if(window.secel)secel.ontoggle=()=>{try{localStorage.setItem('elem-aberto',secel.open?'1':'0')}catch{}}}
+// ⇄ juntar: prende a sua combinação à igual (completa o que falta nela); se a igual também for sua, junta as duas
+function juntar(id){const c=C.find(x=>x.meu&&x.id===id);if(!c||!c.gemeo)return;const o=C.find(x=>cid(x)===c.gemeo);const sua=M.combos.find(x=>x.id===id);if(!o||!sua)return;
+ if(o.meu||o.meuId){const out=M.combos.find(x=>x.id===(o.meu?o.id:o.meuId)); // a igual já é sua (ou já tem uma cópia sua): junta nela
+ if(out){if(!out.m&&sua.m)out.m=sua.m;if(!out.l&&sua.l)out.l=sua.l;if(out.ch==null&&sua.ch!=null)out.ch=sua.ch}M.combos=M.combos.filter(x=>x.id!==id)}
+ else Object.assign(sua,{alvo:cid(o),modo:'juntar'});atualiza()}
 function atualiza(){return salva().then(()=>{monta();if(cur)ficha(cur,true)})}
 // ---- edição: chance, nome PT, combinação nova ----
 function editaChance(el){const id=el.dataset.pc,c=C.find(x=>cid(x)===id);if(!c)return;
@@ -179,19 +198,25 @@ function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="${
  const ok=()=>{if(feito)return;feito=true;const v=pti.value.trim();if(v)M.pt[cur]=v;else delete M.pt[cur];atualiza()};
  pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=ok}
 // tela "Nova combinação": aberta pelo ＋ do topo ou pelo botão da ficha (já vem com o resultado preenchido)
-function formCombo(r){const s=r&&K[r];cur=null;sel=-1;marca({t:'form',r:r||null});
- bd.innerHTML=`${voltarLk()}<h4>${t('form_h')}</h4><div class="form">
+// ed = {c: combinação sendo editada, id: sua cópia (se houver), alvo: id da original da base/comunidade}
+function formCombo(r,ed){const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;marca({t:'form',r:r||null});
+ bd.innerHTML=`${voltarLk()}<h4>${t(e?'form_h_edit':'form_h')}</h4><div class="form">
  <label>${t('result')}</label><input id="fr" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${s?esc(rot(s)):''}">
- <label>${t('slime1')}</label><input id="fa" list="nomes" placeholder="${esc(t('pick_ph'))}">
- <label>${t('slime2')}</label><input id="fb" list="nomes" placeholder="${esc(t('pick_ph'))}">
- <label>${t('material')}</label><input id="fmat" list="materiais" placeholder="${esc(t('mat_ph'))}"><label>${t('level')}</label><input id="fl" placeholder="${esc(t('opt_ph'))}">
- <label>${t('chance')}</label><input id="fpc" type="number" min="0" max="100" placeholder="${esc(t('opt_ph'))}">
+ <label>${t('slime1')}</label><input id="fa" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${e&&K[e.a]?esc(rot(K[e.a])):''}">
+ <label>${t('slime2')}</label><input id="fb" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${e&&K[e.b]?esc(rot(K[e.b])):''}">
+ <label>${t('material')}</label><input id="fmat" list="materiais" placeholder="${esc(t('mat_ph'))}" value="${e?esc(e.m||''):''}"><label>${t('level')}</label><input id="fl" placeholder="${esc(t('opt_ph'))}" value="${e?esc(e.l||''):''}">
+ <label>${t('chance')}</label><input id="fpc" type="number" min="0" max="100" placeholder="${esc(t('opt_ph'))}" value="${e&&e.ch!=null?e.ch:''}">
  <div class="bt"><span class="err" id="fe"></span><button class="btn" id="fc">${t('cancel')}</button><button class="btn pri" id="fs">${t('save')}</button></div></div>
- <p class="mu">${t('form_tip')}</p>`;
- (s?fa:fr).focus();const sai=voltar;fc.onclick=sai;
+ <p class="mu">${t(e&&!e.meu?'form_tip_edit':'form_tip')}</p>`;
+ (e?fmat:s?fa:fr).focus();const sai=voltar;fc.onclick=sai;
  fs.onclick=async()=>{const rr=chave(fr.value),a=chave(fa.value),b=chave(fb.value);
   if(!rr||!a||!b){fe.textContent=t('form_err');return}
-  const p=fpc.value.trim();M.combos.push({id:'u'+Date.now(),r:rr,a,b,m:fmat.value.trim(),l:fl.value.trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[]});
+  const p=fpc.value.trim(),novo={r:rr,a,b,m:fmat.value.trim(),l:fl.value.trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[]};
+  const sua=ed&&ed.id&&M.combos.find(x=>x.id===ed.id);
+  if(e&&e.meu&&sua)Object.assign(sua,novo); // editando uma combinação sua
+  else if(e&&!e.meu&&chaveC(novo)===chaveC(e)){ // corrigindo uma da base/comunidade: guarda por cima da original
+   if(sua)Object.assign(sua,novo,{alvo:ed.alvo,modo:'editar'});else M.combos.push({id:'u'+Date.now(),...novo,alvo:ed.alvo,modo:'editar'})}
+  else M.combos.push({id:'u'+Date.now(),...novo}); // nova (ou mudou os slimes: vira outra combinação)
   await salva();monta();vista=null;ficha(rr)};
  bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')fs.click();else if(e.key=='Escape')sai()}}
 // ---- CSV no formato da planilha da comunidade (Result, ID, Level, Slime 1, Slime 2, Material, notas/chance...) ----
@@ -241,6 +266,7 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
+ <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
  nv2.onclick=()=>formCombo(null);env.onclick=envio;
  exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
@@ -257,11 +283,10 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
 let VERSAO='',PASTA='';
 function info(){cur=null;sel=-1;marca({t:'info'});
  bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
- <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
  <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
 // textos fixos do topo (mudam com o idioma)
 function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');qx.title=t('clear');
- inf.title=t('info');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+ inf.title=t('info_tip');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
@@ -280,6 +305,8 @@ bd.onclick=e=>{const t=e.target;
  if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
+ if(t.dataset.ed){const c=C.find(x=>cid(x)===t.dataset.ed);if(c)formCombo(c.r,{c,id:c.meu?c.id:c.meuId||null,alvo:c.meu?null:cid(c)});return}
+ if(t.dataset.jn){juntar(t.dataset.jn);return}
  if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);return atualiza()}
  if(t.id=='ptedit')return editaPT();
  if(t.id=='numedit')return editaNum();

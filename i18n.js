@@ -1,14 +1,16 @@
 // Textos da interface em PT-BR e inglês. t('chave', {var}) troca {var} pelos valores.
 const TXT = {
   pt: {
-    search_ph: 'buscar slime', clear: 'Limpar busca', info: 'Dicas e idioma', new_title: 'Nova combinação',
-    my_title: 'Meus dados (exportar / importar)', close_title: 'Fechar (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — arraste para mover',
+    search_ph: 'buscar slime', clear: 'Limpar busca', info_tip: 'Dicas', new_title: 'Nova combinação',
+    my_title: 'Meus dados e idioma', close_title: 'Fechar (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — arraste para mover',
     back: '← voltar', back_title: 'Voltar (tecla V ou botão voltar do mouse)',
     recent: 'Recentes', all: 'Todos ({n})', nothing: 'Nada encontrado.',
     up: 'Funciona', down: 'Não funciona / não existe', lv: 'nv',
     community: 'comunidade', community_title: 'Enviada por {n} pessoas e confirmada no merge diário',
     contested: 'contestada', contested_title: 'Muita gente votou que não funciona',
-    mine: 'meu', del_title: 'Apagar esta combinação', chance_title: 'Chance — clique para editar',
+    mine: 'meu', del_title: 'Apagar esta combinação', del_title_junta: 'Apagar a sua cópia (a da comunidade continua)', del_title_edit: 'Desfazer a sua edição (volta à original)', editado: 'editado',
+    edit_title: 'Editar esta combinação', juntar_title: 'Juntar com a combinação igual', form_h_edit: 'Editar combinação',
+    form_tip_edit: 'A correção fica no seu app, por cima da original; a lixeira na linha desfaz. Ela também vai quando você enviar suas descobertas.', chance_title: 'Chance — clique para editar',
     elements: 'Elementos', green: 'verde', adv: 'vantagem', red: 'vermelho', disadv: 'desvantagem',
     attack: '⚔ Ataque', defense: '🛡 Defesa', neutral: 'neutro',
     atk_title: 'Golpes de {e}: verde = causa mais dano, vermelho = causa menos',
@@ -38,7 +40,7 @@ const TXT = {
     nova_versao: '⬆ Nova versão {v} disponível — Atualizar', nova_versao_baixar: '⬆ Nova versão {v} disponível — Baixar', nova_versao_tip: 'nova versão {v}',
     atualizando: 'Atualizando… {p}%', atualizado: '✓ Atualizado para a versão {v}', novidades_h: 'Novidades da versão {v}', novidades_varias: 'O que mudou desde a sua versão ({v})',
     versao_x: 'Versão {v}', confirma_atualizar: 'Atualizar para a versão {v} agora? O Slimedex vai fechar e abrir de novo sozinho.', confirma_baixar: 'Baixar a versão {v}? A página de download vai abrir no navegador.', atualizar_agora: 'Atualizar agora', baixar_mac: 'Baixar no GitHub', depois: 'Depois', sem_novidades: 'Melhorias e correções.', falha_atualizar: 'Não consegui atualizar ({e}) — tentar de novo',
-    info_h: 'Dicas e idioma',
+    info_h: 'Dicas',
     info: `<h4>Abrir e fechar</h4><ul>
 <li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> abre e fecha de qualquer lugar, inclusive com o jogo em foco</li>
 <li>Clique no ícone para abrir; <kbd>Esc</kbd> ou clicar fora do painel fecha</li>
@@ -55,7 +57,8 @@ const TXT = {
 <li><b>＋ Nova combinação</b>: cadastre o que você descobriu (com sugestões de slimes e materiais)</li>
 <li><b>✎ nome em PT-BR</b> e <b>✎ número</b>: dê um nome em português e o número da Slimepedia do jogo</li>
 <li><b>Elementos</b> (abre e fecha): contra quem o ataque é forte/fraco e de quem ele toma mais/menos dano</li></ul>
-<h4>Seus dados (⋯)</h4><ul>
+<h4>Seus dados e idioma (⋯)</h4><ul>
+<li>Troque o idioma (Português / English)</li>
 <li>Ficam só no seu PC e não se perdem ao atualizar</li>
 <li>Importe/exporte CSV no formato da planilha da comunidade ou faça backup em JSON</li></ul>
 <h4>Base colaborativa</h4><ul>
@@ -66,14 +69,16 @@ const TXT = {
     err: {}
   },
   en: {
-    search_ph: 'search slime', clear: 'Clear search', info: 'Tips & language', new_title: 'New combination',
-    my_title: 'My data (export / import)', close_title: 'Close (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — drag to move',
+    search_ph: 'search slime', clear: 'Clear search', info_tip: 'Tips', new_title: 'New combination',
+    my_title: 'My data & language', close_title: 'Close (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — drag to move',
     back: '← back', back_title: 'Back (V key or mouse back button)',
     recent: 'Recent', all: 'All ({n})', nothing: 'Nothing found.',
     up: 'Works', down: "Doesn't work / doesn't exist", lv: 'lv',
     community: 'community', community_title: 'Sent by {n} people and confirmed in the daily merge',
     contested: 'disputed', contested_title: 'Many people voted that it does not work',
-    mine: 'mine', del_title: 'Delete this combination', chance_title: 'Chance — click to edit',
+    mine: 'mine', del_title: 'Delete this combination', del_title_junta: 'Delete your copy (the community one stays)', del_title_edit: 'Undo your edit (back to the original)', editado: 'edited',
+    edit_title: 'Edit this combination', juntar_title: 'Merge with the matching combination', form_h_edit: 'Edit combination',
+    form_tip_edit: 'Your correction stays on your app, on top of the original; the trash icon on the row undoes it. It is also sent when you send your discoveries.', chance_title: 'Chance — click to edit',
     elements: 'Elements', green: 'green', adv: 'advantage', red: 'red', disadv: 'disadvantage',
     attack: '⚔ Attack', defense: '🛡 Defense', neutral: 'neutral',
     atk_title: '{e} attacks: green = deal more damage, red = deal less',
@@ -103,7 +108,7 @@ const TXT = {
     nova_versao: '⬆ New version {v} available — Update', nova_versao_baixar: '⬆ New version {v} available — Download', nova_versao_tip: 'new version {v}',
     atualizando: 'Updating… {p}%', atualizado: '✓ Updated to version {v}', novidades_h: "What's new in {v}", novidades_varias: 'What changed since your version ({v})',
     versao_x: 'Version {v}', confirma_atualizar: 'Update to version {v} now? Slimedex will close and reopen by itself.', confirma_baixar: 'Download version {v}? The download page will open in your browser.', atualizar_agora: 'Update now', baixar_mac: 'Download from GitHub', depois: 'Later', sem_novidades: 'Improvements and fixes.', falha_atualizar: 'Update failed ({e}) — try again',
-    info_h: 'Tips & language',
+    info_h: 'Tips',
     info: `<h4>Open and close</h4><ul>
 <li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> opens and closes it from anywhere, even with the game focused</li>
 <li>Click the icon to open; <kbd>Esc</kbd> or clicking outside the panel closes it</li>
@@ -120,7 +125,8 @@ const TXT = {
 <li><b>＋ New combination</b>: add something you discovered (with slime and material suggestions)</li>
 <li><b>✎ Portuguese name</b> and <b>✎ number</b>: give the slime a Portuguese name and its in-game Slimepedia number</li>
 <li><b>Elements</b> (collapsible): what its attacks are strong/weak against and what hurts it more/less</li></ul>
-<h4>Your data (⋯)</h4><ul>
+<h4>Your data & language (⋯)</h4><ul>
+<li>Switch the language (Português / English)</li>
 <li>Stored only on your PC and kept across updates</li>
 <li>Import/export CSV in the community spreadsheet format, or back up everything as JSON</li></ul>
 <h4>Collaborative database</h4><ul>

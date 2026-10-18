@@ -24,7 +24,8 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 | Voltar | tecla **V**, botão **voltar do mouse** ou **← voltar** |
 | Fechar | **Esc**, **Ctrl+Tab** ou clique fora do painel |
 | Mover o ícone | arraste (a posição é lembrada) |
-| Dicas e idioma | botão **i** ao lado da busca — atalhos, recursos e **idioma (Português / English)** |
+| Dicas | botão **i** ao lado da busca — atalhos e recursos explicados |
+| Idioma | botão **⋯** → **Português / English** |
 | Limpar a busca | **×** dentro do campo |
 | Sair | botão direito no ícone da bandeja → **Sair** |
 
@@ -36,9 +37,10 @@ Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 - **Usado em** — combinações em que ele é ingrediente.
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
-- **✎ nome em PT-BR** — dá um nome em português ao slime; a busca passa a achar pelos dois.
+- **✎ nome em PT-BR** e **✎ número** — dá um nome em português e o número da Slimepedia do jogo; a busca acha pelos dois.
+- **✎ em cada combinação** — corrige material, nível ou chance (fica no seu app, por cima da original; a lixeira desfaz). **⇄** junta uma combinação sua com outra igual; combinações suas iguais às da base/comunidade já aparecem juntas numa linha só.
 
-### Seus dados (botão ⋯)
+### Seus dados e idioma (botão ⋯)
 
 O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDATA%\slime-overlay\meus-dados.json`, e não se perde ao atualizar o `.exe`. Pelo botão **⋯** dá para:
 
@@ -87,6 +89,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.5.2 (Windows) | `AAD1ABB01C0AF2E1CD14CBE44BF5957C713F450A12FBA9CCAE07103B5FEA5D01` | _em análise_ |
 | 1.5.1 (Windows) | `8A213946F486096B2194436380C3557B3C8841484A492C0DB475E40C2584A4F3` | [**1/64** — ver análise](https://www.virustotal.com/gui/file/8a213946f486096b2194436380c3557b3c8841484a492c0db475e40c2584a4f3/detection) |
 | 1.5.1 (Mac, chip Apple) | `217762DB9B695BA6D0C576DF4CCE7852ED47335475AC7475E46928F7DEEBB0BD` | — |
 | 1.5.1 (Mac, Intel) | `755F2E7E26C51EC15382BB7788C4614F603066419E52310023EC0D298C1F0101` | — |
