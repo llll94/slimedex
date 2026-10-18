@@ -1,7 +1,18 @@
 {
- "gerado": "2026-10-18T03:27:19.296Z",
- "pessoas": 0,
- "combos": [],
+ "gerado": "2026-10-18T13:50:01.090Z",
+ "pessoas": 1,
+ "combos": [
+  {
+   "id": "c:SL_Honet_WindElectric+SL_Rat_PoisonDark>SL_Bat_WindDark",
+   "r": "SL_Bat_WindDark",
+   "a": "SL_Rat_PoisonDark",
+   "b": "SL_Honet_WindElectric",
+   "m": "Asa Demoníaca (Devil Wing)",
+   "l": "22",
+   "ch": null,
+   "n": 1
+  }
+ ],
  "pc": {},
  "pt": {},
  "votos": {}
