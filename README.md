@@ -62,6 +62,7 @@ Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances
 - uma **combinação nova** entra a partir do primeiro envio, depois de revisada (aparece com o selo *comunidade* e o número de pessoas que a enviaram);
 - a **chance** vira a mediana dos relatos;
 - um **nome em PT-BR** entra com o nome mais usado;
+- o **número do slime** (para os que não têm na base) entra com o número mais enviado — número que já é de outro slime é descartado;
 - os **votos** viram placar; combinação com muitos 👎 é marcada como *contestada* (e, se for da comunidade, sai da base) — é assim que dados errados são corrigidos;
 - cada atualização passa por um Pull Request revisado antes de valer.
 
@@ -86,6 +87,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.5.1 (Windows) | `8A213946F486096B2194436380C3557B3C8841484A492C0DB475E40C2584A4F3` | _em análise_ |
 | 1.5.0 (Windows) | `3912CBAA628B15536972DD06877315C178444129A431E68990C5EF40343478CB` | [**1/57** — ver análise](https://www.virustotal.com/gui/file/3912cbaa628b15536972dd06877315c178444129a431e68990c5ef40343478cb/detection) |
 | 1.5.0 (Mac, chip Apple) | `900BB94C4B05115E79B01555D20428F14516AC2A07A80B266296B285403CDB4F` | — |
 | 1.5.0 (Mac, Intel) | `CE9DA87612F6282E05C691E0A2F368EFAFD366EA01F7C309A09B47E75F31B2F8` | — |

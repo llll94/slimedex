@@ -8,6 +8,7 @@
 //   - combinação nova entra se >= MIN_PESSOAS pessoas diferentes enviaram (material/nível = o mais citado, chance = mediana)
 //   - chance de combinação existente entra se >= MIN_PESSOAS relatos (mediana)
 //   - nome PT-BR entra se >= MIN_PESSOAS pessoas usaram o mesmo nome
+//   - número do slime (só para slimes sem número na base): o mais enviado; número que já é de outro slime é descartado
 //   - votos 👍/👎 viram placar; combinação da comunidade muito negativada (CONTESTADA) é descartada
 const fs = require('fs'), path = require('path');
 
@@ -53,6 +54,7 @@ async function lerEnvios() {
   const novos = new Map();   // par -> { a,b,r, quem:Set, m:[], l:[], ch:[] }
   const chances = new Map(); // id da combinação -> [valores]
   const nomes = new Map();   // slime -> Map(nome normalizado -> { nome, quem:Set })
+  const numeros = new Map(); // slime -> Map(número -> Set(autores))
   const votos = new Map();   // id da combinação -> { u, d }
 
   for (const [autor, p] of ultimo) {
@@ -68,6 +70,10 @@ async function lerEnvios() {
       const ch = chance(v); if (ch == null) continue;
       if (baseCids.has(id)) (chances.get(id) || chances.set(id, []).get(id)).push(ch);
       else if (id.startsWith('c:') && novos.has(id.slice(2))) novos.get(id.slice(2)).ch.push(ch);
+    }
+    for (const [k, v] of Object.entries(p.num && typeof p.num === 'object' ? p.num : {})) {
+      if (!SLIMES.has(k) || !Number.isInteger(v) || v < 1 || v > 9999) continue;
+      const m = numeros.get(k) || numeros.set(k, new Map()).get(k); (m.get(v) || m.set(v, new Set()).get(v)).add(autor);
     }
     for (const [k, v] of Object.entries(p.pt && typeof p.pt === 'object' ? p.pt : {})) {
       const nome = txt(v, 40); if (!SLIMES.has(k) || !nome) continue;
@@ -91,9 +97,16 @@ async function lerEnvios() {
   const vt = Object.fromEntries([...votos].filter(([id]) => aceitos.has(id)).sort().map(([id, v]) => [id, v]));
 
   // só o que o app usa decide se há novidade; "pessoas" é informativo e não abre PR sozinho
-  const essencial = { combos, pc, pt, votos: vt };
+  // números: a base manda nos que já têm; entre os demais, vale o mais enviado e um número só fica com um slime
+  const baseNum = new Map(D.slimes.filter(s => s.n != null).map(s => [s.n, s.k])), temNum = new Set(D.slimes.filter(s => s.n != null).map(s => s.k));
+  const candidatos = [];
+  for (const [k, m] of numeros) { if (temNum.has(k)) continue; const [n, q] = [...m].sort((a, b) => b[1].size - a[1].size || a[0] - b[0])[0]; if (q.size >= MIN_PESSOAS && !baseNum.has(n)) candidatos.push({ k, n, q: q.size }) }
+  const usado = new Set(), num = {};
+  for (const c of candidatos.sort((a, b) => b.q - a.q || (a.k < b.k ? -1 : 1))) { if (usado.has(c.n)) continue; usado.add(c.n); num[c.k] = c.n }
+  const numOrd = Object.fromEntries(Object.keys(num).sort().map(k => [k, num[k]]));
+  const essencial = { combos, pc, pt, votos: vt, num: numOrd };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = JSON.stringify({ combos: a.combos, pc: a.pc, pt: a.pt, votos: a.votos }) } catch {}
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = JSON.stringify({ combos: a.combos, pc: a.pc, pt: a.pt, votos: a.votos, num: a.num || {} }) } catch {}
   const mudou = antes !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
@@ -102,10 +115,11 @@ async function lerEnvios() {
     `## Base colaborativa — ${new Date().toISOString().slice(0, 10)}`, '',
     `- Envios lidos: **${linhas.length}** de **${ultimo.size}** pessoa(s)`,
     `- Combinações novas aceitas (≥${MIN_PESSOAS} pessoas): **${combos.length}** · candidatas ainda sem consenso: ${[...novos.values()].filter(n => n.quem.size < MIN_PESSOAS).length}`,
-    `- Chances com consenso: **${Object.keys(pc).length}** · nomes PT-BR: **${Object.keys(pt).length}** · combinações com votos: **${Object.keys(vt).length}**`,
+    `- Chances com consenso: **${Object.keys(pc).length}** · nomes PT-BR: **${Object.keys(pt).length}** · números: **${Object.keys(numOrd).length}** · combinações com votos: **${Object.keys(vt).length}**`,
     `- Contestadas (muitos 👎): ${Object.entries(vt).filter(([, v]) => contestada(v)).length}`, '',
     ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)`), ''] : []),
-    ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : [])
+    ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
+    ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : [])
   ].join('\n');
   fs.writeFileSync(path.join(RAIZ, 'resumo-merge.md'), resumo + '\n');
   console.log(resumo);

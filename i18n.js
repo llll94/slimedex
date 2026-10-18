@@ -13,6 +13,7 @@ const TXT = {
     attack: '⚔ Ataque', defense: '🛡 Defesa', neutral: 'neutro',
     atk_title: 'Golpes de {e}: verde = causa mais dano, vermelho = causa menos',
     def_title: 'Recebendo golpes: vermelho = toma mais dano, verde = toma menos',
+    num_add: '✎ adicionar número', num_edit: '✎ editar número', num_ph: 'número', num_invalido: 'Use um número inteiro de 1 a 9999', num_dup: 'O #{n} já é do {s}',
     pt_add: '✎ adicionar nome em PT-BR', pt_edit: '✎ editar nome em PT-BR', pt_ph: 'nome em PT-BR',
     where: 'Onde nasce', no_loc: 'Sem local cadastrado', how: 'Como obter ({n})', no_combo: 'Sem combinação',
     used: 'Usado em ({n})', new_btn: '＋ Nova combinação',
@@ -20,12 +21,12 @@ const TXT = {
     pick_ph: 'digite e escolha', opt_ph: 'opcional', mat_ph: 'opcional — digite e escolha', cancel: 'Cancelar', save: 'Salvar',
     form_err: 'Escolha o resultado e os dois slimes da lista',
     form_tip: 'Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
-    send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR',
+    send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR · {u} número(s)',
     send_info: 'Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
     send_empty: 'Você ainda não tem nada para enviar.', send_same: 'Isso já foi enviado. Cadastre ou vote em algo novo para enviar de novo.',
     send_btn: 'Enviar', sending: 'Enviando…', sent_ok: 'Enviado, obrigado! Vai aparecer pra todo mundo depois da revisão diária.', sent: 'Enviado',
     send_fail: 'Não consegui enviar: {e}', retry: 'Tentar de novo',
-    my_h: 'Meus dados', my_counts: '{n} nome(s) em PT-BR · {p} chance(s) editada(s) · {c} combinação(ões) minha(s) · {v} voto(s)',
+    my_h: 'Meus dados', my_counts: '{n} nome(s) em PT-BR · {u} número(s) · {p} chance(s) editada(s) · {c} combinação(ões) minha(s) · {v} voto(s)',
     my_where: 'Ficam só neste computador, em {p}, e não se perdem ao atualizar o app.',
     send_open: '⬆ Enviar minhas descobertas…', import: 'Importar JSON ou CSV…', export_json: 'Exportar backup (JSON)…', export_csv: 'Exportar combinações (CSV)…',
     csv_tip: 'CSV: mesmo formato da planilha da comunidade (Result, ID, Level, Slime 1, Slime 2, Material, Chance). Combinações que já existem não duplicam — só ganham a chance, se estiver faltando.',
@@ -52,7 +53,7 @@ const TXT = {
 <li><b>Como obter</b>: combinações, da maior chance para a menor — clique no <b>%</b> para editar</li>
 <li><b>👍 / 👎</b>: diga se a combinação funciona; o número ao lado é o placar da comunidade</li>
 <li><b>＋ Nova combinação</b>: cadastre o que você descobriu (com sugestões de slimes e materiais)</li>
-<li><b>✎ nome em PT-BR</b>: dê um nome em português ao slime</li>
+<li><b>✎ nome em PT-BR</b> e <b>✎ número</b>: dê um nome em português e o número da Slimepedia do jogo</li>
 <li><b>Elementos</b> (abre e fecha): contra quem o ataque é forte/fraco e de quem ele toma mais/menos dano</li></ul>
 <h4>Seus dados (⋯)</h4><ul>
 <li>Ficam só no seu PC e não se perdem ao atualizar</li>
@@ -77,6 +78,7 @@ const TXT = {
     attack: '⚔ Attack', defense: '🛡 Defense', neutral: 'neutral',
     atk_title: '{e} attacks: green = deal more damage, red = deal less',
     def_title: 'Taking hits: red = takes more damage, green = takes less',
+    num_add: '✎ add number', num_edit: '✎ edit number', num_ph: 'number', num_invalido: 'Use a whole number from 1 to 9999', num_dup: '#{n} already belongs to {s}',
     pt_add: '✎ add Portuguese name', pt_edit: '✎ edit Portuguese name', pt_ph: 'Portuguese name',
     where: 'Where it spawns', no_loc: 'No location registered', how: 'How to get ({n})', no_combo: 'No combination',
     used: 'Used in ({n})', new_btn: '＋ New combination',
@@ -84,12 +86,12 @@ const TXT = {
     pick_ph: 'type and pick', opt_ph: 'optional', mat_ph: 'optional — type and pick', cancel: 'Cancel', save: 'Save',
     form_err: 'Pick the result and both slimes from the list',
     form_tip: 'To add many at once, use ⋯ → Import with a CSV in the spreadsheet format (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
-    send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s)',
+    send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s) · {u} number(s)',
     send_info: 'It goes to the collaborative database. Once a day submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
     send_empty: "You don't have anything to send yet.", send_same: 'This was already sent. Add or vote on something new to send again.',
     send_btn: 'Send', sending: 'Sending…', sent_ok: 'Sent, thank you! It will show up for everyone after the daily review.', sent: 'Sent',
     send_fail: 'Could not send: {e}', retry: 'Try again',
-    my_h: 'My data', my_counts: '{n} Portuguese name(s) · {p} edited chance(s) · {c} combination(s) of mine · {v} vote(s)',
+    my_h: 'My data', my_counts: '{n} Portuguese name(s) · {u} number(s) · {p} edited chance(s) · {c} combination(s) of mine · {v} vote(s)',
     my_where: 'Stored only on this computer, in {p}, and kept when you update the app.',
     send_open: '⬆ Send my discoveries…', import: 'Import JSON or CSV…', export_json: 'Export backup (JSON)…', export_csv: 'Export combinations (CSV)…',
     csv_tip: "CSV: same format as the community spreadsheet (Result, ID, Level, Slime 1, Slime 2, Material, Chance). Combinations that already exist aren't duplicated — they only get the chance if it's missing.",
@@ -116,7 +118,7 @@ const TXT = {
 <li><b>How to get</b>: combinations, highest chance first — click the <b>%</b> to edit it</li>
 <li><b>👍 / 👎</b>: say whether a combination works; the number next to it is the community score</li>
 <li><b>＋ New combination</b>: add something you discovered (with slime and material suggestions)</li>
-<li><b>✎ Portuguese name</b>: give the slime a name in Portuguese</li>
+<li><b>✎ Portuguese name</b> and <b>✎ number</b>: give the slime a Portuguese name and its in-game Slimepedia number</li>
 <li><b>Elements</b> (collapsible): what its attacks are strong/weak against and what hurts it more/less</li></ul>
 <h4>Your data (⋯)</h4><ul>
 <li>Stored only on your PC and kept across updates</li>

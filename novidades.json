@@ -2,6 +2,15 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.5.1",
+      "pt": [
+        "Agora dá para adicionar o número do slime (o da Slimepedia do jogo) na ficha — ele aparece na lista, entra na busca e vai junto quando você envia suas descobertas"
+      ],
+      "en": [
+        "You can now add a slime's number (the one from the in-game Slimepedia) on its entry — it shows in the list, works in search and is sent along with your discoveries"
+      ]
+    },
+    {
       "v": "1.5.0",
       "pt": [
         "O Slimedex agora avisa quando sai uma versão nova e se atualiza sozinho com um clique — não precisa mais baixar no GitHub",

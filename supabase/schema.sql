@@ -1,5 +1,5 @@
 -- Slimedex — base colaborativa: envios feitos pelo app ("Enviar minhas descobertas"),
--- com nomes PT, chances, combinações novas e votos 👍/👎 em combinações existentes.
+-- com nomes PT, números de slime, chances, combinações novas e votos 👍/👎 em combinações existentes.
 -- O público (chave publishable/anon) só consegue INSERIR. Ninguém lê, edita ou apaga envios de outros.
 -- O merge diário (GitHub Actions) usa a chave secreta para ler e marcar o que foi processado.
 
@@ -37,8 +37,19 @@ declare
   n  int;
 begin
   -- formato igual ao meus-dados.json do app: { pt: {...}, pc: {...}, combos: [...], votos: { id_combinação: 1 | -1 } }
-  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos')) then
+  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num')) then
     raise exception 'formato inválido';
+  end if;
+  -- num: { slime: número do slime } (inteiro de 1 a 9999)
+  if new.payload ? 'num' then
+    if jsonb_typeof(new.payload -> 'num') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'num')) > 500
+       or exists (select 1 from jsonb_each(new.payload -> 'num') v
+                  where case when jsonb_typeof(v.value) = 'number'
+                             then (v.value::text)::numeric not between 1 and 9999 or (v.value::text)::numeric % 1 <> 0
+                             else true end) then
+      raise exception 'num inválido';
+    end if;
   end if;
   if new.payload ? 'votos' then
     if jsonb_typeof(new.payload -> 'votos') <> 'object'

@@ -69,7 +69,8 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 <script src="i18n.js"></script>
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app';S.forEach(s=>K[s.k]=s);
-const ALL=[...S].sort((a,b)=>(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm)); // numerados primeiro, depois por nome
+S.forEach(s=>s.n0=s.n); // número da base (o número exibido pode vir do usuário ou da comunidade)
+let ALL=[];const ordena=()=>{ALL=[...S].sort((a,b)=>(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm))};ordena(); // numerados primeiro, depois por nome
 const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const im=p=>p?`<img alt="" src="imagens${p}" onerror="this.onerror=null;this.src='${BASE}${p}'">`:'<i class="mu">?</i>';
@@ -81,13 +82,13 @@ const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // mater
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
-let M={pt:{},pc:{},combos:[],votos:{}},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
 const dn=s=>LANG==='pt'?(s.pt||s.nm):s.nm,nm=k=>K[k]?dn(K[k]):k;
 const alt=s=>LANG==='pt'?(s.pt?s.nm:''):(s.pt||''); // nome no outro idioma, se houver
 function monta(){
- S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';
+ S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';const nu=(M.num||{})[s.k]??(CM&&CM.num&&CM.num[s.k]);s.n=s.n0??(Number.isInteger(nu)?nu:null);
   s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.el.map(e=>EL_EN[e]||'').join(' '),s.lc.join(' '),s.lc.map(l=>(D.locEn&&D.locEn[l])||'').join(' ')].join(' '))});
  const cpc=(CM&&CM.pc)||{},cvt=(CM&&CM.votos)||{};
  const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b])
@@ -97,7 +98,7 @@ function monta(){
  made={};used={};
  C.forEach(c=>{if(c.r)(made[c.r]=made[c.r]||[]).push(c);new Set([c.a,c.b]).forEach(k=>(used[k]=used[k]||[]).push(c))});
  const byCh=(a,b)=>(b.ch??-1)-(a.ch??-1);Object.values(made).forEach(v=>v.sort(byCh)); // maior chance primeiro
- LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
+ ordena();LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
  // sugestões do campo Material: "Couro (Hide)" em PT, "Hide (Couro)" em EN — acha digitando nas duas línguas
  materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('')}
 const rot=s=>`${s.n!=null?'#'+s.n+' ':''}${dn(s)}${s.el.length?' ('+s.el.map(elN).join('/')+')':''}`; // rótulo único da lista de sugestões
@@ -152,7 +153,7 @@ function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys
 function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
  bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b>
  ${a?`<div class="mu">${esc(a)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.map(elN).join(' / '))}</div>
- <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span></div></div></div>
+ <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>
  <h4>${t('where')}</h4>${s.lc.length?esc(s.lc.map(locN).join(' · ')):`<span class="mu">${t('no_loc')}</span>`}
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<span class="mu">${t('no_combo')}</span>`}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
@@ -167,6 +168,13 @@ function editaChance(el){const id=el.dataset.pc,c=C.find(x=>cid(x)===id);if(!c)r
   if(c.meu){const u=M.combos.find(x=>x.id===c.id);if(u)u.ch=val}else if(val==null)delete M.pc[id];else M.pc[id]=val; // vazio = volta ao valor da base
   atualiza()};
  i.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};i.onblur=ok}
+function editaNum(){const s=K[cur];ptw.innerHTML=`<input id="nmi" type="number" min="1" max="9999" placeholder="${esc(t('num_ph'))}" value="${s.n??''}" style="padding:2px 6px;font-size:12px;width:90px">`;nmi.focus();nmi.select();let feito=false;
+ const ok=()=>{if(feito)return;const v=nmi.value.trim();
+  if(v===''){feito=true;delete M.num[cur];return atualiza()}
+  const n=Number(v);if(!Number.isInteger(n)||n<1||n>9999){nume.textContent=t('num_invalido');return}
+  const dono=S.find(x=>x.k!==cur&&x.n===n);if(dono){nume.textContent=t('num_dup',{n,s:dn(dono)});return} // número já é de outro slime
+  feito=true;M.num[cur]=n;atualiza()};
+ nmi.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};nmi.onblur=()=>{if(!feito)ficha(cur,true)}}
 function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="${esc(t('pt_ph'))}" value="${esc(s.pt)}" style="padding:2px 6px;font-size:12px;width:170px">`;pti.focus();pti.select();let feito=false;
  const ok=()=>{if(feito)return;feito=true;const v=pti.value.trim();if(v)M.pt[cur]=v;else delete M.pt[cur];atualiza()};
  pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=ok}
@@ -211,12 +219,12 @@ function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"
 // ---- enviar para a base colaborativa (revisada antes de entrar na base de todos) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){cur=null;sel=-1;marca({t:'envio'});
- const p={pt:M.pt,pc:M.pc,combos:M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),votos:M.votos||{}};
- const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,sig=assinatura(JSON.stringify(p));
+ const p={pt:M.pt,pc:M.pc,combos:M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),votos:M.votos||{},num:M.num||{}};
+ const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
- const vazio=!(n+c+k+v),igual=sig===ult;
+ const vazio=!(n+c+k+v+u),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- <p>${t('send_counts',{k,c,v,n})}</p>
+ <p>${t('send_counts',{k,c,v,n,u})}</p>
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -225,9 +233,9 @@ function envio(){cur=null;sel=-1;marca({t:'envio'});
   if(r.ok){try{localStorage.setItem('ultimo-envio',sig)}catch{}envmsg.className='ok';envmsg.textContent=t('sent_ok');envok.textContent=t('sent')}
   else{envmsg.className='err';envmsg.textContent=t('send_fail',{e:erroT(r.erro)});envok.disabled=false;envok.textContent=t('retry')}}}
 // ---- meus dados: resumo, exportar, importar ----
-function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length;
+function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
- <p>${t('my_counts',{n,p,c,v})}</p>
+ <p>${t('my_counts',{n,p,c,v,u})}</p>
  <p class="mu">${esc(t('my_where',{p:PASTA?PASTA+(ov.plataforma==='win32'?'\\':'/')+'meus-dados.json':''}))}</p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
@@ -242,7 +250,7 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
    return meus(t('msg_csv_in',{novas:o.novas,pcs:o.pcs,ja:o.ja})+(o.falha.size?t('msg_unknown',{l:[...o.falha].slice(0,8).join(', ')+(o.falha.size>8?'…':'')}):''))}
   let d;try{d=JSON.parse(f.texto)}catch{return meus(t('msg_invalid'))}
   if(!d||typeof d!='object'||Array.isArray(d))return meus(t('msg_invalid'));
-  M.pt={...M.pt,...(d.pt||{})};M.pc={...M.pc,...(d.pc||{})};M.votos={...M.votos,...(d.votos&&typeof d.votos=="object"?d.votos:{})};const ids=new Set(M.combos.map(c=>c.id));
+  M.pt={...M.pt,...(d.pt||{})};M.pc={...M.pc,...(d.pc||{})};M.votos={...M.votos,...(d.votos&&typeof d.votos=="object"?d.votos:{})};M.num={...M.num,...(d.num&&typeof d.num=="object"?d.num:{})};const ids=new Set(M.combos.map(c=>c.id));
   const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&K[c.r]&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
 // ---- ajuda: atalhos, como voltar, recursos e idioma ----
@@ -274,6 +282,7 @@ bd.onclick=e=>{const t=e.target;
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
  if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);return atualiza()}
  if(t.id=='ptedit')return editaPT();
+ if(t.id=='numedit')return editaNum();
  if(t.id=='addc')return formCombo(cur);
  const r=t.closest('[data-k]');if(r&&K[r.dataset.k])ficha(r.dataset.k)};
 // ícone: arrastar move a janela; clique simples (sem arrastar) abre o painel
@@ -293,7 +302,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},...d};monta()});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
