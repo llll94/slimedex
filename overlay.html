@@ -8,6 +8,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:transparent;font:13px 
 input{flex:1;min-width:0;background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:6px 9px;font:inherit;user-select:text}
 input:focus{outline:none;border-color:#4d79c7}
 button{background:none;border:0;color:#9aa3ad;font-size:16px;cursor:pointer}button:hover{color:#fff}
+/* busca com × para limpar dentro do campo */
+#qw{position:relative;flex:1;display:flex;min-width:0}#qw input{padding-right:26px}
+#qx{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:20px;height:20px;line-height:18px;font-size:15px;border-radius:50%;padding:0}#qx:hover{background:#2b3440}
 #bd{flex:1;overflow-y:auto;padding:6px 8px}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#3a414a;border:2px solid transparent;border-radius:8px;background-clip:padding-box}
@@ -45,27 +48,37 @@ details.sec>summary{list-style:none;cursor:pointer;margin:10px 0 4px;font-size:1
 details.sec>summary::-webkit-details-marker{display:none}details.sec>summary::before{content:'▸ ';display:inline-block;width:12px}
 details.sec[open]>summary::before{content:'▾ '}details.sec>summary:hover{color:#e8eaed}
 .el{font-size:11px;padding:0 6px;border-radius:8px}.el.g{background:#1f3a2c;color:#7fe0a8}.el.r{background:#3d2226;color:#ff9a9a}
+/* ajuda */
+#inf{font-size:15px;font-weight:700;font-family:Georgia,serif;width:22px}
+.info ul{margin:2px 0 6px;padding-left:16px}.info li{margin:3px 0;line-height:1.35}
+kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440;border:1px solid #3a414a;border-bottom-width:2px;color:#e8eaed}
+.lg{display:flex;gap:6px;margin:4px 0 8px}.lg .btn.on{background:#3a6fd8}
 </style></head><body>
-<div id="ico" title="Slimedex (Ctrl+Tab) — arraste para mover"><img src="icon.svg" alt=""></div>
-<div id="pn" hidden><div id="hd"><input id="qi" placeholder="buscar slime  (↓ ↑ navega · Enter abre · Esc fecha)"><button id="nv" title="Nova combinação">＋</button><button id="mn" title="Meus dados (exportar / importar)">⋯</button><button id="x" title="Fechar (Esc)">✕</button></div><div id="bd"></div></div>
+<div id="ico"><img src="icon.svg" alt=""></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
+<script src="i18n.js"></script>
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app';S.forEach(s=>K[s.k]=s);
 const ALL=[...S].sort((a,b)=>(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm)); // numerados primeiro, depois por nome
-const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const im=p=>p?`<img alt="" src="imagens${p}" onerror="this.onerror=null;this.src='${BASE}${p}'">`:'<i class="mu">?</i>';
+// ---- idioma: nomes, elementos, locais e materiais no idioma escolhido ----
+const locN=l=>LANG==='en'?(D.locEn&&D.locEn[l])||l:l;
+const IT={};(D.itens||[]).forEach(i=>[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>IT[norm(v)]=i));
+const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // material da base/usuário traduzido quando conhecido
 // ---- dados do usuário (meus-dados.json, via main): nomes PT, % editados e combinações próprias ----
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let M={pt:{},pc:{},combos:[],votos:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
-const dn=s=>s.pt||s.nm,nm=k=>K[k]?dn(K[k]):k;
-// sugestões do campo Material: "Couro (Hide)" — acha digitando em PT ou EN
-materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(i.pt+' ('+i.en+')')}">`).join('');
+const dn=s=>LANG==='pt'?(s.pt||s.nm):s.nm,nm=k=>K[k]?dn(K[k]):k;
+const alt=s=>LANG==='pt'?(s.pt?s.nm:''):(s.pt||''); // nome no outro idioma, se houver
 function monta(){
- S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.lc.join(' ')].join(' '))});
+ S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';
+  s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.el.map(e=>EL_EN[e]||'').join(' '),s.lc.join(' '),s.lc.map(l=>(D.locEn&&D.locEn[l])||'').join(' ')].join(' '))});
  const cpc=(CM&&CM.pc)||{},cvt=(CM&&CM.votos)||{};
  const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b])
   .map(c=>({id:c.id,r:c.r,a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
@@ -74,8 +87,10 @@ function monta(){
  made={};used={};
  C.forEach(c=>{if(c.r)(made[c.r]=made[c.r]||[]).push(c);new Set([c.a,c.b]).forEach(k=>(used[k]=used[k]||[]).push(c))});
  const byCh=(a,b)=>(b.ch??-1)-(a.ch??-1);Object.values(made).forEach(v=>v.sort(byCh)); // maior chance primeiro
- LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('')}
-const rot=s=>`${s.n!=null?'#'+s.n+' ':''}${dn(s)}${s.el.length?' ('+s.el.join('/')+')':''}`; // rótulo único da lista de sugestões
+ LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
+ // sugestões do campo Material: "Couro (Hide)" em PT, "Hide (Couro)" em EN — acha digitando nas duas línguas
+ materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('')}
+const rot=s=>`${s.n!=null?'#'+s.n+' ':''}${dn(s)}${s.el.length?' ('+s.el.map(elN).join('/')+')':''}`; // rótulo único da lista de sugestões
 function salva(){return ov.meus.salvar(M)}
 // nome digitado -> chave do slime: rótulo da lista, senão nome único (nome principal/PT antes de apelido)
 function chave(v){v=(v||'').trim();if(LBL[v])return LBL[v];const n=norm(v);if(!n)return null;
@@ -84,7 +99,8 @@ function chave(v){v=(v||'').trim();if(LBL[v])return LBL[v];const n=norm(v);if(!n
 const REC='recentes';let rec=[];try{rec=(JSON.parse(localStorage.getItem(REC))||[]).filter(k=>K[k])}catch{}
 function lembra(k){rec=[k,...rec.filter(x=>x!==k)].slice(0,3);try{localStorage.setItem(REC,JSON.stringify(rec))}catch{}}
 let sel=-1,cur=null; // linha destacada pelo teclado; ficha aberta
-function row(s){return`<div class="row" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${s.pt?esc(s.nm)+' · ':''}${esc(s.el.join(' / '))}</div></div></div>`}
+function row(s){const a=alt(s);return`<div class="row" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${a?esc(a)+' · ':''}${esc(s.el.map(elN).join(' / '))}</div></div></div>`}
+const voltarLk=()=>`<span class="lk" id="bk" title="${esc(t('back_title'))}">${t('back')}</span>`;
 // ---- histórico de navegação: cada tela registra onde está; voltar() refaz a anterior ----
 let vista=null,hist=[],voltando=false;
 function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
@@ -92,38 +108,45 @@ function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  vista=v}
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else list()}finally{voltando=false}}
-function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});
- if(!q)bd.innerHTML=(rec.length?`<h4>Recentes</h4>${rec.map(k=>row(K[k])).join('')}<h4>Todos (${S.length})</h4>`:'')+ALL.map(row).join('');
- else{const w=norm(q).split(/\s+/);bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map(row).join('')||'<p class="mu">Nada encontrado.</p>'}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else list()}finally{voltando=false}}
+// re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info()}finally{voltando=false}}
+function limpaX(){qx.hidden=!qi.value}
+function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
+ if(!q)bd.innerHTML=(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
+ else{const w=norm(q).split(/\s+/);bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map(row).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
 // votos 👍/👎: um por combinação (clicar de novo desfaz); c.v={u,d} e c.cz (contestada) vêm da base mesclada
+// ícones: paths do Material Icons "thumb_up"/"thumb_down" (licença Apache 2.0)
 const UP='<svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
 const DN='<svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>';
-const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt"><button class="vb up${v==1?" on":""}" data-voto="${esc(id)}" data-v="1" title="Funciona">${UP}${p.u?`<i>${p.u}</i>`:""}</button><button class="vb dn${v==-1?" on":""}" data-voto="${esc(id)}" data-v="-1" title="Não funciona / não existe">${DN}${p.d?`<i>${p.d}</i>`:""}</button></span>`};
+const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt"><button class="vb up${v==1?" on":""}" data-voto="${esc(id)}" data-v="1" title="${esc(t('up'))}">${UP}${p.u?`<i>${p.u}</i>`:""}</button><button class="vb dn${v==-1?" on":""}" data-voto="${esc(id)}" data-v="-1" title="${esc(t('down'))}">${DN}${p.d?`<i>${p.d}</i>`:""}</button></span>`};
+// combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
 const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(c.r)} =`:''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
- [c.m?esc(c.m):'',c.l!=null&&c.l!==''?'nv '+esc(c.l):''].filter(Boolean).map((t,i)=>`<span class="mu">${i?'· ':''}${t}</span>`).join('')+
- `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="Enviada por ${c.n} pessoas e confirmada no merge diário">comunidade</span>`:""}${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="Muita gente votou que não funciona">contestada</span>`:""}${c.meu?` <span class="meu">meu</span> <span class="del" data-del="${esc(c.id)}" title="Apagar esta combinação">🗑</span>`:''}`+
- `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="Chance — clique para editar">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}</div></div>`;
+ [c.m?esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
+ `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
+ `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
+ `${c.meu?` <span class="meu">${t('mine')}</span> <span class="del" data-del="${esc(c.id)}" title="${esc(t('del_title'))}">🗑</span>`:''}`+
+ `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}</div></div>`;
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
 function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys(T);
- const ch=(a,c)=>a.map(x=>`<span class="el ${c}">${esc(x)}</span>`).join('');
+ const ch=(a,c)=>a.map(x=>`<span class="el ${c}">${esc(elN(x))}</span>`).join('');
  let ab=false;try{ab=localStorage.getItem('elem-aberto')=='1'}catch{} // seção recolhível; lembra se ficou aberta
- return`<details class="sec" id="secel"${ab?' open':''}><summary>Elementos <span class="mu" style="text-transform:none;font-weight:400">· <span style="color:#7fe0a8">verde</span> vantagem · <span style="color:#ff9a9a">vermelho</span> desvantagem</span></summary>`+
+ return`<details class="sec" id="secel"${ab?' open':''}><summary>${t('elements')} <span class="mu" style="text-transform:none;font-weight:400">· <span style="color:#7fe0a8">${t('green')}</span> ${t('adv')} · <span style="color:#ff9a9a">${t('red')}</span> ${t('disadv')}</span></summary>`+
   s.el.filter(e=>T[e]).map(e=>{const fo=E.filter(d=>T[e][d]=='strong'),fr=E.filter(d=>T[e][d]=='weak'),
    mais=E.filter(a=>T[a][e]=='strong'),menos=E.filter(a=>T[a][e]=='weak');
-   return`<div class="eb"><b>${esc(e)}</b>
-   <div class="el-l"><span class="mu" title="Golpes de ${esc(e)}: verde = causa mais dano, vermelho = causa menos">⚔ Ataque</span>${ch(fo,'g')}${ch(fr,'r')}${fo.length+fr.length?'':'<span class="mu">neutro</span>'}</div>
-   <div class="el-l"><span class="mu" title="Recebendo golpes: vermelho = toma mais dano, verde = toma menos">🛡 Defesa</span>${ch(mais,'r')}${ch(menos,'g')}${mais.length+menos.length?'':'<span class="mu">neutro</span>'}</div></div>`}).join('')+'</details>'}
-function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop;if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
- bd.innerHTML=`<span class="lk" id="bk" title="Voltar (tecla V ou botão voltar do mouse)">← voltar</span><div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b>
- ${s.pt?`<div class="mu">${esc(s.nm)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.join(' / '))}</div>
- <div id="ptw"><span class="lk sm" id="ptedit">✎ ${s.pt?'editar':'adicionar'} nome em PT-BR</span></div></div></div>
- <h4>Onde nasce</h4>${s.lc.length?esc(s.lc.join(' · ')):'<span class="mu">Sem local cadastrado</span>'}
- <h4>Como obter (${m.length})</h4>${m.map(c=>rc(c,0)).join('')||'<span class="mu">Sem combinação</span>'}
- <button class="btn pri" id="addc" style="margin:6px 0">＋ Nova combinação</button>
- <h4>Usado em (${u.length})</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
+   return`<div class="eb"><b>${esc(elN(e))}</b>
+   <div class="el-l"><span class="mu" title="${esc(t('atk_title',{e:elN(e)}))}">${t('attack')}</span>${ch(fo,'g')}${ch(fr,'r')}${fo.length+fr.length?'':`<span class="mu">${t('neutral')}</span>`}</div>
+   <div class="el-l"><span class="mu" title="${esc(t('def_title'))}">${t('defense')}</span>${ch(mais,'r')}${ch(menos,'g')}${mais.length+menos.length?'':`<span class="mu">${t('neutral')}</span>`}</div></div>`}).join('')+'</details>'}
+function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
+ bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b>
+ ${a?`<div class="mu">${esc(a)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.map(elN).join(' / '))}</div>
+ <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span></div></div></div>
+ <h4>${t('where')}</h4>${s.lc.length?esc(s.lc.map(locN).join(' · ')):`<span class="mu">${t('no_loc')}</span>`}
+ <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<span class="mu">${t('no_combo')}</span>`}
+ <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
+ <h4>${t('used',{n:u.length})}</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
  ${elems(s)}`;bd.scrollTop=keep?top:0;
  if(window.secel)secel.ontoggle=()=>{try{localStorage.setItem('elem-aberto',secel.open?'1':'0')}catch{}}}
 function atualiza(){return salva().then(()=>{monta();if(cur)ficha(cur,true)})}
@@ -134,22 +157,22 @@ function editaChance(el){const id=el.dataset.pc,c=C.find(x=>cid(x)===id);if(!c)r
   if(c.meu){const u=M.combos.find(x=>x.id===c.id);if(u)u.ch=val}else if(val==null)delete M.pc[id];else M.pc[id]=val; // vazio = volta ao valor da base
   atualiza()};
  i.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};i.onblur=ok}
-function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="nome em PT-BR" value="${esc(s.pt)}" style="padding:2px 6px;font-size:12px;width:170px">`;pti.focus();pti.select();let feito=false;
+function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="${esc(t('pt_ph'))}" value="${esc(s.pt)}" style="padding:2px 6px;font-size:12px;width:170px">`;pti.focus();pti.select();let feito=false;
  const ok=()=>{if(feito)return;feito=true;const v=pti.value.trim();if(v)M.pt[cur]=v;else delete M.pt[cur];atualiza()};
  pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=ok}
 // tela "Nova combinação": aberta pelo ＋ do topo ou pelo botão da ficha (já vem com o resultado preenchido)
 function formCombo(r){const s=r&&K[r];cur=null;sel=-1;marca({t:'form',r:r||null});
- bd.innerHTML=`<span class="lk" id="bk" title="Voltar (tecla V ou botão voltar do mouse)">← voltar</span><h4>Nova combinação</h4><div class="form">
- <label>Resultado</label><input id="fr" list="nomes" placeholder="digite e escolha" value="${s?esc(rot(s)):''}">
- <label>Slime 1</label><input id="fa" list="nomes" placeholder="digite e escolha">
- <label>Slime 2</label><input id="fb" list="nomes" placeholder="digite e escolha">
- <label>Material</label><input id="fmat" list="materiais" placeholder="opcional — digite e escolha"><label>Nível</label><input id="fl" placeholder="opcional">
- <label>Chance %</label><input id="fpc" type="number" min="0" max="100" placeholder="opcional">
- <div class="bt"><span class="err" id="fe"></span><button class="btn" id="fc">Cancelar</button><button class="btn pri" id="fs">Salvar</button></div></div>
- <p class="mu">Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).</p>`;
+ bd.innerHTML=`${voltarLk()}<h4>${t('form_h')}</h4><div class="form">
+ <label>${t('result')}</label><input id="fr" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${s?esc(rot(s)):''}">
+ <label>${t('slime1')}</label><input id="fa" list="nomes" placeholder="${esc(t('pick_ph'))}">
+ <label>${t('slime2')}</label><input id="fb" list="nomes" placeholder="${esc(t('pick_ph'))}">
+ <label>${t('material')}</label><input id="fmat" list="materiais" placeholder="${esc(t('mat_ph'))}"><label>${t('level')}</label><input id="fl" placeholder="${esc(t('opt_ph'))}">
+ <label>${t('chance')}</label><input id="fpc" type="number" min="0" max="100" placeholder="${esc(t('opt_ph'))}">
+ <div class="bt"><span class="err" id="fe"></span><button class="btn" id="fc">${t('cancel')}</button><button class="btn pri" id="fs">${t('save')}</button></div></div>
+ <p class="mu">${t('form_tip')}</p>`;
  (s?fa:fr).focus();const sai=voltar;fc.onclick=sai;
  fs.onclick=async()=>{const rr=chave(fr.value),a=chave(fa.value),b=chave(fb.value);
-  if(!rr||!a||!b){fe.textContent='Escolha o resultado e os dois slimes da lista';return}
+  if(!rr||!a||!b){fe.textContent=t('form_err');return}
   const p=fpc.value.trim();M.combos.push({id:'u'+Date.now(),r:rr,a,b,m:fmat.value.trim(),l:fl.value.trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[]});
   await salva();monta();vista=null;ficha(rr)};
  bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')fs.click();else if(e.key=='Escape')sai()}}
@@ -182,42 +205,53 @@ function envio(){cur=null;sel=-1;marca({t:'envio'});
  const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
  const vazio=!(n+c+k+v),igual=sig===ult;
- bd.innerHTML=`<span class="lk" id="bk" title="Voltar (tecla V ou botão voltar do mouse)">← voltar</span><h4>Enviar minhas descobertas</h4>
- <p>${k} combinação(ões) · ${c} chance(s) · ${v} voto(s) · ${n} nome(s) em PT-BR</p>
- <p class="mu">Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for confirmado por mais de uma pessoa entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.</p>
- ${vazio?'<p class="mu">Você ainda não tem nada para enviar.</p>':igual?'<p class="ok">Isso já foi enviado. Cadastre ou vote em algo novo para enviar de novo.</p>':''}
- <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>Enviar</button><button class="btn" id="envno">Cancelar</button></div><p id="envmsg"></p>`;
+ bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
+ <p>${t('send_counts',{k,c,v,n})}</p>
+ <p class="mu">${t('send_info')}</p>
+ ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
+ <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
  envno.onclick=voltar;
- envok.onclick=async()=>{if(vazio||igual)return;envok.disabled=true;envok.textContent='Enviando…';const r=await ov.meus.enviar(p);
-  if(r.ok){try{localStorage.setItem('ultimo-envio',sig)}catch{}envmsg.className='ok';envmsg.textContent='Enviado, obrigado! Vai aparecer pra todo mundo depois da revisão diária.';envok.textContent='Enviado'}
-  else{envmsg.className='err';envmsg.textContent='Não consegui enviar: '+r.erro;envok.disabled=false;envok.textContent='Tentar de novo'}}}
+ envok.onclick=async()=>{if(vazio||igual)return;envok.disabled=true;envok.textContent=t('sending');const r=await ov.meus.enviar(p);
+  if(r.ok){try{localStorage.setItem('ultimo-envio',sig)}catch{}envmsg.className='ok';envmsg.textContent=t('sent_ok');envok.textContent=t('sent')}
+  else{envmsg.className='err';envmsg.textContent=t('send_fail',{e:erroT(r.erro)});envok.disabled=false;envok.textContent=t('retry')}}}
 // ---- meus dados: resumo, exportar, importar ----
 function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length;
- bd.innerHTML=`<span class="lk" id="bk" title="Voltar (tecla V ou botão voltar do mouse)">← voltar</span><h4>Meus dados</h4>
- <p>${n} nome(s) em PT-BR · ${p} chance(s) editada(s) · ${c} combinação(ões) minha(s) · ${v} voto(s)</p>
- <p class="mu">Ficam só neste PC, em %APPDATA%\\slime-overlay\\meus-dados.json, e não se perdem ao atualizar o app.</p>
- <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">⬆ Enviar minhas descobertas…</button></div>
- <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">＋ Nova combinação</button><button class="btn" id="imp">Importar JSON ou CSV…</button></div>
- <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">Exportar backup (JSON)…</button><button class="btn" id="expc">Exportar combinações (CSV)…</button></div>
- <p class="mu">CSV: mesmo formato da planilha da comunidade (Result, ID, Level, Slime 1, Slime 2, Material, Chance). Combinações que já existem não duplicam — só ganham a chance, se estiver faltando.</p>
+ bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
+ <p>${t('my_counts',{n,p,c,v})}</p>
+ <p class="mu">${esc(t('my_where'))}</p>
+ <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
+ <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
+ <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
+ <p class="mu">${t('csv_tip')}</p>
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
  nv2.onclick=()=>formCombo(null);env.onclick=envio;
- exp.onclick=async()=>{if(await ov.meus.exportar(M))meus('Backup exportado.')};
- expc.onclick=async()=>{if(!M.combos.length)return meus('Você ainda não tem combinações próprias para exportar.');if(await ov.meus.exportarCsv(csvMeus()))meus(`${M.combos.length} combinação(ões) exportada(s) em CSV.`)};
+ exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
+ expc.onclick=async()=>{if(!M.combos.length)return meus(t('msg_nocombo'));if(await ov.meus.exportarCsv(csvMeus()))meus(t('msg_csv_out',{n:M.combos.length}))};
  imp.onclick=async()=>{const f=await ov.meus.importar();if(!f)return;
   if(f.ext=='csv'){const o=importaCsv(f.texto);await salva();monta();
-   return meus(`CSV: ${o.novas} combinação(ões) nova(s), ${o.pcs} chance(s) completada(s), ${o.ja} já existiam.`+(o.falha.size?` Não reconheci: ${[...o.falha].slice(0,8).join(', ')}${o.falha.size>8?'…':''}`:''))}
-  let d;try{d=JSON.parse(f.texto)}catch{return meus('Arquivo inválido.')}
-  if(!d||typeof d!='object'||Array.isArray(d))return meus('Arquivo inválido.');
+   return meus(t('msg_csv_in',{novas:o.novas,pcs:o.pcs,ja:o.ja})+(o.falha.size?t('msg_unknown',{l:[...o.falha].slice(0,8).join(', ')+(o.falha.size>8?'…':'')}):''))}
+  let d;try{d=JSON.parse(f.texto)}catch{return meus(t('msg_invalid'))}
+  if(!d||typeof d!='object'||Array.isArray(d))return meus(t('msg_invalid'));
   M.pt={...M.pt,...(d.pt||{})};M.pc={...M.pc,...(d.pc||{})};M.votos={...M.votos,...(d.votos&&typeof d.votos=="object"?d.votos:{})};const ids=new Set(M.combos.map(c=>c.id));
   const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&K[c.r]&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
-  await salva();monta();meus(`Importado: ${Object.keys(d.pt||{}).length} nome(s), ${Object.keys(d.pc||{}).length} chance(s), ${novas.length} combinação(ões) nova(s).`)}}
+  await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
+// ---- ajuda: atalhos, como voltar, recursos e idioma ----
+let VERSAO='';
+function info(){cur=null;sel=-1;marca({t:'info'});
+ bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
+ <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
+ <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
+// textos fixos do topo (mudam com o idioma)
+function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title');qi.placeholder=t('search_ph');qx.title=t('clear');
+ inf.title=t('info');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
  r.forEach((e,j)=>e.classList.toggle('on',j==sel));r[sel].scrollIntoView({block:'nearest'})}
 function open(){ico.hidden=true;pn.hidden=false;ov.size(true);qi.value='';hist=[];vista=null;list();qi.focus()}
 function close(){pn.hidden=true;ico.hidden=false;ov.size(false)}
-x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);qi.oninput=list;
+x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=info;qi.oninput=list;
+qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
  if(e.key=='ArrowDown'){e.preventDefault();mark(sel+1)}
  else if(e.key=='ArrowUp'){e.preventDefault();mark(sel-1)}
@@ -225,6 +259,7 @@ qi.onkeydown=e=>{
  else if(e.key=='Escape')close()};
 bd.onclick=e=>{const t=e.target;
  if(t.id=='bk')return voltar();
+ if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
  if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);return atualiza()}
@@ -246,6 +281,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  if(e.key=='v'||e.key=='V'){e.preventDefault();voltar()}
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
-monta();ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},...d};monta()});
+estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>VERSAO=v).catch(()=>{});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 </script></body></html>

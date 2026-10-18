@@ -41,6 +41,7 @@ ipcMain.handle('comunidade',async()=>{const cache=path.join(app.getPath('userDat
 // devolve o texto cru e a extensão; quem decide como ler (JSON ou CSV) é a interface
 ipcMain.handle('meus-importar',async()=>{const r=await comDialogo(()=>dialog.showOpenDialog(win,{properties:['openFile'],filters:[{name:'Meus dados ou planilha',extensions:['json','csv']}]}));
   if(r.canceled||!r.filePaths[0])return null;const f=r.filePaths[0];return{ext:path.extname(f).slice(1).toLowerCase(),texto:fs.readFileSync(f,'utf8').replace(/^﻿/,'')}});
+function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 app.whenReady().then(()=>{
   const wa=screen.getPrimaryDisplay().workArea,p=carrega()||{x:wa.x+wa.width-ICON[0]-48,y:wa.y+506}; // padrão: 48px da borda direita, 506px do topo
   win=new BrowserWindow({width:ICON[0],height:ICON[1],x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,webPreferences:{preload:path.join(__dirname,'preload.js')}});
@@ -49,7 +50,9 @@ app.whenReady().then(()=>{
   // botão "voltar" do mouse: no Windows ele chega como comando de app (não como clique), mesmo sem foco
   win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
   tray=new Tray(nativeImage.createFromPath(path.join(__dirname,'icon.png')).resize({width:16}));
-  tray.setToolTip('Slimedex (Ctrl+Tab)');tray.setContextMenu(Menu.buildFromTemplate([{label:'Sair',click:()=>app.quit()}]));
+  tray.setToolTip('Slimedex (Ctrl+Tab)');menuBandeja('pt');
+  ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
+  ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.on('size',(_,o)=>size(o));
   // arrastar o ícone: guarda a distância do cursor ao canto da janela e acompanha o cursor
   ipcMain.on('drag-start',()=>{const c=screen.getCursorScreenPoint(),[x,y]=win.getPosition();off={x:c.x-x,y:c.y-y}});
