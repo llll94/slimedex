@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0;height:100%;overflow:hidden;background:transparent;font:13px system-ui,sans-serif;color:#e8eaed;user-select:none}
-#ico{width:56px;height:56px;margin:4px;border-radius:50%;background:rgba(14,19,21,.72);display:flex;align-items:center;justify-content:center;cursor:grab;transition:transform .12s;box-shadow:0 2px 8px #0008;touch-action:none}
+#ico{position:relative;width:56px;height:56px;margin:4px;border-radius:50%;background:rgba(14,19,21,.72);display:flex;align-items:center;justify-content:center;cursor:grab;transition:transform .12s;box-shadow:0 2px 8px #0008;touch-action:none}
 #ico:hover{transform:scale(1.12)}#ico:active{cursor:grabbing}#ico img{width:50px;pointer-events:none}
 #pn{height:100%;display:flex;flex-direction:column;background:rgba(24,28,33,.95);border:1px solid #2d333a;border-radius:14px;overflow:hidden}
 #hd{display:flex;gap:6px;padding:8px;-webkit-app-region:drag;border-bottom:1px solid #2d333a}#hd *{-webkit-app-region:no-drag}
@@ -53,9 +53,17 @@ details.sec[open]>summary::before{content:'▾ '}details.sec>summary:hover{color
 .info ul{margin:2px 0 6px;padding-left:16px}.info li{margin:3px 0;line-height:1.35}
 kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440;border:1px solid #3a414a;border-bottom-width:2px;color:#e8eaed}
 .lg{display:flex;gap:6px;margin:4px 0 8px}.lg .btn.on{background:#3a6fd8}
+/* aviso de base nova da comunidade */
+#anel{position:absolute;left:-4px;top:-4px;width:64px;height:64px;pointer-events:none}#anel svg{display:block;width:64px;height:64px}#anel circle{fill:none;stroke-width:3}
+#anel .trilho{stroke:rgba(255,255,255,.14)}#anel .prog{stroke:#6fe6ff;stroke-linecap:round;transition:stroke-dashoffset .15s linear}
+#anel.gira{animation:gira 1.4s linear infinite}#anel.ok .prog{stroke:#7fe0a8}#anel.erro .prog{stroke:#ff8a8a}@keyframes gira{to{transform:rotate(360deg)}}
+#pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(14,19,21,.62);color:#fff;font:800 14px system-ui;font-style:normal;text-shadow:0 1px 2px #000;pointer-events:none}#pct.erro{color:#ff8a8a;font-size:20px}
+#check{position:absolute;right:-1px;bottom:-1px;width:18px;height:18px;border-radius:50%;background:#2fb67a;color:#fff;font:700 11px/18px system-ui;text-align:center;font-style:normal;box-shadow:0 0 0 2px rgba(14,19,21,.9)}
+#ponto{position:absolute;top:2px;right:2px;width:13px;height:13px;border-radius:50%;background:#7fe0a8;box-shadow:0 0 0 2px rgba(14,19,21,.9),0 0 8px #7fe0a8}
+#rodape{display:flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 8px;border-top:1px solid #2d333a}#rodape .btn{flex:1;min-width:0;padding:7px 10px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#avc{background:#1f6f5a}#avc:hover{background:#26846b}
 </style></head><body>
-<div id="ico"><img src="icon.svg" alt=""></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div></div>
+<div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="i18n.js"></script>
@@ -71,6 +79,8 @@ const IT={};(D.itens||[]).forEach(i=>[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>I
 const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // material da base/usuário traduzido quando conhecido
 // ---- dados do usuário (meus-dados.json, via main): nomes PT, % editados e combinações próprias ----
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
+let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
+function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let M={pt:{},pc:{},combos:[],votos:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -108,9 +118,9 @@ function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  vista=v}
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
-function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info()}finally{voltando=false}}
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela()}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
  if(!q)bd.innerHTML=(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
@@ -242,13 +252,13 @@ function info(){cur=null;sel=-1;marca({t:'info'});
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
  <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
 // textos fixos do topo (mudam com o idioma)
-function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title');qi.placeholder=t('search_ph');qx.title=t('clear');
+function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');qx.title=t('clear');
  inf.title=t('info');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
  r.forEach((e,j)=>e.classList.toggle('on',j==sel));r[sel].scrollIntoView({block:'nearest'})}
-function open(){ico.hidden=true;pn.hidden=false;ov.size(true);qi.value='';hist=[];vista=null;list();qi.focus()}
+function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;ov.size(true);qi.value='';hist=[];vista=null;list();qi.focus()}
 function close(){pn.hidden=true;ico.hidden=false;ov.size(false)}
 x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=info;qi.oninput=list;
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
@@ -282,7 +292,42 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  if(e.key=='v'||e.key=='V'){e.preventDefault();voltar()}
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
-estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>VERSAO=v).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
+estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
 ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
+// ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
+function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
+function verificaVersao(){ov.versaoNova().then(r=>{if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
+function verificaComunidade(){ultimaChecagem=Date.now();verificaVersao();ov.comunidade().then(d=>{
+ if(!d||typeof d!='object'||!d.gerado||(CM&&d.gerado===CM.gerado))return; // nada novo
+ CMnova=d;avisa()}).catch(()=>{})}
+avb.onclick=()=>novidadesTela(); // versão nova: mostra o que mudou e pede confirmação
+avc.onclick=()=>{avc.disabled=true;ov.reiniciar()}; // base nova: reinicia com as combinações novas
+// ---- novidades da versão (para quem joga): todas as versões entre a atual e a nova ----
+const comparaV=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++)if((x[i]||0)!==(y[i]||0))return(x[i]||0)-(y[i]||0);return 0};
+function novidadesTela(){const n=NOVA;if(!n)return list();cur=null;sel=-1;marca({t:'novas'});
+ bd.innerHTML=`${voltarLk()}<h4 id="nvh">${esc(t('novidades_h',{v:n.versao}))}</h4>
+ <p style="margin:4px 0 0"><b>${esc(t(n.arquivo?'confirma_atualizar':'confirma_baixar',{v:n.versao}))}</b></p>
+ <div class="bt" style="justify-content:flex-start;margin:8px 0 4px"><button class="btn pri" id="nvok">${n.arquivo?t('atualizar_agora'):t('baixar_mac')}</button><button class="btn" id="nvno">${t('depois')}</button></div>
+ <div id="nvl" class="info"><p class="mu">…</p></div>`;
+ nvno.onclick=voltar;nvok.onclick=iniciarAtualizacao;
+ ov.novidades().then(d=>{if(!window.nvl||vista.t!=='novas')return;
+  const L=((d&&d.versoes)||[]).filter(x=>x&&x.v&&comparaV(x.v,VERSAO||'0.0.0')>0&&comparaV(x.v,n.versao)<=0).sort((a,b)=>comparaV(b.v,a.v));
+  if(L.length>1)nvh.textContent=t('novidades_varias',{v:VERSAO});
+  nvl.innerHTML=L.length?L.map(x=>`<h4>${esc(t('versao_x',{v:x.v}))}</h4><ul>${(x[LANG]||x.pt||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`).join(''):`<p class="mu">${t('sem_novidades')}</p>`})
+  .catch(()=>{if(window.nvl)nvl.innerHTML=`<p class="mu">${t('sem_novidades')}</p>`})}
+// ---- atualizar: anel no ícone sobe até 90% em 10 s e segura; 100% quando o download termina e confere; aí reinicia ----
+function iniciarAtualizacao(){const n=NOVA;if(!n)return;if(!n.arquivo){ov.baixarAtualizacao(n);return} // Mac: abre a página de download
+ close();ponto.hidden=true;check.hidden=true;avc.hidden=true;anel.hidden=false;pct.hidden=false;pct.className='';anel.setAttribute('class','gira');avb.disabled=true;
+ let perc=0,feito=false;const t0=Date.now(); // perc: % mostrado (o elemento da tela se chama pct)
+ const pinta=p=>{anelp.style.strokeDashoffset=188.5*(1-p/100);pct.textContent=Math.round(p)+'%';const s=t('atualizando',{p:Math.round(p)});avb.textContent=s;ico.title=s};
+ pinta(0);const tm=setInterval(()=>{if(feito)return;const s=Math.min(1,(Date.now()-t0)/10000);perc=90*(1-(1-s)*(1-s));pinta(perc)},100);
+ const falhou=e=>{clearInterval(tm);anel.setAttribute('class','erro');pct.className='erro';pct.textContent='!';avb.disabled=false;avb.textContent=t('falha_atualizar',{e});ico.title=avb.textContent;
+  setTimeout(()=>{anel.hidden=true;pct.hidden=true;ponto.hidden=false;avc.hidden=!CMnova;estaticos()},5000)};
+ ov.baixarAtualizacao(n).then(r=>{if(!r||!r.ok)return falhou(r&&r.erro||'?');
+  feito=true;clearInterval(tm);anel.setAttribute('class','ok');pinta(100);setTimeout(()=>ov.instalarAtualizacao(),800)}).catch(e=>falhou(e.message))}
+// aberto logo depois de atualizar: ✓ verde no ícone por alguns segundos e "Atualizado para vX" no rodapé
+ov.foiAtualizado().then(f=>{if(!f)return;ATUALIZADO=true;check.hidden=false;estaticos();setTimeout(()=>{check.hidden=true},8000)}).catch(()=>{});
+setTimeout(verificaVersao,5000); // ao abrir o app, já confere se saiu versão nova
+setInterval(verificaComunidade,60*60e3); // confere a cada 1 hora
 </script></body></html>

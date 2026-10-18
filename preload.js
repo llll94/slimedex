@@ -6,4 +6,6 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),
     exportar:d=>ipcRenderer.invoke('meus-exportar',d),exportarCsv:t=>ipcRenderer.invoke('meus-exportar-csv',t),
     importar:()=>ipcRenderer.invoke('meus-importar'),enviar:p=>ipcRenderer.invoke('enviar',p)},
   comunidade:()=>ipcRenderer.invoke('comunidade'),idioma:l=>ipcRenderer.send('idioma',l),versao:()=>ipcRenderer.invoke('versao'),
-  pasta:()=>ipcRenderer.invoke('pasta'),plataforma:process.platform});
+  pasta:()=>ipcRenderer.invoke('pasta'),plataforma:process.platform,reiniciar:()=>ipcRenderer.send('reiniciar'),
+  versaoNova:()=>ipcRenderer.invoke('versao-nova'),baixarAtualizacao:n=>ipcRenderer.invoke('baixar-atualizacao',n),instalarAtualizacao:()=>ipcRenderer.send('instalar-atualizacao'),
+  foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p))});

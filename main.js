@@ -1,4 +1,5 @@
-const {app,BrowserWindow,Tray,Menu,screen,ipcMain,nativeImage,globalShortcut,dialog}=require('electron');
+const {app,BrowserWindow,Tray,Menu,screen,ipcMain,nativeImage,globalShortcut,dialog,shell}=require('electron');
+const atz=require('./atualizador');
 const path=require('path'),fs=require('fs'),crypto=require('crypto');
 const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação em 2 linhas; 100% dos "Como obter" e ~93% dos "Usado em" cabem (medido)
 const MAC=process.platform==='darwin';
@@ -57,6 +58,23 @@ app.whenReady().then(()=>{
   ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
   ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
+  // reiniciar (base nova da comunidade): salva a posição, fecha e abre de novo.
+  // No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE).
+  // nova versão no GitHub: verifica; no .exe portátil baixa, confere o SHA-256 e reinicia na nova; no Mac/dev abre a página
+  const RELEASES=process.env.SLIMEDEX_RELEASE_URL||'https://api.github.com/repos/llll94/slimedex/releases/latest';
+  ipcMain.handle('versao-nova',async()=>{try{return await atz.verificar(RELEASES,app.getVersion(),process.platform)}catch{return null}});
+  let baixado=null; // .exe novo já baixado e conferido, esperando o reinício
+  ipcMain.handle('baixar-atualizacao',async(_,nova)=>{const exe=process.env.PORTABLE_EXECUTABLE_FILE;
+    if(process.platform!=='win32'||!exe||!nova||!nova.arquivo){const p=nova&&/^https:\/\/github\.com\/llll94\/slimedex\//.test(nova.pagina||'')?nova.pagina:'https://github.com/llll94/slimedex/releases/latest';shell.openExternal(p);return{aberto:true}}
+    try{baixado=await atz.baixar(nova.arquivo,path.dirname(exe),p=>win.webContents.send('progresso',p));return{ok:true}}
+    catch(e){return{erro:e.message}}});
+  ipcMain.on('instalar-atualizacao',()=>{const exe=process.env.PORTABLE_EXECUTABLE_FILE;if(!baixado||!exe)return;
+    salva();app.relaunch({execPath:baixado,args:['--remover-antigo',exe]});app.exit(0)});
+  ipcMain.handle('foi-atualizado',()=>process.argv.includes('--remover-antigo')); // aberto logo depois de uma atualização
+  // o que mudou em cada versão, para quem joga (novidades.json no repositório)
+  const NOVIDADES=process.env.SLIMEDEX_NOVIDADES_URL||'https://raw.githubusercontent.com/llll94/slimedex/main/novidades.json'; // variável só para teste local
+  ipcMain.handle('novidades',async()=>{try{const r=await fetch(NOVIDADES,{signal:AbortSignal.timeout(6000)});if(r.ok)return await r.json()}catch{}return null});
+  ipcMain.on('reiniciar',()=>{salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)});
   ipcMain.on('size',(_,o)=>size(o));
   // arrastar o ícone: guarda a distância do cursor ao canto da janela e acompanha o cursor
   ipcMain.on('drag-start',()=>{const c=screen.getCursorScreenPoint(),[x,y]=win.getPosition();off={x:c.x-x,y:c.y-y}});
@@ -67,3 +85,5 @@ app.whenReady().then(()=>{
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);
 });
 app.on('will-quit',()=>globalShortcut.unregisterAll());
+// aberto pela atualização: apaga o .exe da versão anterior (o atualizador só aceita um Slimedex portátil na mesma pasta)
+{const i=process.argv.indexOf('--remover-antigo');if(i>=0)atz.removerAntigo(process.argv[i+1],process.env.PORTABLE_EXECUTABLE_FILE)}

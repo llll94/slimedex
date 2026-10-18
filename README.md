@@ -45,6 +45,16 @@ O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDA
 - **Importar CSV** no formato da planilha da comunidade (`Result, ID, Level, Slime 1, Slime 2, Material, Chance`) — combinações que já existem não duplicam, só ganham a chance se estiver faltando;
 - **Exportar** suas combinações em CSV (mesmo formato) ou fazer backup de tudo em JSON, e **importar** de volta.
 
+### Atualizações
+
+A partir da 1.5.0 o Slimedex confere de hora em hora se há novidades e avisa no **rodapé do painel** (e com uma bolinha verde no ícone):
+
+- **versão nova:** mostra o que mudou (inclusive das versões puladas) e pede confirmação; no Windows ele baixa o `.exe` novo para a mesma pasta, **confere o SHA-256 informado pelo GitHub**, reinicia na versão nova e apaga a antiga — o progresso aparece num anel com porcentagem no ícone. No Mac o botão abre a página de download;
+- **base nova da comunidade:** um clique reinicia o app já com as combinações novas;
+- se houver as duas ao mesmo tempo, você escolhe qual fazer.
+
+O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](novidades.json); os detalhes técnicos ficam na descrição de cada release.
+
 ### Base colaborativa
 
 Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. Uma vez por dia, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
@@ -76,6 +86,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.5.0 (Windows) | `3912CBAA628B15536972DD06877315C178444129A431E68990C5EF40343478CB` | _em análise_ |
 | 1.4.0 (Windows) | `722E0AD8E8617426C5F258FB01649D801E9BA8CF1844B7225560AF019BEB8B97` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/722e0ad8e8617426c5f258fb01649d801e9ba8cf1844b7225560af019beb8b97/detection) |
 | 1.4.0 (Mac, chip Apple) | `FA5E96398F21408E4A40210A00B946A01B5D1E8F6C6BFD90CCFAA30753A543A3` | — |
 | 1.4.0 (Mac, Intel) | `BEFB47468140B32031CD304A0C6043EC12A3501F46BF43AFFAEDE504F6636392` | — |
@@ -92,7 +103,7 @@ Os hashes dos `.dmg` de Mac ficam no arquivo `SHA256-mac.txt` gerado junto pelo 
 Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o arquivo se chamava Slimepedia-…
 ```
 
-O app não acessa a internet além de carregar as imagens da wiki, não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
+O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
 
 ## Rodar a partir do código
 

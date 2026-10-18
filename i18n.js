@@ -33,6 +33,10 @@ const TXT = {
     msg_csv_in: 'CSV: {novas} combinação(ões) nova(s), {pcs} chance(s) completada(s), {ja} já existiam.', msg_unknown: ' Não reconheci: {l}',
     msg_invalid: 'Arquivo inválido.', msg_json_in: 'Importado: {n} nome(s), {c} chance(s), {k} combinação(ões) nova(s).',
     lang: 'Idioma', tray_quit: 'Sair',
+    nova_base: 'há novidades da comunidade', reiniciar_btn: '✨ Base atualizada — clique em reiniciar', base_em_dia: '✓ Base da comunidade em dia', btn_app_curto: '⬆ Atualizar para a v{v}', btn_base_curto: '✨ Base nova: reiniciar',
+    nova_versao: '⬆ Nova versão {v} disponível — Atualizar', nova_versao_baixar: '⬆ Nova versão {v} disponível — Baixar', nova_versao_tip: 'nova versão {v}',
+    atualizando: 'Atualizando… {p}%', atualizado: '✓ Atualizado para a versão {v}', novidades_h: 'Novidades da versão {v}', novidades_varias: 'O que mudou desde a sua versão ({v})',
+    versao_x: 'Versão {v}', confirma_atualizar: 'Atualizar para a versão {v} agora? O Slimedex vai fechar e abrir de novo sozinho.', confirma_baixar: 'Baixar a versão {v}? A página de download vai abrir no navegador.', atualizar_agora: 'Atualizar agora', baixar_mac: 'Baixar no GitHub', depois: 'Depois', sem_novidades: 'Melhorias e correções.', falha_atualizar: 'Não consegui atualizar ({e}) — tentar de novo',
     info_h: 'Dicas e idioma',
     info: `<h4>Abrir e fechar</h4><ul>
 <li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> abre e fecha de qualquer lugar, inclusive com o jogo em foco</li>
@@ -93,6 +97,10 @@ const TXT = {
     msg_csv_in: 'CSV: {novas} new combination(s), {pcs} chance(s) filled in, {ja} already existed.', msg_unknown: ' Not recognized: {l}',
     msg_invalid: 'Invalid file.', msg_json_in: 'Imported: {n} name(s), {c} chance(s), {k} new combination(s).',
     lang: 'Language', tray_quit: 'Quit',
+    nova_base: 'community updates available', reiniciar_btn: '✨ Database updated — click to restart', base_em_dia: '✓ Community database up to date', btn_app_curto: '⬆ Update to v{v}', btn_base_curto: '✨ New data: restart',
+    nova_versao: '⬆ New version {v} available — Update', nova_versao_baixar: '⬆ New version {v} available — Download', nova_versao_tip: 'new version {v}',
+    atualizando: 'Updating… {p}%', atualizado: '✓ Updated to version {v}', novidades_h: "What's new in {v}", novidades_varias: 'What changed since your version ({v})',
+    versao_x: 'Version {v}', confirma_atualizar: 'Update to version {v} now? Slimedex will close and reopen by itself.', confirma_baixar: 'Download version {v}? The download page will open in your browser.', atualizar_agora: 'Update now', baixar_mac: 'Download from GitHub', depois: 'Later', sem_novidades: 'Improvements and fixes.', falha_atualizar: 'Update failed ({e}) — try again',
     info_h: 'Tips & language',
     info: `<h4>Open and close</h4><ul>
 <li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> opens and closes it from anywhere, even with the game focused</li>
