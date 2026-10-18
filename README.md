@@ -2,7 +2,7 @@
 
 # Slimedex
 
-[![VirusTotal 1/68](https://img.shields.io/badge/VirusTotal-1%2F68_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/c87790e346d46e6732db5964d6731bbc809b20d588588c6a9a7e60eba9912ac3/detection)
+[![VirusTotal 1.3.0](https://img.shields.io/badge/VirusTotal-ver_an%C3%A1lise_1.3.0-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/8d80e04130dccfe7941f22374b148b45309b274a958a364c080c16b4aa68ce8a/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
 Overlay para Windows com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
@@ -64,7 +64,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
-| 1.3.0 | `8D80E04130DCCFE7941F22374B148B45309B274A958A364C080C16B4AA68CE8A` | _em análise_ |
+| 1.3.0 | `8D80E04130DCCFE7941F22374B148B45309B274A958A364C080C16B4AA68CE8A` | [ver análise](https://www.virustotal.com/gui/file/8d80e04130dccfe7941f22374b148b45309b274a958a364c080c16b4aa68ce8a/detection) |
 | 1.2.0 | `C87790E346D46E6732DB5964D6731BBC809B20D588588C6A9A7E60EBA9912AC3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/c87790e346d46e6732db5964d6731bbc809b20d588588c6a9a7e60eba9912ac3/detection) |
 | 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection) |
 | 1.0.0 | `0B0CA238299E3430D662F3733EA6FCCFCB9EE3669C3FE1F02899E1F3902EF2DB` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection) |
