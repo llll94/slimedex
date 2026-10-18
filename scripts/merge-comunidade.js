@@ -90,11 +90,12 @@ async function lerEnvios() {
     .filter(([, t]) => t.quem.size >= MIN_PESSOAS).sort().map(([k, t]) => [k, t.nome]));
   const vt = Object.fromEntries([...votos].filter(([id]) => aceitos.has(id)).sort().map(([id, v]) => [id, v]));
 
-  const conteudo = { pessoas: ultimo.size, combos, pc, pt, votos: vt };
+  // só o que o app usa decide se há novidade; "pessoas" é informativo e não abre PR sozinho
+  const essencial = { combos, pc, pt, votos: vt };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); delete a.gerado; antes = JSON.stringify(a) } catch {}
-  const mudou = antes !== JSON.stringify(conteudo);
-  if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), ...conteudo }, null, 1) + '\n');
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = JSON.stringify({ combos: a.combos, pc: a.pc, pt: a.pt, votos: a.votos }) } catch {}
+  const mudou = antes !== JSON.stringify(essencial);
+  if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
   const nm = k => (D.slimes.find(s => s.k === k) || {}).nm || k;
   const resumo = [
