@@ -39,6 +39,18 @@ O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDA
 - **Importar CSV** no formato da planilha da comunidade (`Result, ID, Level, Slime 1, Slime 2, Material, Chance`) — combinações que já existem não duplicam, só ganham a chance se estiver faltando;
 - **Exportar** suas combinações em CSV (mesmo formato) ou fazer backup de tudo em JSON, e **importar** de volta.
 
+### Base colaborativa
+
+Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. Uma vez por dia, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
+
+- uma **combinação nova** só entra quando **2 ou mais pessoas** enviaram a mesma (aparece com o selo *comunidade*);
+- a **chance** vira a mediana dos relatos (mínimo de 2);
+- um **nome em PT-BR** entra quando 2 ou mais pessoas usaram o mesmo nome;
+- os **votos** viram placar; combinação com muitos 👎 é marcada como *contestada* (e, se for da comunidade, sai da base);
+- cada atualização passa por um Pull Request revisado antes de valer.
+
+**Privacidade:** o envio leva só os dados acima e um código aleatório gerado no seu PC (para contar "pessoas diferentes"). Nenhum dado pessoal é coletado; o IP não é guardado (apenas um hash, usado para limitar spam a 10 envios por dia). A estrutura do banco e as regras de acesso estão em [`supabase/schema.sql`](supabase/schema.sql) — o app só consegue **inserir** envios, nunca ler os de outras pessoas.
+
 > **Atenção:** enquanto o app está aberto, o atalho Ctrl+Tab fica reservado para ele (não troca abas no navegador).
 > Para o painel aparecer por cima do jogo, use o modo **janela sem borda** (borderless) em vez de tela cheia exclusiva.
 

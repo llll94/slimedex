@@ -1,0 +1,50 @@
+name: Merge diário da base colaborativa
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # 06:00 em Brasília
+  workflow_dispatch:       # botão "Run workflow" na aba Actions
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: merge-comunidade
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Consolidar envios do Supabase
+        env:
+          SUPABASE_URL: https://pwletsegcprygxgoduvp.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node scripts/merge-comunidade.js
+
+      - name: Abrir ou atualizar o PR (só se mudou algo)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- comunidade.json && [ -z "$(git status --porcelain -- comunidade.json)" ]; then
+            echo "Nada novo hoje."; exit 0
+          fi
+          branch="comunidade/atualizacao"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add comunidade.json
+          git commit -m "Base colaborativa: atualização de $(date -u +%Y-%m-%d)"
+          git push -f origin "$branch"
+          if gh pr view "$branch" --json state -q .state 2>/dev/null | grep -q OPEN; then
+            gh pr edit "$branch" --title "Base colaborativa — $(date -u +%Y-%m-%d)" --body-file resumo-merge.md
+          else
+            gh pr create --base main --head "$branch" --title "Base colaborativa — $(date -u +%Y-%m-%d)" --body-file resumo-merge.md
+          fi
