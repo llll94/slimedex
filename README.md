@@ -77,6 +77,8 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
 | 1.4.0 (Windows) | `722E0AD8E8617426C5F258FB01649D801E9BA8CF1844B7225560AF019BEB8B97` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/722e0ad8e8617426c5f258fb01649d801e9ba8cf1844b7225560af019beb8b97/detection) |
+| 1.4.0 (Mac, chip Apple) | `FA5E96398F21408E4A40210A00B946A01B5D1E8F6C6BFD90CCFAA30753A543A3` | — |
+| 1.4.0 (Mac, Intel) | `BEFB47468140B32031CD304A0C6043EC12A3501F46BF43AFFAEDE504F6636392` | — |
 | 1.3.0 | `8D80E04130DCCFE7941F22374B148B45309B274A958A364C080C16B4AA68CE8A` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/8d80e04130dccfe7941f22374b148b45309b274a958a364c080c16b4aa68ce8a/detection) |
 | 1.2.0 | `C87790E346D46E6732DB5964D6731BBC809B20D588588C6A9A7E60EBA9912AC3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/c87790e346d46e6732db5964d6731bbc809b20d588588c6a9a7e60eba9912ac3/detection) |
 | 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection) |
