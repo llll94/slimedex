@@ -2,7 +2,7 @@
 
 # Slimepédia overlay
 
-[![VirusTotal 1/67](https://img.shields.io/badge/VirusTotal-1%2F67_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection)
+[![VirusTotal 1/68](https://img.shields.io/badge/VirusTotal-1%2F68_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
 Overlay para Windows que mostra a Slimepédia do **World of Slime** por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
@@ -48,10 +48,10 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
-| 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | _em análise_ |
+| 1.1.0 | `F7CE0ECFFA7DF80223EE064E04FF999BEEB1A7E76A73F76DF1E5B8DE5962CFA3` | [**1/68** — ver análise](https://www.virustotal.com/gui/file/f7ce0ecffa7df80223ee064e04ff999beeb1a7e76a73f76df1e5b8de5962cfa3/detection) |
 | 1.0.0 | `0B0CA238299E3430D662F3733EA6FCCFCB9EE3669C3FE1F02899E1F3902EF2DB` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/0b0ca238299e3430d662f3733ea6fccfcb9ee3669c3fe1f02899e1f3902ef2db/detection) |
 
-> **Sobre o 1/67:** o único alerta é da McAfee, com a detecção `Ti!0B0CA238299E`. Ela não identifica vírus nenhum: é a regra de **reputação** da McAfee ("Threat Intelligence"), que marca qualquer executável novo, pouco baixado e sem assinatura digital — repare que o "nome" da detecção é só o começo do hash do próprio arquivo. Os outros 66 antivírus e o Windows Defender não acusam nada, e o código-fonte completo está neste repositório.
+> **Sobre o alerta único:** nas duas versões, o único alerta é da McAfee, com uma detecção do tipo `Ti!<começo do hash>` (ex.: `Ti!0B0CA238299E` na 1.0.0). Ela não identifica vírus nenhum: é a regra de **reputação** da McAfee ("Threat Intelligence"), que marca qualquer executável novo, pouco baixado e sem assinatura digital — repare que o "nome" da detecção é só o começo do hash do próprio arquivo, e por isso ela reaparece a cada versão nova. Todos os outros antivírus e o Windows Defender não acusam nada, e o código-fonte completo está neste repositório.
 
 ```powershell
 Get-FileHash .\Slimepedia-1.1.0-portable.exe -Algorithm SHA256
