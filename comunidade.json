@@ -1,15 +1,55 @@
 {
- "gerado": "2026-10-18T15:08:19.830Z",
- "pessoas": 2,
+ "gerado": "2026-10-22T14:16:55.837Z",
+ "pessoas": 4,
  "combos": [
+  {
+   "id": "c:SL_Bass_WaterGround+SL_SlimeSM_Water>SL_Turtle_Water",
+   "r": "SL_Turtle_Water",
+   "a": "SL_Bass_WaterGround",
+   "b": "SL_SlimeSM_Water",
+   "m": "Fragmento Sólido (Solid Fragment)",
+   "l": "31",
+   "ch": 10,
+   "n": 2
+  },
+  {
+   "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Beholder_DarkMagic",
+   "r": "SL_Beholder_DarkMagic",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_Bat_WindDark",
+   "m": "Tentáculo de Aqua Melon (Aqua Melon's Tentacle)",
+   "l": "25",
+   "ch": null,
+   "n": 1
+  },
   {
    "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Ghost_Magic",
    "r": "SL_Ghost_Magic",
    "a": "SL_Cauldron_MagicSteel",
    "b": "SL_Bat_WindDark",
    "m": "",
-   "l": "",
+   "l": "31",
    "ch": 8.8,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Bat_WindDark+SL_ElecChicken_WindElectric>SL_Crow_WindDark",
+   "r": "SL_Crow_WindDark",
+   "a": "SL_Bat_WindDark",
+   "b": "SL_ElecChicken_WindElectric",
+   "m": "Cristal de Kobold (Kobold's Crystal)",
+   "l": "31",
+   "ch": 7.6,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Bat_WindPoison+SL_Beholder_DarkMagic>SL_Ghost_Magic",
+   "r": "SL_Ghost_Magic",
+   "a": "SL_Beholder_DarkMagic",
+   "b": "SL_Bat_WindPoison",
+   "m": "Anel de Ladyf (Ladif's Ring)",
+   "l": "31",
+   "ch": 15,
    "n": 1
   },
   {
@@ -31,9 +71,41 @@
    "l": "22",
    "ch": 100,
    "n": 1
+  },
+  {
+   "id": "c:SL_Rat_PoisonGround+SL_Wisp_Light>SL_Tricky_Light",
+   "r": "SL_Tricky_Light",
+   "a": "SL_Rat_PoisonGround",
+   "b": "SL_Wisp_Light",
+   "m": "",
+   "l": "19",
+   "ch": 60,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Slime_Water+SL_Sword_SteelDark>SL_Shade_DarkWater",
+   "r": "SL_Shade_DarkWater",
+   "a": "SL_Sword_SteelDark",
+   "b": "SL_Slime_Water",
+   "m": "Duto de Escape (Exhaust Vent)",
+   "l": "",
+   "ch": 100,
+   "n": 1
   }
  ],
  "pc": {
+  "SL_Bass_Water|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
+   "ch": 100,
+   "n": 1
+  },
+  "SL_Bass_Water|SL_SeedOcto_GrassGround|SL_SeedOcto_GrassWater|": {
+   "ch": 100,
+   "n": 1
+  },
+  "SL_Dwarf_MagicDark|SL_Rat_PoisonGround|SL_Rat_PoisonDark|": {
+   "ch": 100,
+   "n": 1
+  },
   "SL_ElecChicken_WindElectric|SL_Wisp_LightElectric||": {
    "ch": 95,
    "n": 1
@@ -47,6 +119,17 @@
   "SL_HermitCrab_WaterPower": "Sora",
   "SL_HermitCrab_WaterSteel": "Sora de Aço"
  },
- "votos": {},
- "num": {}
+ "votos": {
+  "SL_Bass_Water|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
+   "u": 1,
+   "d": 0
+  },
+  "SL_Bass_Water|SL_SeedOcto_GrassGround|SL_SeedOcto_GrassWater|": {
+   "u": 1,
+   "d": 0
+  }
+ },
+ "num": {
+  "SL_Ghost_Magic": 115
+ }
 }
