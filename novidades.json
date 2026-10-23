@@ -2,6 +2,19 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.6.2",
+      "pt": [
+        "🗑 Apague qualquer combinação errada, inclusive da base: some do seu app na hora (dá para desfazer na ficha) e vai para revisão da comunidade quando você enviar suas descobertas",
+        "Botão de atualizar (⟳) no rodapé: confere na hora se tem base nova da comunidade ou versão nova",
+        "Landif (#94) agora é o Ladyf Elétrico: eram o mesmo slime"
+      ],
+      "en": [
+        "🗑 Delete any wrong combination, including database ones: it disappears from your app right away (undo it on the entry) and goes to community review when you send your discoveries",
+        "Refresh button (⟳) in the footer: checks right away for new community data or a new version",
+        "Landif (#94) is now Ladyf (Electric): they were the same slime"
+      ]
+    },
+    {
       "v": "1.6.1",
       "pt": [
         "Slimes do mapa (Tab) abrem na hora, com o último mapa, e se completam em seguida",

@@ -38,7 +38,7 @@ Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 - **Dia e noite** — ícone ao lado do nome: nasce só de dia, só de noite ou nos dois. Clique para corrigir.
 - **Onde nasce** — os mapas em que ele aparece (clique num mapa para ver ou editar os slimes dele).
 - **Drops** — os itens que ele solta, com ícone.
-- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍.
+- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍. Combinação errada? **🗑** apaga (some do seu app na hora; ao enviar suas descobertas, vai para revisão e pode sumir para todos).
 - **Usado em** — combinações em que ele é ingrediente.
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
@@ -64,7 +64,8 @@ A partir da 1.5.0 o Slimedex confere de hora em hora se há novidades e avisa no
 
 - **versão nova:** mostra o que mudou (inclusive das versões puladas) e pede confirmação; no Windows ele baixa o `.exe` novo para a mesma pasta, **confere o SHA-256 informado pelo GitHub**, reinicia na versão nova e apaga a antiga — o progresso aparece num anel com porcentagem no ícone. No Mac o botão abre a página de download;
 - **base nova da comunidade:** um clique reinicia o app já com as combinações novas;
-- se houver as duas ao mesmo tempo, você escolhe qual fazer.
+- se houver as duas ao mesmo tempo, você escolhe qual fazer;
+- o botão **⟳** no rodapé confere na hora, sem esperar a próxima hora.
 
 O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](novidades.json); os detalhes técnicos ficam na descrição de cada release.
 
@@ -102,6 +103,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.6.2 (Windows) | `C808B77DB13B8DA98F4FCB0B15C24EEC072FEA8BE80501A50BF71B68A7C0F71D` | _em análise_ |
 | 1.6.1 (Windows) | `852A2E3C9244C408D42B0DC9555CA2C955C74F5E6BDD406641CBE82F3EC86905` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/852a2e3c9244c408d42b0dc9555ca2c955c74f5e6bdd406641cbe82f3ec86905/detection) |
 | 1.6.1 (Mac, chip Apple) | `893C8A87E4F9467E3294A978A48F3738677F85011AA5D73CF70404975344A2C4` | — |
 | 1.6.1 (Mac, Intel) | `BBD1D414D96BA0053EA146F721D45A52FC80D028369661606B0D3BB86961537C` | — |
