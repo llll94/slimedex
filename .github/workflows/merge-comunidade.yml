@@ -1,8 +1,8 @@
-name: Merge diário da base colaborativa
+name: Merge da base colaborativa (de hora em hora)
 
 on:
   schedule:
-    - cron: '0 9 * * *'   # 06:00 em Brasília
+    - cron: '17 * * * *'  # de hora em hora, aos 17 min (fora da virada da hora, quando o GitHub atrasa mais)
   workflow_dispatch:       # botão "Run workflow" na aba Actions
 
 permissions:

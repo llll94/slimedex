@@ -70,7 +70,7 @@ O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](
 
 ### Base colaborativa
 
-Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. Uma vez por dia, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
+Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. De hora em hora, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
 
 - uma **combinação nova** entra a partir do primeiro envio, depois de revisada (aparece com o selo *comunidade* e o número de pessoas que a enviaram);
 - a **chance** vira a mediana dos relatos;
