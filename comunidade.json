@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-23T13:15:17.762Z",
+ "gerado": "2026-10-23T15:09:11.804Z",
  "pessoas": 4,
  "combos": [
   {
@@ -73,16 +73,6 @@
    "n": 1
   },
   {
-   "id": "c:SL_Frog_WaterMagic+SL_Mandrake_GrassFire>SL_Starfish_WaterFire",
-   "r": "SL_Starfish_WaterFire",
-   "a": "SL_Frog_WaterMagic",
-   "b": "SL_Mandrake_GrassFire",
-   "m": "Wisp's Sigil",
-   "l": "13",
-   "ch": null,
-   "n": 1
-  },
-  {
    "id": "c:SL_Rat_PoisonDark+SL_Honet_WindElectric>SL_Bat_WindDark",
    "r": "SL_Bat_WindDark",
    "a": "SL_Rat_PoisonDark",
@@ -113,16 +103,6 @@
    "n": 1
   },
   {
-   "id": "c:SL_SeedOcto_GrassGround+SL_Honet_WindElectric>SL_LightningBug_GroundElectric",
-   "r": "SL_LightningBug_GroundElectric",
-   "a": "SL_SeedOcto_GrassGround",
-   "b": "SL_Honet_WindElectric",
-   "m": "Kobold's Crystal",
-   "l": "19",
-   "ch": null,
-   "n": 1
-  },
-  {
    "id": "c:SL_Sword_SteelDark+SL_Slime_Water>SL_Shade_DarkWater",
    "r": "SL_Shade_DarkWater",
    "a": "SL_Sword_SteelDark",
@@ -141,26 +121,6 @@
    "l": "22",
    "ch": 100,
    "n": 1
-  },
-  {
-   "id": "c:SL_Wicked+SL_Lizard_Poison>SL_Rat_PoisonDark",
-   "r": "SL_Rat_PoisonDark",
-   "a": "SL_Wicked",
-   "b": "SL_Lizard_Poison",
-   "m": "Tweety's Hide",
-   "l": "19",
-   "ch": null,
-   "n": 1
-  },
-  {
-   "id": "c:SL_Wicked+SL_Rat_PoisonGround>SL_Rat_PoisonDark",
-   "r": "SL_Rat_PoisonDark",
-   "a": "SL_Wicked",
-   "b": "SL_Rat_PoisonGround",
-   "m": "",
-   "l": "19",
-   "ch": null,
-   "n": 1
   }
  ],
  "pc": {
@@ -172,12 +132,32 @@
    "ch": 100,
    "n": 1
   },
+  "SL_Bushtit_WindLight|SL_Eel_WaterPower|SL_Cattle_PowerLight|Hide": {
+   "ch": 24,
+   "n": 1
+  },
+  "SL_Dandelion_GrassWind|SL_Honet_WindElectric|SL_ElecChicken_WindElectric|Fried's Feather\nFluffy's Feather": {
+   "ch": 92,
+   "n": 1
+  },
   "SL_ElecChicken_WindElectric|SL_Wisp_LightElectric||": {
    "ch": 95,
    "n": 1
   },
   "SL_Embers_MagicIce|SL_Bat_WindDark|SL_Beholder_DarkMagic|Tentacle": {
    "ch": 10,
+   "n": 2
+  },
+  "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide": {
+   "ch": 29.6,
+   "n": 1
+  },
+  "SL_Lizard_Ground|SL_Frog_WaterPoison|SL_Lizard_Poison|": {
+   "ch": 100,
+   "n": 1
+  },
+  "SL_Lizard_Ground|SL_Lizard_Poison|SL_Rat_PoisonGround|Tweety's Hide": {
+   "ch": 35.6,
    "n": 1
   }
  },
@@ -187,7 +167,10 @@
   "SL_Eel_WaterPower": "Enguia",
   "SL_Ghost_Magic": "Spooky",
   "SL_HermitCrab_WaterPower": "Sora",
-  "SL_HermitCrab_WaterSteel": "Sora de Aço"
+  "SL_HermitCrab_WaterSteel": "Sora de Aço",
+  "SL_Honet_Wind": "Vespete",
+  "SL_Honet_WindElectric": "Vespete Elétrica",
+  "SL_Honet_WindPoison": "Vespete Venenosa"
  },
  "votos": {
   "SL_Bass_Water|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
@@ -197,11 +180,46 @@
   "SL_Bass_Water|SL_SeedOcto_GrassGround|SL_SeedOcto_GrassWater|": {
    "u": 1,
    "d": 0
+  },
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Eel_WaterPower|Duto de Escape": {
+   "u": 0,
+   "d": 1
   }
  },
  "num": {
   "SL_Ghost_Magic": 115
  },
- "loc": {},
- "per": {}
+ "loc": {
+  "Caminho dos Fundos de Noecheon 1": [
+   "-SL_Bushtit_WindLight",
+   "SL_Honet_WindElectric",
+   "SL_Honet_WindPoison"
+  ],
+  "Caminho dos Fundos de Noecheon 3": [
+   "SL_Honet_WindElectric"
+  ],
+  "Entrada Norte de Noecheon": [
+   "SL_ElecChicken_WindElectric",
+   "SL_Honet_WindElectric"
+  ],
+  "Monte Noecheon 3": [
+   "-SL_Honet_Wind"
+  ],
+  "Monte Noecheon 7": [
+   "SL_Honet_WindElectric"
+  ],
+  "Trilha dos Fundos de Noecheon 2": [
+   "SL_Bushtit_WindLight",
+   "SL_Honet_WindElectric",
+   "SL_Honet_WindPoison",
+   "SL_SlimeSM_Grass"
+  ]
+ },
+ "per": {},
+ "conf": [
+  "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide"
+ ],
+ "apagadas": [
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Eel_WaterPower|Duto de Escape"
+ ]
 }
