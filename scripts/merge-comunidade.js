@@ -128,6 +128,7 @@ async function lerEnvios() {
     }
     const ant = relatos(anterior.get(autor) || {});
     for (const [id, vals] of relatos(p)) { if (BQ_COMBO.has(id)) continue; const ch = escolhe(vals, ant.get(id));
+      const tc = id.startsWith('c:') ? TESTE_IDX.get(id.slice(2)) : [...TESTE_IDX.values()].find(c => cidBase(c) === id); if (tc) confirmadas.add(cidBase(tc)); // informou a chance: fez a combinação
       if (baseCids.has(id)) (chances.get(id) || chances.set(id, []).get(id)).push(ch);
       else if (id.startsWith('c:') && novos.has(id.slice(2))) novos.get(id.slice(2)).ch.push(ch) }
     for (const [k, v] of Object.entries(p.num && typeof p.num === 'object' ? p.num : {})) {
