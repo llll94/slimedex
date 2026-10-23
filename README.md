@@ -73,7 +73,7 @@ O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](
 Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. De hora em hora, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
 
 - uma **combinação nova** entra a partir do primeiro envio, depois de revisada (aparece com o selo *comunidade* e o número de pessoas que a enviaram);
-- a **chance** vira a mediana dos relatos;
+- a **chance** é a mais enviada (empate: fica a que já estava aprovada, senão a mais recente);
 - um **nome em PT-BR** entra com o nome mais usado;
 - o **número do slime** (para os que não têm na base) entra com o número mais enviado — número que já é de outro slime é descartado;
 - **slimes vistos nos mapas** e **dia / noite** entram com o mais marcado; tirar um slime que a base põe num mapa, mapa novo (nome lido da tela) ou trocar um dia/noite já aprovado passam por revisão;
