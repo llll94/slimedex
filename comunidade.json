@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-23T00:16:30.628Z",
+ "gerado": "2026-10-23T00:30:46.287Z",
  "pessoas": 4,
  "combos": [
   {
@@ -11,6 +11,16 @@
    "l": "31",
    "ch": 10,
    "n": 2
+  },
+  {
+   "id": "c:SL_Bass_WaterPoison+SL_Lizard_Ground>SL_Rat_PoisonGround",
+   "r": "SL_Rat_PoisonGround",
+   "a": "SL_Lizard_Ground",
+   "b": "SL_Bass_WaterPoison",
+   "m": "Tweety's Hide",
+   "l": "16",
+   "ch": null,
+   "n": 1
   },
   {
    "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Beholder_DarkMagic",
@@ -43,6 +53,16 @@
    "n": 1
   },
   {
+   "id": "c:SL_Bat_WindDark+SL_LightningBug_GroundElectric>SL_Crow_WindDark",
+   "r": "SL_Crow_WindDark",
+   "a": "SL_LightningBug_GroundElectric",
+   "b": "SL_Bat_WindDark",
+   "m": "Feather",
+   "l": "31",
+   "ch": null,
+   "n": 1
+  },
+  {
    "id": "c:SL_Bat_WindPoison+SL_Beholder_DarkMagic>SL_Ghost_Magic",
    "r": "SL_Ghost_Magic",
    "a": "SL_Beholder_DarkMagic",
@@ -53,6 +73,106 @@
    "n": 1
   },
   {
+   "id": "c:SL_Beholder_DarkMagic+SL_Tricky_Light>SL_BlackCat_DarkMagic",
+   "r": "SL_BlackCat_DarkMagic",
+   "a": "SL_Tricky_Light",
+   "b": "SL_Beholder_DarkMagic",
+   "m": "Dandelion's Orb",
+   "l": "31",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Bushtit_WindLight+SL_Rat_PoisonDark>SL_Bat_WindPoison",
+   "r": "SL_Bat_WindPoison",
+   "a": "SL_Rat_PoisonDark",
+   "b": "SL_Bushtit_WindLight",
+   "m": "Vesper/Infesper's Demon Wing",
+   "l": "25",
+   "ch": 25,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Dandelion_GrassWind+SL_Honet_WindPoison>SL_Bat_WindPoison",
+   "r": "SL_Bat_WindPoison",
+   "a": "SL_Dandelion_GrassWind",
+   "b": "SL_Honet_WindPoison",
+   "m": "Vesper/Infesper's Demon Wing",
+   "l": "25",
+   "ch": 18,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Dandelion_GrassWind+SL_Lizard_Electric>SL_ElecChicken_WindElectric",
+   "r": "SL_ElecChicken_WindElectric",
+   "a": "SL_Dandelion_GrassWind",
+   "b": "SL_Lizard_Electric",
+   "m": "Fried's Feather / Fluffy's Feather",
+   "l": "13",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Dandelion_GrassWind+SL_Mandrake_GrassFire>SL_ElecChicken_WindFire",
+   "r": "SL_ElecChicken_WindFire",
+   "a": "SL_Dandelion_GrassWind",
+   "b": "SL_Mandrake_GrassFire",
+   "m": "Feather",
+   "l": "19",
+   "ch": 70,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Dandelion_GrassWind+SL_SlimeSM_Fire>SL_ElecChicken_WindFire",
+   "r": "SL_ElecChicken_WindFire",
+   "a": "SL_Dandelion_GrassWind",
+   "b": "SL_SlimeSM_Fire",
+   "m": "Fried's Feather",
+   "l": "21",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterElectric+SL_Honet_WindElectric>SL_ElecChicken_WindElectric",
+   "r": "SL_ElecChicken_WindElectric",
+   "a": "SL_Eel_WaterElectric",
+   "b": "SL_Honet_WindElectric",
+   "m": "Fluffy's Feather",
+   "l": "19",
+   "ch": 40,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterElectric+SL_LightningBug_GroundElectric>SL_Bass_WaterGround",
+   "r": "SL_Bass_WaterGround",
+   "a": "SL_LightningBug_GroundElectric",
+   "b": "SL_Eel_WaterElectric",
+   "m": "Electric Lizard's Scales",
+   "l": "25",
+   "ch": 14,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterElectric+SL_Lizard_Ground>SL_Bass_WaterGround",
+   "r": "SL_Bass_WaterGround",
+   "a": "SL_Lizard_Ground",
+   "b": "SL_Eel_WaterElectric",
+   "m": "",
+   "l": "25",
+   "ch": 20,
+   "n": 1
+  },
+  {
+   "id": "c:SL_ElecChicken_WindElectric+SL_Sword_SteelDark>SL_Bat_WindDark",
+   "r": "SL_Bat_WindDark",
+   "a": "SL_ElecChicken_WindElectric",
+   "b": "SL_Sword_SteelDark",
+   "m": "Vesper/Infesper's Demon Wing",
+   "l": "22",
+   "ch": null,
+   "n": 1
+  },
+  {
    "id": "c:SL_ElecChicken_WindFire+SL_Wisp_Light>SL_Bushtit_WindLight",
    "r": "SL_Bushtit_WindLight",
    "a": "SL_ElecChicken_WindFire",
@@ -60,6 +180,36 @@
    "m": "",
    "l": "22",
    "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_ElecChicken_WindFire+SL_Wisp_LightElectric>SL_Bushtit_WindLight",
+   "r": "SL_Bushtit_WindLight",
+   "a": "SL_ElecChicken_WindFire",
+   "b": "SL_Wisp_LightElectric",
+   "m": "",
+   "l": "22",
+   "ch": 97,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Frog_WaterPoison+SL_Wicked>SL_Rat_PoisonDark",
+   "r": "SL_Rat_PoisonDark",
+   "a": "SL_Wicked",
+   "b": "SL_Frog_WaterPoison",
+   "m": "Tweety's Hide",
+   "l": "19",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Frog_WaterPoison+SL_Wicked>SL_Shade_DarkWater",
+   "r": "SL_Shade_DarkWater",
+   "a": "SL_Wicked",
+   "b": "SL_Frog_WaterPoison",
+   "m": "Slick's Vent",
+   "l": "13",
+   "ch": null,
    "n": 1
   },
   {
@@ -80,6 +230,56 @@
    "m": "Pena de Fluffy (Fluffy's Feather)",
    "l": "22",
    "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Kobold_Steel+SL_SeedOcto_GrassGround>SL_Mole_GroundSteel",
+   "r": "SL_Mole_GroundSteel",
+   "a": "SL_Kobold_Steel",
+   "b": "SL_SeedOcto_GrassGround",
+   "m": "Blade",
+   "l": "22",
+   "ch": 10,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Lizard_Ground+SL_Shade_DarkWater>SL_Bass_WaterGround",
+   "r": "SL_Bass_WaterGround",
+   "a": "SL_Lizard_Ground",
+   "b": "SL_Shade_DarkWater",
+   "m": "",
+   "l": "25",
+   "ch": 20,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Lizard_Ground+SL_Sword_SteelDark>SL_Mole_GroundSteel",
+   "r": "SL_Mole_GroundSteel",
+   "a": "SL_Sword_SteelDark",
+   "b": "SL_Lizard_Ground",
+   "m": "",
+   "l": "22",
+   "ch": 20,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Lizard_Poison+SL_Wicked>SL_Rat_PoisonDark",
+   "r": "SL_Rat_PoisonDark",
+   "a": "SL_Lizard_Poison",
+   "b": "SL_Wicked",
+   "m": "Tweety's Hide",
+   "l": "19",
+   "ch": 30,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Mandrake_GrassFire+SL_Slime_Grass>SL_SlimeSM_Grass",
+   "r": "SL_SlimeSM_Grass",
+   "a": "SL_Slime_Grass",
+   "b": "SL_Mandrake_GrassFire",
+   "m": "",
+   "l": "16",
+   "ch": null,
    "n": 1
   },
   {
