@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-22T14:16:55.837Z",
+ "gerado": "2026-10-23T00:16:30.628Z",
  "pessoas": 4,
  "combos": [
   {
@@ -50,6 +50,16 @@
    "m": "Anel de Ladyf (Ladif's Ring)",
    "l": "31",
    "ch": 15,
+   "n": 1
+  },
+  {
+   "id": "c:SL_ElecChicken_WindFire+SL_Wisp_Light>SL_Bushtit_WindLight",
+   "r": "SL_Bushtit_WindLight",
+   "a": "SL_ElecChicken_WindFire",
+   "b": "SL_Wisp_Light",
+   "m": "",
+   "l": "22",
+   "ch": 100,
    "n": 1
   },
   {
