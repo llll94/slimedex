@@ -77,9 +77,12 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 #check{position:absolute;right:-1px;bottom:-1px;width:18px;height:18px;border-radius:50%;background:#2fb67a;color:#fff;font:700 11px/18px system-ui;text-align:center;font-style:normal;box-shadow:0 0 0 2px rgba(14,19,21,.9)}
 #ponto{position:absolute;top:2px;right:2px;width:13px;height:13px;border-radius:50%;background:#7fe0a8;box-shadow:0 0 0 2px rgba(14,19,21,.9),0 0 8px #7fe0a8}
 #rodape{display:flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 8px;border-top:1px solid #2d333a}#rodape .btn{flex:1;min-width:0;padding:7px 10px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#avc{background:#1f6f5a}#avc:hover{background:#26846b}
+/* conferir agora (base nova / versão nova) */
+#chk{flex:none;width:26px;height:26px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#9aa3ad}#chk:hover{color:#fff;background:#262c33}
+#chk svg{width:17px;height:17px;fill:currentColor}#chk.gira svg{animation:gira .8s linear infinite}@keyframes gira{to{transform:rotate(360deg)}}
 </style></head><body>
 <div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button></div></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="i18n.js"></script>
@@ -343,7 +346,7 @@ function info(){cur=null;sel=-1;marca({t:'info'});
  bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
  <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
 // textos fixos do topo (mudam com o idioma)
-function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');qx.title=t('clear');
+function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');chk.title=t('chk_title');qx.title=t('clear');
  inf.title=t('info_tip');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
@@ -494,10 +497,14 @@ ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
-function verificaVersao(){ov.versaoNova().then(r=>{if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
-function verificaComunidade(){ultimaChecagem=Date.now();verificaVersao();ov.comunidade().then(d=>{
+function verificaVersao(){return ov.versaoNova().then(r=>{if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
+function verificaComunidade(){ultimaChecagem=Date.now();return Promise.all([verificaVersao(),ov.comunidade().then(d=>{
  if(!d||typeof d!='object'||!d.gerado||(CM&&d.gerado===CM.gerado))return; // nada novo
- CMnova=d;avisa()}).catch(()=>{})}
+ CMnova=d;avisa()}).catch(()=>{})])}
+// refresh no rodapé: confere agora; nada novo = avisa "tudo em dia" por uns segundos
+let chkVolta=0;chk.onclick=async()=>{if(chk.classList.contains('gira'))return;chk.classList.add('gira');
+ await Promise.all([verificaComunidade(),new Promise(r=>setTimeout(r,700))]);chk.classList.remove('gira'); // gira pelo menos um pouco: dá para ver que conferiu
+ if(NOVA||CMnova)return;rst.hidden=false;rst.textContent=t('chk_ok');clearTimeout(chkVolta);chkVolta=setTimeout(estaticos,3500)};
 avb.onclick=()=>novidadesTela(); // versão nova: mostra o que mudou e pede confirmação
 avc.onclick=()=>{avc.disabled=true;ov.reiniciar()}; // base nova: reinicia com as combinações novas
 // ---- novidades da versão (para quem joga): todas as versões entre a atual e a nova ----
