@@ -37,7 +37,7 @@ declare
   n  int;
 begin
   -- formato igual ao meus-dados.json do app: { pt: {...}, pc: {...}, combos: [...], votos: { id_combinação: 1 | -1 } }
-  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num')) then
+  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num', 'loc', 'per')) then
     raise exception 'formato inválido';
   end if;
   -- num: { slime: número do slime } (inteiro de 1 a 9999)
@@ -49,6 +49,24 @@ begin
                              then (v.value::text)::numeric not between 1 and 9999 or (v.value::text)::numeric % 1 <> 0
                              else true end) then
       raise exception 'num inválido';
+    end if;
+  end if;
+  -- loc: { mapa: [slimes vistos nele] } (até 300 mapas, 100 slimes cada)
+  if new.payload ? 'loc' then
+    if jsonb_typeof(new.payload -> 'loc') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'loc')) > 300
+       or exists (select 1 from jsonb_each(new.payload -> 'loc') v
+                  where length(v.key) > 80 or jsonb_typeof(v.value) <> 'array' or jsonb_array_length(v.value) > 100
+                     or exists (select 1 from jsonb_array_elements(v.value) e where jsonb_typeof(e) <> 'string' or length(e #>> '{}') > 60)) then
+      raise exception 'loc inválido';
+    end if;
+  end if;
+  -- per: { slime: 'dia' | 'noite' | 'ambos' } (até 500)
+  if new.payload ? 'per' then
+    if jsonb_typeof(new.payload -> 'per') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'per')) > 500
+       or exists (select 1 from jsonb_each(new.payload -> 'per') v where length(v.key) > 60 or v.value not in ('"dia"'::jsonb, '"noite"'::jsonb, '"ambos"'::jsonb)) then
+      raise exception 'per inválido';
     end if;
   end if;
   if new.payload ? 'votos' then

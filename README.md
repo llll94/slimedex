@@ -27,18 +27,29 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 | Dicas | botão **i** ao lado da busca — atalhos e recursos explicados |
 | Idioma | botão **⋯** → **Português / English** |
 | Limpar a busca | **×** dentro do campo |
+| Fixar na tela | **☆** numa combinação ou ao lado do nome do slime — vira uma janelinha por cima do jogo, arrastável (até 8) |
+| Slimes do mapa (beta, Windows) | **⋯** → ligar; no jogo, **Tab** mostra os slimes que nascem no mapa atual |
 | Sair | botão direito no ícone da bandeja → **Sair** |
 
 Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 
 ### Na ficha de cada slime
 
+- **Dia e noite** — ícone ao lado do nome: nasce só de dia, só de noite ou nos dois. Clique para corrigir.
+- **Onde nasce** — os mapas em que ele aparece (clique num mapa para ver ou editar os slimes dele).
+- **Drops** — os itens que ele solta, com ícone.
 - **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance.
 - **Usado em** — combinações em que ele é ingrediente.
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
 - **✎ nome em PT-BR** e **✎ número** — dá um nome em português e o número da Slimepedia do jogo; a busca acha pelos dois.
 - **✎ em cada combinação** — corrige material, nível ou chance (fica no seu app, por cima da original; a lixeira desfaz). **⇄** junta uma combinação sua com outra igual; combinações suas iguais às da base/comunidade já aparecem juntas numa linha só.
+
+### Slimes do mapa (Tab) · beta, só Windows
+
+Ligado em **⋯ → Slimes do mapa**, ao apertar **Tab** no jogo (o mapa ampliado) aparece uma janelinha com as fotos dos slimes que nascem no mapa em que você está — fundo off-white = dia, lilás = noite, os dois = dia e noite. Arraste para onde quiser; **Tab** de novo ou **Esc** no jogo esconde. **Adicionar / editar** abre a lista do mapa no painel: marque os slimes que você viu ou tire os que não nascem ali (inclusive os da base).
+
+Como ele sabe o mapa: um processo pequeno ([`leitor-tela.ps1`](leitor-tela.ps1)) olha se o Tab foi apertado — **sem segurar a tecla**, o jogo recebe normalmente; Tab com Ctrl, Alt ou Windows é ignorado — e, só nesse momento, recorta o bloco abaixo do minimapa (região e nome do mapa) e lê com o **OCR do próprio Windows**. O texto lido é cruzado com a lista de mapas conhecidos. Nada é gravado nem enviado. Desligado, não roda nada.
 
 ### Seus dados e idioma (botão ⋯)
 
@@ -65,6 +76,7 @@ Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances
 - a **chance** vira a mediana dos relatos;
 - um **nome em PT-BR** entra com o nome mais usado;
 - o **número do slime** (para os que não têm na base) entra com o número mais enviado — número que já é de outro slime é descartado;
+- **slimes vistos nos mapas** e **dia / noite** entram com o mais marcado; tirar um slime que a base põe num mapa, mapa novo (nome lido da tela) ou trocar um dia/noite já aprovado passam por revisão;
 - os **votos** viram placar; combinação com muitos 👎 é marcada como *contestada* (e, se for da comunidade, sai da base) — é assim que dados errados são corrigidos;
 - cada atualização vira um Pull Request. Se **tudo** o que mudou segue o padrão da base, ele é aprovado sozinho: o resultado divide ao menos um elemento com os pais, o material é um item conhecido, o nível bate com o que a base já sabe daquele slime e nenhuma chance, nome ou número já aprovado muda de forma brusca. Qualquer coisa fora disso espera revisão manual — o motivo aparece no próprio PR;
 - o que for ignorado de propósito (envio ruim, nome errado) fica em [`bloqueios.json`](bloqueios.json).
@@ -90,6 +102,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.6.0 (Windows) | `31D1D1A9588BD71EB304007C1780E186336529B35298FF67218A47C80002AF68` | _em análise_ |
 | 1.5.2 (Windows) | `AAD1ABB01C0AF2E1CD14CBE44BF5957C713F450A12FBA9CCAE07103B5FEA5D01` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/aad1abb01c0af2e1cd14cbe44bf5957c713f450a12fba9ccae07103b5fea5d01/detection) |
 | 1.5.2 (Mac, chip Apple) | `05FE6052695EF7B99F759B435D2A05431F242EA1968F8B3B5D23D2B103E720F5` | — |
 | 1.5.2 (Mac, Intel) | `09925518B9FB8C025E80512DB31A0702E3DECF30E6DA0B9B87DAE2DC34487E09` | — |

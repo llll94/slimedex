@@ -10,6 +10,8 @@
 //   - nome PT-BR entra se >= MIN_PESSOAS pessoas usaram o mesmo nome
 //   - número do slime (só para slimes sem número na base): o mais enviado; número que já é de outro slime é descartado
 //   - votos 👍/👎 viram placar; combinação da comunidade muito negativada (CONTESTADA) é descartada
+//   - slime visto num mapa (loc): entra se >= MIN_PESSOAS pessoas marcaram; só mapas da lista (D.mapas) e só o que a base ainda não tem
+//   - dia/noite (per): o mais marcado por slime (dia | noite | ambos), só quando difere da base; trocar um já aprovado → revisão
 //   - bloqueios.json: autores, combinações, nomes e números que o merge ignora (rollback de verdade: o revert do PR
 //     sozinho não basta, porque o merge seguinte recalcularia tudo do Supabase)
 //
@@ -48,7 +50,8 @@ async function baseDoApp() {
 const K = Object.fromEntries(D.slimes.map(s => [s.k, s]));
 let BQ = {}; try { BQ = JSON.parse(fs.readFileSync(path.join(RAIZ, 'bloqueios.json'), 'utf8')) } catch {}
 const bloq = n => new Set(Array.isArray(BQ[n]) ? BQ[n] : []);
-const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'), BQ_NUM = bloq('num');
+const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'), BQ_NUM = bloq('num'), BQ_LOC = bloq('loc'); // loc: 'Mapa=SL_x' ou 'Mapa'
+const MAPAS = new Map((D.mapas || []).map(m => [m.pt, new Set(m.sl)]));
 
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
@@ -86,6 +89,8 @@ async function lerEnvios() {
   const nomes = new Map();   // slime -> Map(nome normalizado -> { nome, quem:Set })
   const numeros = new Map(); // slime -> Map(número -> Set(autores))
   const votos = new Map();   // id da combinação -> { u, d }
+  const vistos = new Map();  // mapa -> Map(slime -> Set(autores))
+  const periodos = new Map(); // slime -> Map(dia|noite|ambos -> Set(autores))
   for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
 
   for (const [autor, p] of ultimo) {
@@ -112,6 +117,18 @@ async function lerEnvios() {
       const m = nomes.get(k) || nomes.set(k, new Map()).get(k), nn = norm(nome);
       (m.get(nn) || m.set(nn, { nome, quem: new Set() }).get(nn)).quem.add(autor);
     }
+    for (const [mapa, ks] of Object.entries(p.loc && typeof p.loc === 'object' ? p.loc : {})) {
+      // mapa fora da lista também entra (nome lido da tela pelo app), mas a aprovação automática manda para revisão
+      if (typeof mapa !== 'string' || mapa.length > 80 || !/^[\p{L}\d][\p{L}\d' -]*$/u.test(mapa) || BQ_LOC.has(mapa) || !Array.isArray(ks)) continue;
+      // 'SL_x' = visto aqui; '-SL_x' = não nasce aqui (só faz sentido para o que a base tem nesse mapa)
+      for (const e of ks.slice(0, 100)) { if (typeof e !== 'string') continue; const tira = e[0] === '-', k = tira ? e.slice(1) : e, naBase = (MAPAS.get(mapa) || new Set()).has(k);
+        if (!SLIMES.has(k) || (tira ? !naBase : naBase) || BQ_LOC.has(mapa + '=' + k)) continue;
+        const m = vistos.get(mapa) || vistos.set(mapa, new Map()).get(mapa), c = tira ? '-' + k : k; (m.get(c) || m.set(c, new Set()).get(c)).add(autor) }
+    }
+    for (const [k, v] of Object.entries(p.per && typeof p.per === 'object' ? p.per : {})) {
+      if (!SLIMES.has(k) || !['dia', 'noite', 'ambos'].includes(v) || bloq('per').has(k)) continue;
+      const m = periodos.get(k) || periodos.set(k, new Map()).get(k); (m.get(v) || m.set(v, new Set()).get(v)).add(autor);
+    }
     for (const [id, v] of Object.entries(p.votos && typeof p.votos === 'object' ? p.votos : {})) {
       if (v !== 1 && v !== -1 || typeof id !== 'string' || id.length > 300) continue;
       const t = votos.get(id) || votos.set(id, { u: 0, d: 0 }).get(id); v === 1 ? t.u++ : t.d++;
@@ -136,14 +153,17 @@ async function lerEnvios() {
   const usado = new Set(), num = {};
   for (const c of candidatos.sort((a, b) => b.q - a.q || (a.k < b.k ? -1 : 1))) { if (usado.has(c.n)) continue; usado.add(c.n); num[c.k] = c.n }
   const numOrd = Object.fromEntries(Object.keys(num).sort().map(k => [k, num[k]]));
-  const essencial = { combos, pc, pt, votos: vt, num: numOrd };
+  const loc = Object.fromEntries([...vistos].sort().map(([mapa, m]) => [mapa, [...m].filter(([, q]) => q.size >= MIN_PESSOAS).map(([k]) => k).sort()]).filter(([, ks]) => ks.length));
+  const per = Object.fromEntries([...periodos].map(([k, m]) => [k, [...m].sort((a, b) => b[1].size - a[1].size || (a[0] < b[0] ? -1 : 1))[0]])
+    .filter(([k, [v, q]]) => q.size >= MIN_PESSOAS && v !== (K[k] || {}).pe).sort().map(([k, [v]]) => [k, v]));
+  const essencial = { combos, pc, pt, votos: vt, num: numOrd, loc, per };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {} } } catch {}
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {} } } catch {}
   const mudou = JSON.stringify(antes) !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
   const nm = k => (K[k] || {}).nm || k;
-  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {} }, essencial, nm);
+  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {}, loc: {}, per: {} }, essencial, nm);
   const auto = mudou && barrados.length === 0;
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `auto=${auto}\n`);
   const resumo = [
@@ -156,6 +176,8 @@ async function lerEnvios() {
     ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)`), ''] : []),
     ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : []),
+    ...(Object.keys(per).length ? ['### Dia / noite', '', ...Object.entries(per).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
+    ...(Object.keys(loc).length ? ['### Slimes vistos nos mapas', '', ...Object.entries(loc).map(([mapa, ks]) => `- ${mapa}: ${ks.map(k => k[0] === '-' ? `~~${nm(k.slice(1))}~~ (não nasce aqui)` : nm(k)).join(', ')}`), ''] : []),
     ...(mudou ? ['### Aprovação automática', '', auto
       ? `✅ ${novidades} novidade(s)${removidos ? ` e ${removidos} remoção(ões)` : ''} dentro do padrão da base — **aprovado sozinho**. Se der problema: **Revert** neste PR e coloque o item em \`bloqueios.json\` (senão o próximo merge traz de volta).`
       : '⚠️ **Precisa de revisão** — fora do padrão:', ...barrados.map(b => `- ${b}`), ''] : [])
@@ -208,7 +230,12 @@ function verifica(antes, agora, nm) {
     if (o != null) barrados.push(`número de ${nm(k)} trocaria de #${o} para #${v}`);
     else if (v > 300) barrados.push(`número #${v} de ${nm(k)} acima de 300`);
   }
-  for (const n of ['pc', 'pt', 'num']) removidos += Object.keys(antes[n]).filter(k => !(k in agora[n])).length;
+  for (const [mapa, ks] of Object.entries(agora.loc)) { const o = new Set(antes.loc[mapa] || []), n = ks.filter(k => !o.has(k)).length; novidades += n;
+    if (n && !MAPAS.has(mapa)) barrados.push(`mapa novo "${mapa}" (nome lido da tela: confira antes de aprovar)`);
+    for (const k of ks) if (k[0] === '-' && !o.has(k)) barrados.push(`tirar ${nm(k.slice(1))} de "${mapa}" (corrige a base: confira)`) }
+  for (const [mapa, ks] of Object.entries(antes.loc)) { const n = new Set(agora.loc[mapa] || []); removidos += ks.filter(k => !n.has(k)).length }
+  for (const [k, v] of Object.entries(agora.per)) { const o = antes.per[k]; if (o === v) continue; novidades++; if (o) barrados.push(`dia/noite de ${nm(k)} trocaria de ${o} para ${v}`) }
+  for (const n of ['pc', 'pt', 'num', 'per']) removidos += Object.keys(antes[n]).filter(k => !(k in agora[n])).length;
   if (removidos > 3) barrados.push(`${removidos} itens já aprovados sairiam de uma vez`);
   if (novidades > 30) barrados.push(`${novidades} novidades num dia só (limite 30)`);
   return { barrados, novidades, removidos };

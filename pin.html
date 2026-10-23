@@ -7,6 +7,9 @@
 .l1{display:flex;align-items:center;gap:4px}.l1 img{width:24px;height:24px;object-fit:contain}.l1 i{font-style:normal;color:#9aa3ad}
 .r{color:#ffd479;font-weight:600}
 .l2{display:flex;align-items:center;gap:4px;color:#9aa3ad;font-size:11px;padding-left:2px;min-height:16px}
+.l2 img{width:22px;height:22px;object-fit:contain;margin-right:3px} /* item: 90% da imagem dos slimes (24px; 30px no de slime) */
+.s .l2 img{width:27px;height:27px}.l2 .it{display:inline-flex;align-items:center}.sep{color:#5c6670}
+.s .l1 img{width:30px;height:30px}
 .pc{padding:0 5px;border-radius:8px;background:#1f3a2c;color:#7fe0a8;font-weight:600}
 #x{position:absolute;top:1px;right:3px;border:0;background:none;color:#9aa3ad;font-size:15px;line-height:16px;cursor:pointer;opacity:0;padding:0 3px}
 #p:hover #x{opacity:1}#x:hover{color:#ff7b7b}
@@ -14,12 +17,17 @@
 // só monta o que o painel mandou (textos já traduzidos); tudo via textContent, nada de HTML vindo de fora
 const p=document.getElementById('p'),l1=document.getElementById('l1'),l2=document.getElementById('l2');
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
-function img(par){const i=el('img');i.alt='';if(!par||!par[0])return el('i',null,'?');i.src=par[0];i.onerror=()=>{i.onerror=null;if(par[1])i.src=par[1]};i.onload=mede;return i}
+function img(par){const i=el('img');i.alt='';if(!par||!par[0])return el('i',null,'?');if(typeof par=='string')par=[par];i.src=par[0];i.onerror=()=>{i.onerror=null;if(par[1])i.src=par[1]};i.onload=mede;return i}
 function mede(){ov.pin.tamanho(p.offsetWidth+6,p.offsetHeight+6)}
 let D=null;
-ov.pin.onDados(d=>{if(!d)return;D=d;l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,'='),img(d.im.a),el('span',null,d.tx.a),el('i',null,'+'),img(d.im.b),el('span',null,d.tx.b));
-  const info=[d.l?d.lv+' '+d.l:'',d.m||''].filter(Boolean);l2.replaceChildren(el('span',null,info.join(' · ')||'—'));if(d.ch!=null)l2.append(el('span','pc','~'+d.ch+'%'));
-  x.title=d.tx.fechar;p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';requestAnimationFrame(mede)});
+// item com ícone (o ícone some se não carregar)
+const item=(u,nome)=>{const s=el('span','it');if(u){const i=el('img');i.alt='';i.src=u;i.onerror=()=>{i.remove();mede()};i.onload=mede;s.append(i)}s.append(nome);return s};
+const junta=partes=>{l2.replaceChildren();partes.forEach((p,i)=>{if(i)l2.append(el('span','sep','·'));l2.append(p)})};
+ov.pin.onDados(d=>{if(!d)return;D=d;p.className=d.tipo==='s'?'s':'';
+  if(d.tipo==='s'){l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,d.tx.el||''));junta(d.dr.length?d.dr.map(([u,n])=>item(u,n)):[el('span',null,'—')])}
+  else{l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,'='),img(d.im.a),el('span',null,d.tx.a),el('i',null,'+'),img(d.im.b),el('span',null,d.tx.b));
+   const partes=[];if(d.l)partes.push(el('span',null,d.lv+' '+d.l));if(d.m)partes.push(item(d.mi,d.m));junta(partes.length?partes:[el('span',null,'—')]);if(d.ch!=null)l2.append(el('span','pc','~'+d.ch+'%'))}
+  x.title=d.tx.fechar;p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';mede();requestAnimationFrame(mede)});
 // arrastar move; clique simples abre a ficha do resultado no painel; × tira da tela
 const x=document.getElementById('x');let drag=null;
 x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};

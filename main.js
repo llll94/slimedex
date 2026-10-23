@@ -61,6 +61,32 @@ function abrePin(d,i){const p=pins.get(d.id);if(p){p.dados=d;p.w.webContents.sen
   w.webContents.on('did-finish-load',()=>{const q=pins.get(d.id);if(q&&q.w===w)w.webContents.send('pin-dados',q.dados)});
   w.on('closed',()=>{if(pins.get(d.id)?.w===w)pins.delete(d.id)})}
 const pinDe=s=>[...pins].find(([,p])=>!p.w.isDestroyed()&&p.w.webContents===s);
+// slimes do mapa (Tab) · beta: o leitor de tela é um processo à parte (só Windows, só com a chave ligada no ⋯)
+// que manda o texto lido abaixo do minimapa; o painel acha o mapa e pede a janelinha com os slimes (arrastável)
+const MAPA_POS=()=>path.join(app.getPath('userData'),'mapa-pos.json');
+let leitor=null,mapaWin=null,mapaVisivel=false;
+const ehMapa=s=>mapaWin&&!mapaWin.isDestroyed()&&mapaWin.webContents===s;
+function ligaLeitor(on){
+  if(!on){const p=leitor;leitor=null;if(p)p.kill();mapaVisivel=false;if(mapaWin&&!mapaWin.isDestroyed())mapaWin.hide();return}
+  if(leitor||process.platform!=='win32')return;
+  // roda de uma cópia na pasta de dados (o PowerShell não lê de dentro do pacote do app); BOM para ele ler os acentos
+  const arq=path.join(app.getPath('userData'),'leitor-tela.ps1');
+  try{fs.writeFileSync(arq,'\ufeff'+fs.readFileSync(path.join(__dirname,'leitor-tela.ps1'),'utf8').replace(/^\ufeff/,''))}catch(e){win.webContents.send('mapa-evento',{ev:'erro',msg:e.message});return}
+  const p=require('child_process').spawn('powershell.exe',['-NoProfile','-ExecutionPolicy','Bypass','-File',arq,'-pai',String(process.pid)],{windowsHide:true});leitor=p;
+  require('readline').createInterface({input:p.stdout}).on('line',l=>{let o;try{o=JSON.parse(l)}catch{return}if(leitor===p&&!win.isDestroyed())win.webContents.send('mapa-evento',o)});
+  p.on('exit',c=>{if(leitor!==p)return;leitor=null;win.webContents.send('mapa-evento',{ev:'erro',msg:'o leitor parou (código '+c+')'})});
+  p.on('error',e=>{if(leitor===p){leitor=null;win.webContents.send('mapa-evento',{ev:'erro',msg:e.message})}})}
+function mostraMapa(d){
+  if(!mapaWin||mapaWin.isDestroyed()){let pos;try{pos=JSON.parse(fs.readFileSync(MAPA_POS(),'utf8'))}catch{}
+    const wa=screen.getDisplayMatching(win.getBounds()).workArea,W=440,H=360; // padrão: à esquerda de onde o mapa grande costuma abrir
+    if(!naTela(pos,W,H))pos={x:wa.x+Math.round(wa.width*.2),y:wa.y+Math.round(wa.height*.33)};
+    mapaWin=new BrowserWindow({width:W,height:H,x:pos.x,y:pos.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,
+      hasShadow:false,focusable:false,show:false,useContentSize:true,webPreferences:{preload:path.join(__dirname,'preload.js'),backgroundThrottling:false}}); // escondida entre um Tab e outro: não pode pausar
+    mapaWin.setAlwaysOnTop(true,'screen-saver');if(MAC)mapaWin.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+    const w=mapaWin;w.loadFile('mapa.html');w.webContents.on('did-finish-load',()=>{if(w.dados)w.webContents.send('pin-dados',w.dados)})}
+  // larga antes de medir: o conteúdo se ajusta à janela; depois a janela encolhe para o tamanho dele
+  mapaWin.dados=d;if(!mapaWin.isVisible())mapaWin.setContentSize(440,360);if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
+
 function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 app.whenReady().then(()=>{
   if(MAC&&app.dock)app.dock.hide(); // Mac: overlay fica fora do Dock (só ícone na barra de menu)
@@ -98,18 +124,26 @@ app.whenReady().then(()=>{
   const arrasto=new Map(),jan=e=>BrowserWindow.fromWebContents(e.sender);
   ipcMain.on('drag-start',e=>{const w=jan(e);if(!w)return;const c=screen.getCursorScreenPoint(),[x,y]=w.getPosition();arrasto.set(w,{x:c.x-x,y:c.y-y})});
   ipcMain.on('drag-move',e=>{const w=jan(e),o=w&&arrasto.get(w);if(!o)return;const c=screen.getCursorScreenPoint();w.setPosition(c.x-o.x,c.y-o.y)});
-  ipcMain.on('drag-end',e=>{const w=jan(e);if(!w||!arrasto.delete(w))return;w===win?salva():salvaPins()});
+  ipcMain.on('drag-end',e=>{const w=jan(e);if(!w||!arrasto.delete(w))return;
+    if(w===win)salva();else if(w===mapaWin){const [x,y]=w.getPosition();try{gravaJson(MAPA_POS(),{x,y})}catch{}}else salvaPins()});
   // combinações fixadas: o painel manda a lista toda (abre as novas, atualiza e fecha as que saíram)
   try{posPins=JSON.parse(fs.readFileSync(PINS(),'utf8'))||{}}catch{}
   ipcMain.on('fav-sync',(_,lista)=>{if(!Array.isArray(lista))return;lista=lista.filter(d=>d&&typeof d.id=='string').slice(0,MAX_PINS);
     const ids=new Set(lista.map(d=>d.id));for(const [id,p] of [...pins])if(!ids.has(id)){pins.delete(id);p.w.close()}lista.forEach(abrePin)});
-  ipcMain.on('pin-tamanho',(e,w,h)=>{const x=jan(e);if(!x||!pinDe(e.sender))return;x.setContentSize(Math.ceil(w),Math.ceil(h));if(!x.isVisible())x.showInactive()});
-  ipcMain.on('pin-fechar',e=>{const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-removido',p[0])});
-  ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender))return;win.show();if(MAC)app.focus({steal:true});win.focus();win.webContents.send('abrir-ficha',k)});
+  ipcMain.on('pin-tamanho',(e,w,h)=>{const x=jan(e),m=ehMapa(e.sender);if(!x||!(pinDe(e.sender)||m))return;
+    const [cw,ch]=x.getContentSize(),nw=Math.ceil(w),nh=Math.ceil(h);if(cw!==nw||ch!==nh)x.setContentSize(nw,nh); // mesmo tamanho: não redesenha (piscava)
+    if(x.isVisible()||(m&&!mapaVisivel))return; // a do mapa só aparece se o painel ainda quer (Tab pode ter fechado antes)
+    if(!m)return x.showInactive();
+    x.setOpacity(0);x.showInactive();setTimeout(()=>{if(!x.isDestroyed())x.setOpacity(1)},60)}); // invisível até desenhar o mapa novo (sem resto do anterior)
+  ipcMain.on('pin-fechar',e=>{if(ehMapa(e.sender)){mapaVisivel=false;mapaWin.hide();win.webContents.send('mapa-fechado');return}const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-removido',p[0])});
+  ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender)&&!ehMapa(e.sender)||typeof k!='string'||k.length>200)return;win.show();if(MAC)app.focus({steal:true});win.focus();win.webContents.send('abrir-ficha',k)});
   // atalho global: abre o painel já com foco na busca; se já estiver aberto e em foco, fecha
   if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus()}win.webContents.send('toggle',f)}))
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);
 });
-app.on('will-quit',()=>globalShortcut.unregisterAll());
+app.on('will-quit',()=>{globalShortcut.unregisterAll();ligaLeitor(false)});
+ipcMain.on('mapa-ligar',(_,on)=>ligaLeitor(!!on));
+ipcMain.on('mapa-mostrar',(_,d)=>{if(!d||typeof d!='object')return;mapaVisivel=true;mostraMapa(d)});
+ipcMain.on('mapa-esconder',()=>{mapaVisivel=false;if(mapaWin&&!mapaWin.isDestroyed())mapaWin.hide()});
 // aberto pela atualização: apaga o .exe da versão anterior (o atualizador só aceita um Slimedex portátil na mesma pasta)
 {const i=process.argv.indexOf('--remover-antigo');if(i>=0)atz.removerAntigo(process.argv[i+1],process.env.PORTABLE_EXECUTABLE_FILE)}

@@ -1,0 +1,37 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
+/* slimes do mapa (Tab): janelinha arrastável com as fotos dos slimes que nascem no mapa atual */
+*{box-sizing:border-box}html,body{margin:0;background:transparent;overflow:hidden;font:13px system-ui,sans-serif;color:#e8eaed;user-select:none}
+#p{display:inline-flex;flex-direction:column;gap:6px;margin:3px;padding:7px 26px 8px 10px;background:rgba(24,28,33,.92);border:1px solid #2d333a;border-radius:10px;
+  box-shadow:0 2px 8px #0008;cursor:grab;position:relative;touch-action:none;max-width:420px}
+#p:active{cursor:grabbing}#p:hover{border-color:#3d4650}
+.t{font-weight:600;color:#ffd479;white-space:nowrap}.s{color:#8fd0ff;font-size:11px;white-space:nowrap}
+.g{display:flex;flex-wrap:wrap;gap:6px 8px}
+.sl{display:flex;flex-direction:column;align-items:center;width:62px;cursor:pointer;border-radius:8px;padding:2px}.sl:hover{background:#262c33}
+.sl img{width:44px;height:44px;object-fit:contain}.sl i{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-style:normal;color:#9aa3ad}
+.sl span{font-size:10px;color:#c9ced4;text-align:center;line-height:12px;max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* fundo atrás da foto: lilás = noite, off-white = dia, os dois na diagonal = dia e noite */
+.fb{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center}.fb.dia{background:#f1ece0}.fb.noite{background:#b9a6ff66}
+.fb.ambos{background:linear-gradient(135deg,#f1ece0 50%,#b9a6ff66 50%)}.leg{display:flex;gap:10px;font-size:10px;color:#9aa3ad}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+.m{color:#9aa3ad;font-size:11px;max-width:300px}
+#add{align-self:flex-start;background:#1d3346;color:#8fd0ff;border:0;border-radius:8px;padding:3px 9px;font:inherit;font-size:11px;cursor:pointer}#add:hover{filter:brightness(1.3)}
+#x{position:absolute;top:2px;right:4px;border:0;background:none;color:#9aa3ad;font-size:15px;line-height:16px;cursor:pointer;padding:0 3px}#x:hover{color:#ff7b7b}
+</style></head><body><div id="p"><button id="x">×</button><div><div class="t" id="t"></div><div class="s" id="s"></div></div><div class="g" id="g"></div><div class="leg" id="leg" hidden></div><div class="m" id="m"></div><button id="add" hidden></button></div><script>
+// só monta o que o painel mandou (textos já traduzidos), tudo via textContent
+const p=document.getElementById('p'),x=document.getElementById('x');
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+function mede(){ov.pin.tamanho(p.offsetWidth+6,p.offsetHeight+6)}
+function img(par){if(!par||!par[0])return el('i',null,'?');const i=el('img');i.alt='';i.src=par[0];i.onerror=()=>{i.onerror=null;if(par[1])i.src=par[1]};i.onload=mede;return i}
+ov.pin.onDados(d=>{if(!d)return;document.getElementById('t').textContent=d.titulo||'';document.getElementById('s').textContent=d.sub||'';
+  const g=document.getElementById('g');g.replaceChildren(...(d.slimes||[]).map(s=>{const c=el('div','sl');c.dataset.k=s.k;c.title=s.nome;const f=el('span','fb'+(['dia','noite','ambos'].includes(s.pe)?' '+s.pe:''));f.append(img(s.im));c.append(f,el('span',null,s.nome));return c}));
+  const leg=document.getElementById('leg'),tem=(d.slimes||[]).some(s=>['dia','noite','ambos'].includes(s.pe));leg.hidden=!tem;
+  if(tem){const it=(cor,txt)=>{const s=el('span');const b=el('i');b.style.background=cor;s.append(b,txt);return s};leg.replaceChildren(it('#f1ece0',d.tx.dia),it('#b9a6ff',d.tx.noite))}
+  g.hidden=!(d.slimes||[]).length;const m=document.getElementById('m');m.textContent=d.msg||'';m.hidden=!d.msg;
+  const add=document.getElementById('add');add.hidden=!d.add;if(d.add){add.textContent=d.add.txt;add.onclick=ev=>{ev.stopPropagation();ov.pin.abrir(d.add.id)}}
+  x.title=d.tx&&d.tx.fechar||'';p.title=d.tx&&d.tx.dica||'';mede();requestAnimationFrame(mede)});
+// arrastar move; clique num slime abre a ficha no painel; × esconde
+let drag=null;x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};
+p.onpointerdown=e=>{if(e.button||e.target===x||e.target.id==='add')return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false,k:(e.target.closest('.sl')||{}).dataset?.k};ov.dragStart()};
+p.onpointermove=e=>{if(!drag)return;if(!(e.buttons&1)){drag=null;ov.dragEnd();return}
+ if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
+p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&d.k)ov.pin.abrir(d.k)};
+</script></body></html>

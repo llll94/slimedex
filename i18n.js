@@ -9,7 +9,16 @@ const TXT = {
     community: 'comunidade', community_title: 'Enviada por {n} pessoas e confirmada no merge diário',
     contested: 'contestada', contested_title: 'Muita gente votou que não funciona',
     mine: 'meu', del_title: 'Apagar esta combinação', del_title_junta: 'Apagar a sua cópia (a da comunidade continua)', del_title_edit: 'Desfazer a sua edição (volta à original)', editado: 'editado',
-    edit_title: 'Editar esta combinação', fav_title: 'Fixar na tela (fica por cima do jogo)', fav_off: 'Tirar da tela', fav_limite: 'Dá para fixar até {n} combinações',
+    edit_title: 'Editar esta combinação', mapa_add: 'Adicionar / editar',
+    pe_dia: 'Nasce só de dia', pe_noite: 'Nasce só de noite', pe_ambos: 'Nasce de dia e de noite', pe_esp: 'Só depois de derrotar o chefe Dwarf', pe_nao: 'Ainda não sabemos se nasce de dia ou de noite',
+    pe_clique: 'clique para marcar', pe_b_dia: 'Só de dia', pe_b_noite: 'Só de noite', pe_b_ambos: 'Dia e noite', pe_b_limpa: 'Tirar o meu',
+    pe_tip: 'Vale na hora no seu app e vai para a comunidade em ⋯ → Enviar minhas descobertas.', pe_leg_dia: 'dia', pe_leg_noite: 'noite', mapa_novo: 'Mapa novo: ainda sem slimes. Marque os que você vir aqui.', mapa_renomear: 'Corrigir nome', mapa_nada: 'Tab ignorado: não achei o nome do mapa (região lida: {a})',
+    mapa_novo_tip: 'Este mapa ainda não está na lista. O nome veio da tela e pode ter uma letra errada: confira e corrija antes de marcar os slimes (o mapa novo é revisado antes de ir para todo mundo).', mapa_tela_h: 'Slimes em {m}', mapa_add_h: 'Marcar um slime que você viu aqui', mapa_tirar: 'Tirar deste mapa', mapa_tirar_base: 'Não nasce aqui (corrige a base)', mapa_tirados: 'Tirados (não nascem aqui):', mapa_volta: 'Desfazer: voltar para o mapa',
+    mapa_add_tip: 'Busque e clique para marcar (ou desmarcar). Vale na hora no seu app e vai para a comunidade em ⋯ → Enviar minhas descobertas. Vale também para os que vêm da base: se algum estiver errado, tire no ×.',
+    mapa_h: 'Slimes do mapa (Tab) · beta', mapa_tip: 'Ao apertar Tab no jogo, mostra uma janelinha com os slimes que nascem no mapa em que você está (arraste para onde quiser). Para saber o mapa, o Slimedex lê só o nome abaixo do minimapa, com o OCR do próprio Windows — nada sai do seu PC. Desligado, não roda nada.',
+    mapa_on: 'Ligado · clique para desligar', mapa_off: 'Desligado · clique para ligar', mapa_iniciando: 'Iniciando…', mapa_pronto: 'Pronto: aperte Tab no jogo', mapa_erro: 'Erro: {m}',
+    mapa_ultimo: 'Último mapa: {m} (lido em {ms} ms)', mapa_vazio: 'Nenhum slime cadastrado neste mapa ainda', mapa_desconhecido: 'Mapa não reconhecido', mapa_lido: 'Li: “{t}”', mapa_dica: 'Arraste para mover · clique num slime para abrir a ficha',
+    fav_title: 'Fixar na tela (fica por cima do jogo)', fav_slime_title: 'Fixar este slime na tela (e no topo da lista)', favs: 'Fixados', drops: 'Drops', no_drops: 'Sem drops cadastrados', fav_off: 'Tirar da tela', fav_limite: 'Dá para fixar até {n} combinações',
     pin_x: 'Tirar da tela', pin_tip: 'Arraste para mover · clique para abrir a ficha', juntar_title: 'Juntar com a combinação igual', form_h_edit: 'Editar combinação',
     form_tip_edit: 'A correção fica no seu app, por cima da original; a lixeira na linha desfaz. Ela também vai quando você enviar suas descobertas.', chance_title: 'Chance — clique para editar',
     elements: 'Elementos', green: 'verde', adv: 'vantagem', red: 'vermelho', disadv: 'desvantagem',
@@ -24,7 +33,7 @@ const TXT = {
     pick_ph: 'digite e escolha', opt_ph: 'opcional', mat_ph: 'opcional — digite e escolha', cancel: 'Cancelar', save: 'Salvar',
     form_err: 'Escolha o resultado e os dois slimes da lista',
     form_tip: 'Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
-    send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR · {u} número(s)',
+    send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR · {u} número(s) · {lo} slime(s) em mapas · {pe} dia/noite',
     send_info: 'Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
     send_empty: 'Você ainda não tem nada para enviar.', send_same: 'Isso já foi enviado. Cadastre ou vote em algo novo para enviar de novo.',
     send_btn: 'Enviar', sending: 'Enviando…', sent_ok: 'Enviado, obrigado! Vai aparecer pra todo mundo depois da revisão diária.', sent: 'Enviado',
@@ -55,7 +64,7 @@ const TXT = {
 <h4>Na ficha</h4><ul>
 <li><b>Como obter</b>: combinações, da maior chance para a menor — clique no <b>%</b> para editar</li>
 <li><b>👍 / 👎</b>: diga se a combinação funciona; o número ao lado é o placar da comunidade</li>
-<li><b>☆</b>: fixa a combinação na tela, por cima do jogo — arraste para onde quiser; clique abre a ficha; <b>×</b> tira (até 8)</li>
+<li><b>☆</b> (na combinação ou ao lado do nome do slime): fixa na tela, por cima do jogo — arraste para onde quiser; clique abre a ficha; <b>×</b> tira (até 8)</li>
 <li><b>＋ Nova combinação</b>: cadastre o que você descobriu (com sugestões de slimes e materiais)</li>
 <li><b>✎ nome em PT-BR</b> e <b>✎ número</b>: dê um nome em português e o número da Slimepedia do jogo</li>
 <li><b>Elementos</b> (abre e fecha): contra quem o ataque é forte/fraco e de quem ele toma mais/menos dano</li></ul>
@@ -79,7 +88,16 @@ const TXT = {
     community: 'community', community_title: 'Sent by {n} people and confirmed in the daily merge',
     contested: 'disputed', contested_title: 'Many people voted that it does not work',
     mine: 'mine', del_title: 'Delete this combination', del_title_junta: 'Delete your copy (the community one stays)', del_title_edit: 'Undo your edit (back to the original)', editado: 'edited',
-    edit_title: 'Edit this combination', fav_title: 'Pin on screen (stays on top of the game)', fav_off: 'Unpin', fav_limite: 'You can pin up to {n} combinations',
+    edit_title: 'Edit this combination', mapa_add: 'Add / edit',
+    pe_dia: 'Spawns only during the day', pe_noite: 'Spawns only at night', pe_ambos: 'Spawns day and night', pe_esp: 'Only after defeating the Dwarf boss', pe_nao: 'We don\'t know yet if it spawns by day or night',
+    pe_clique: 'click to mark', pe_b_dia: 'Day only', pe_b_noite: 'Night only', pe_b_ambos: 'Day and night', pe_b_limpa: 'Remove mine',
+    pe_tip: 'It applies right away on your app and goes to the community in ⋯ → Send my discoveries.', pe_leg_dia: 'day', pe_leg_noite: 'night', mapa_novo: 'New map: no slimes yet. Mark the ones you see here.', mapa_renomear: 'Fix name', mapa_nada: 'Tab ignored: could not find the map name (region read: {a})',
+    mapa_novo_tip: 'This map is not on the list yet. The name came from the screen and may have a wrong letter: check and fix it before marking slimes (new maps are reviewed before going to everyone).', mapa_tela_h: 'Slimes in {m}', mapa_add_h: 'Mark a slime you saw here', mapa_tirar: 'Remove from this map', mapa_tirar_base: 'Does not spawn here (fixes the database)', mapa_tirados: 'Removed (do not spawn here):', mapa_volta: 'Undo: put back on the map',
+    mapa_add_tip: 'Search and click to mark (or unmark). It applies right away on your app and goes to the community in ⋯ → Send my discoveries. It also works for the ones from the database: if one is wrong, remove it with ×.',
+    mapa_h: 'Map slimes (Tab) · beta', mapa_tip: 'When you press Tab in the game, shows a small window with the slimes that spawn on your current map (drag it anywhere). To know the map, Slimedex reads only the name under the minimap, with Windows\' own OCR — nothing leaves your PC. When off, nothing runs.',
+    mapa_on: 'On · click to turn off', mapa_off: 'Off · click to turn on', mapa_iniciando: 'Starting…', mapa_pronto: 'Ready: press Tab in the game', mapa_erro: 'Error: {m}',
+    mapa_ultimo: 'Last map: {m} (read in {ms} ms)', mapa_vazio: 'No slimes listed for this map yet', mapa_desconhecido: 'Map not recognized', mapa_lido: 'Read: “{t}”', mapa_dica: 'Drag to move · click a slime to open its entry',
+    fav_title: 'Pin on screen (stays on top of the game)', fav_slime_title: 'Pin this slime on screen (and at the top of the list)', favs: 'Pinned', drops: 'Drops', no_drops: 'No drops listed', fav_off: 'Unpin', fav_limite: 'You can pin up to {n} combinations',
     pin_x: 'Unpin', pin_tip: 'Drag to move · click to open the entry', juntar_title: 'Merge with the matching combination', form_h_edit: 'Edit combination',
     form_tip_edit: 'Your correction stays on your app, on top of the original; the trash icon on the row undoes it. It is also sent when you send your discoveries.', chance_title: 'Chance — click to edit',
     elements: 'Elements', green: 'green', adv: 'advantage', red: 'red', disadv: 'disadvantage',
@@ -94,7 +112,7 @@ const TXT = {
     pick_ph: 'type and pick', opt_ph: 'optional', mat_ph: 'optional — type and pick', cancel: 'Cancel', save: 'Save',
     form_err: 'Pick the result and both slimes from the list',
     form_tip: 'To add many at once, use ⋯ → Import with a CSV in the spreadsheet format (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
-    send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s) · {u} number(s)',
+    send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s) · {u} number(s) · {lo} slime(s) on maps · {pe} day/night',
     send_info: 'It goes to the collaborative database. Once a day submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
     send_empty: "You don't have anything to send yet.", send_same: 'This was already sent. Add or vote on something new to send again.',
     send_btn: 'Send', sending: 'Sending…', sent_ok: 'Sent, thank you! It will show up for everyone after the daily review.', sent: 'Sent',
@@ -125,7 +143,7 @@ const TXT = {
 <h4>On an entry</h4><ul>
 <li><b>How to get</b>: combinations, highest chance first — click the <b>%</b> to edit it</li>
 <li><b>👍 / 👎</b>: say whether a combination works; the number next to it is the community score</li>
-<li><b>☆</b>: pins the combination on screen, on top of the game — drag it anywhere; click opens the entry; <b>×</b> removes it (up to 8)</li>
+<li><b>☆</b> (on a combination or next to the slime's name): pins it on screen, on top of the game — drag it anywhere; click opens the entry; <b>×</b> removes it (up to 8)</li>
 <li><b>＋ New combination</b>: add something you discovered (with slime and material suggestions)</li>
 <li><b>✎ Portuguese name</b> and <b>✎ number</b>: give the slime a Portuguese name and its in-game Slimepedia number</li>
 <li><b>Elements</b> (collapsible): what its attacks are strong/weak against and what hurts it more/less</li></ul>

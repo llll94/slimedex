@@ -29,7 +29,9 @@
       "data.js",
       "comunidade.json",
       "icon.png",
-      "icon.svg"
+      "icon.svg",
+      "mapa.html",
+      "leitor-tela.ps1"
     ],
     "win": {
       "target": "portable",

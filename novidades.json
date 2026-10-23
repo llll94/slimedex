@@ -2,6 +2,27 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.6.0",
+      "pt": [
+        "☆ Fixe combinações e slimes na tela: uma janelinha por cima do jogo, que você arrasta para onde quiser (até 8)",
+        "Slimes do mapa (beta, Windows): ligue no ⋯ e aperte Tab no jogo para ver quais slimes nascem no mapa em que você está. Dá para adicionar ou tirar slimes de cada mapa",
+        "Dia e noite: cada slime mostra se nasce de dia, de noite ou nos dois — e dá para corrigir clicando no ícone",
+        "Drops: a ficha mostra os itens que cada slime solta, com o ícone de cada um",
+        "Ícone dos itens nas combinações",
+        "20 combinações novas ou completadas a partir da planilha da comunidade",
+        "Se você fechar o Slimedex no meio de uma edição, ele volta onde estava"
+      ],
+      "en": [
+        "☆ Pin combinations and slimes on screen: a small window on top of the game that you can drag anywhere (up to 8)",
+        "Map slimes (beta, Windows): turn it on in ⋯ and press Tab in the game to see which slimes spawn on your current map. You can add or remove slimes on each map",
+        "Day and night: each slime shows whether it spawns by day, at night or both — and you can fix it by clicking the icon",
+        "Drops: the entry shows the items each slime drops, with their icons",
+        "Item icons in combinations",
+        "20 new or completed combinations from the community spreadsheet",
+        "If you close Slimedex in the middle of an edit, it comes back where you were"
+      ]
+    },
+    {
       "v": "1.5.2",
       "pt": [
         "Botão ✎ em cada combinação para corrigir material, nível ou chance — vale no seu app e dá para desfazer",

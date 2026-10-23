@@ -34,6 +34,17 @@ input.mini{flex:none;width:58px;margin-left:auto;padding:1px 6px;font-size:12px}
 .vb i{font-style:normal;font-size:10px;line-height:14px;color:#9aa3ad}.vb.on i{color:inherit}
 .meu{font-size:10px;padding:0 5px;border-radius:6px;background:#2b3440;color:#8fb8ff}
 .del{cursor:pointer;font-size:11px;color:#9aa3ad}.del:hover{color:#ff7b7b}
+/* ícone de item (do tamanho do texto) e drops da ficha */
+.ii{width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:3px} /* item (material e drops): 90% da imagem dos slimes (24px), igual na janelinha */
+.drs{display:flex;flex-wrap:wrap;gap:4px 10px}.dr{display:inline-flex;align-items:center}
+.fh .fv{font-size:18px}
+/* slimes de um mapa */
+.mlist{display:flex;flex-wrap:wrap;gap:4px 8px;margin:2px 0 4px}.mchip{display:inline-flex;align-items:center;gap:3px;padding:1px 6px 1px 2px;border-radius:9px;background:#1f252c}
+.mchip img{width:24px;height:24px;object-fit:contain}.mchip.sua{box-shadow:inset 0 0 0 1px #6aa8ff}.mchip.fora{opacity:.45}.mchip.fora .lk{text-decoration:line-through}.row .ok{margin-left:auto;color:#7fe0a8}
+/* dia / noite (Material Icons) */
+.pe{display:inline-flex;gap:1px;vertical-align:-3px;cursor:pointer;margin-left:4px;padding:1px 3px;border-radius:7px}.pe:hover{background:#262c33}.pe svg{width:16px;height:16px;fill:currentColor}
+.pe .sol{color:#ffd479}.pe .lua{color:#b9a6ff}.pe .esp{color:#ffd479}.pe .nao{color:#5c6670}
+.pesel{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.pesel .btn{display:inline-flex;align-items:center;gap:4px}.pesel svg{width:14px;height:14px;fill:currentColor}
 /* ☆ fixar na tela */
 .fv{cursor:pointer;color:#5c6670;font-size:15px;line-height:14px;margin-left:4px}.fv:hover,.fv.on{color:#ffd479}.fv.cheio{color:#ff7b7b}
 /* formulário de nova combinação */
@@ -78,13 +89,19 @@ const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','
 const im=p=>p?`<img alt="" src="imagens${p}" onerror="this.onerror=null;this.src='${BASE}${p}'">`:'<i class="mu">?</i>';
 // ---- idioma: nomes, elementos, locais e materiais no idioma escolhido ----
 const locN=l=>LANG==='en'?(D.locEn&&D.locEn[l])||l:l;
-const IT={};(D.itens||[]).forEach(i=>[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>IT[norm(v)]=i));
+const IT={},IK={};(D.itens||[]).forEach(i=>{IK[i.k]=i;[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>IT[norm(v)]=i)});
+// drop sem nome próprio na lista (ex.: variação de um item): usa o nome do tipo (Item_Product_<Tipo>_...)
+const itemK=k=>IK[k]||IK[(/^Item_Product_([A-Za-z]+)_/.exec(k)||[])[1]];
+const itemNome=k=>{const i=itemK(k);return i?(LANG==='en'?i.en:i.pt):k};
+const itemIco=k=>{const i=IK[k],ic=i&&i.ic||(/^Item_/.test(k)?k:null);return ic?BASE+'/items/'+ic+'.webp':null};
+const matIco=m=>{const i=m&&IT[norm(m)];return i&&i.ic?BASE+'/items/'+i.ic+'.webp':null}; // material de uma combinação
+const ii=u=>u?`<img class="ii" alt="" src="${esc(u)}" onerror="this.remove()">`:'';
 const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // material da base/usuário traduzido quando conhecido
 // ---- dados do usuário (meus-dados.json, via main): nomes PT, % editados e combinações próprias ----
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
-let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[]},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>[c.a,c.b].sort().join('+')+'>'+c.r; // mesmos slimes e resultado
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -94,7 +111,8 @@ function monta(){
  S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';const nu=(M.num||{})[s.k]??(CM&&CM.num&&CM.num[s.k]);s.n=s.n0??(Number.isInteger(nu)?nu:null);
   s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.el.map(e=>EL_EN[e]||'').join(' '),s.lc.join(' '),s.lc.map(l=>(D.locEn&&D.locEn[l])||'').join(' ')].join(' '))});
  const cpc=(CM&&CM.pc)||{},cvt=(CM&&CM.votos)||{};
- const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b])
+ const naBase=new Set(D.combos.filter(c=>c.r).map(chaveC)); // a da comunidade que já virou base (versão nova) não repete
+ const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b]&&!naBase.has(chaveC(c)))
   .map(c=>({id:c.id,r:c.r,a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
  C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true}))];
  // combinação sua igual a uma da base/comunidade vira uma linha só, com o que cada uma tem de informação
@@ -135,12 +153,13 @@ function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  vista=v}
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
-function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela()}finally{voltando=false}}
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m)}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
- if(!q)bd.innerHTML=(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
+ const fs=(M.fav||[]).filter(f=>f.id.startsWith('s:')&&K[f.id.slice(2)]).map(f=>K[f.id.slice(2)]);
+ if(!q)bd.innerHTML=(fs.length?`<h4>${t('favs')}</h4>${fs.map(row).join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
  else{const w=norm(q).split(/\s+/);bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map(row).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
@@ -151,21 +170,25 @@ const DN='<svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.0
 const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt"><button class="vb up${v==1?" on":""}" data-voto="${esc(id)}" data-v="1" title="${esc(t('up'))}">${UP}${p.u?`<i>${p.u}</i>`:""}</button><button class="vb dn${v==-1?" on":""}" data-voto="${esc(id)}" data-v="-1" title="${esc(t('down'))}">${DN}${p.d?`<i>${p.d}</i>`:""}</button></span>`};
 // ☆ fixar na tela: M.fav guarda o id e uma cópia do que a janelinha mostra (vale mesmo se a combinação sumir da base)
 const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
+const fvS=k=>{const on=(M.fav||[]).some(f=>f.id==='s:'+k);return`<span class="fv${on?' on':''}" data-fav="s:${esc(k)}" title="${esc(t(on?'fav_off':'fav_slime_title'))}">${on?'★':'☆'}</span>`};
+const favSlime=k=>{const s=K[k];return{id:'s:'+k,tipo:'s',r:k,lang:LANG,
+ tx:{r:(s.n!=null?'#'+s.n+' ':'')+dn(s),el:s.el.map(elN).join(' / '),fechar:t('pin_x'),dica:t('pin_tip')},
+ im:{r:s.im?['imagens'+s.im,BASE+s.im]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
 const fv=c=>{if(!c.r)return'';const on=ehFav(c);return`<span class="fv${on?' on':''}" data-fav="${esc(cid(c))}" title="${esc(t(on?'fav_off':'fav_title'))}">${on?'★':'☆'}</span>`};
 const favDados=c=>({id:cid(c),r:c.r,l:c.l||'',m:c.m?matN(c.m):'',ch:c.ch??null,lv:t('lv'),lang:LANG,
- tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),dica:t('pin_tip')},
+ tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),dica:t('pin_tip')},mi:c.m?matIco(c.m):null,
  im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?['imagens'+p,BASE+p]:null]}))});
 function syncFav(){const porId=new Map(C.map(c=>[cid(c),c]));
- M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);return c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),dica:t('pin_tip')}}});
+ M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);if(f.id.startsWith('s:'))return K[f.id.slice(2)]?favSlime(f.id.slice(2)):f;return c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),dica:t('pin_tip')}}});
  ov.fav.sync(M.fav)}
 function favorita(id,el){const i=M.fav.findIndex(f=>f.id===id);
- if(i>=0)M.fav.splice(i,1);else{const c=C.find(x=>cid(x)===id);if(!c||!c.r)return;
+ if(i>=0)M.fav.splice(i,1);else{const s=id.startsWith('s:')&&K[id.slice(2)],c=!s&&C.find(x=>cid(x)===id);if(!s&&(!c||!c.r))return;
   if(M.fav.length>=MAX_FAV){el.classList.add('cheio');el.title=t('fav_limite',{n:MAX_FAV});setTimeout(()=>el.classList.remove('cheio'),800);return}
-  M.fav.push(favDados(c))}
+  M.fav.push(s?favSlime(s.k):favDados(c))}
  atualiza()}
 // combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
 const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(c.r)} =`:''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
- [c.m?esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
+ [c.m?ii(matIco(c.m))+esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
  `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
  `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
@@ -182,10 +205,11 @@ function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys
    <div class="el-l"><span class="mu" title="${esc(t('atk_title',{e:elN(e)}))}">${t('attack')}</span>${ch(fo,'g')}${ch(fr,'r')}${fo.length+fr.length?'':`<span class="mu">${t('neutral')}</span>`}</div>
    <div class="el-l"><span class="mu" title="${esc(t('def_title'))}">${t('defense')}</span>${ch(mais,'r')}${ch(menos,'g')}${mais.length+menos.length?'':`<span class="mu">${t('neutral')}</span>`}</div></div>`}).join('')+'</details>'}
 function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
- bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b>
+ bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b> ${fvS(k)}${peIco(k)}
  ${a?`<div class="mu">${esc(a)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.map(elN).join(' / '))}</div>
- <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>
- <h4>${t('where')}</h4>${s.lc.length?esc(s.lc.map(locN).join(' · ')):`<span class="mu">${t('no_loc')}</span>`}
+ <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>${peSel===k?peEscolha(k):''}
+ <h4>${t('where')}</h4>${(()=>{const l=lugares(k);return l.length?l.map(n=>`<span class="lk" data-mapa="${esc(n)}">${esc(nomeMapa(n))}</span>`).join(' · '):`<span class="mu">${t('no_loc')}</span>`})()}
+ <h4>${t('drops')}</h4>${(s.dp||[]).length?`<div class="drs">${s.dp.map(d=>`<span class="dr">${ii(itemIco(d))}${esc(itemNome(d))}</span>`).join('')}</div>`:`<span class="mu">${t('no_drops')}</span>`}
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<span class="mu">${t('no_combo')}</span>`}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
  <h4>${t('used',{n:u.length})}</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
@@ -261,12 +285,12 @@ function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"
 // ---- enviar para a base colaborativa (revisada antes de entrar na base de todos) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){cur=null;sel=-1;marca({t:'envio'});
- const p={pt:M.pt,pc:M.pc,combos:M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),votos:M.votos||{},num:M.num||{}};
- const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,sig=assinatura(JSON.stringify(p));
+ const p={pt:M.pt,pc:M.pc,combos:M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
+ const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
- const vazio=!(n+c+k+v+u),igual=sig===ult;
+ const vazio=!(n+c+k+v+u+lo+pe),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- <p>${t('send_counts',{k,c,v,n,u})}</p>
+ <p>${t('send_counts',{k,c,v,n,u,lo,pe})}</p>
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -284,8 +308,11 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
+ ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="lg"><button class="btn${mapaOn?' on':''}" id="mapat">${t(mapaOn?'mapa_on':'mapa_off')}</button></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
  nv2.onclick=()=>formCombo(null);env.onclick=envio;
+ const mt=document.getElementById('mapat');if(mt)mt.onclick=()=>{mapaOn=!mapaOn;try{localStorage.setItem('mapa-tab',mapaOn?'1':'0')}catch{}
+  mapaStatus=mapaOn?t('mapa_iniciando'):'';mapaAberto=false;ov.mapa.ligar(mapaOn);meus()};
  exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
  expc.onclick=async()=>{if(!M.combos.length)return meus(t('msg_nocombo'));if(await ov.meus.exportarCsv(csvMeus()))meus(t('msg_csv_out',{n:M.combos.length}))};
  imp.onclick=async()=>{const f=await ov.meus.importar();if(!f)return;
@@ -313,7 +340,8 @@ let campo=null;bd.addEventListener('focusin',e=>{if(e.target.tagName=='INPUT')ca
 function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;ov.size(true);
  if(vista&&(vista.t=='form'||vista.t=='ficha')&&campo&&bd.contains(campo)){campo.focus();return}
  qi.value='';hist=[];vista=null;list();qi.focus()}
-function close(){const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false)}
+let fechouEm=0; // quando o painel fechou (o Esc que fecha o painel não fecha os slimes do mapa)
+function close(){fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false)}
 x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=info;qi.oninput=list;
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
@@ -326,6 +354,10 @@ bd.onclick=e=>{const t=e.target;
  if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
+ const pe=t.closest('[data-pe]');if(pe){peSel=peSel===pe.dataset.pe?null:pe.dataset.pe;return ficha(pe.dataset.pe,true)}
+ const pv=t.closest('[data-pev]');if(pv&&cur){M.per=M.per||{};if(pv.dataset.pev)M.per[cur]=pv.dataset.pev;else delete M.per[cur];peSel=null;return atualiza()}
+ const lm=t.closest('[data-lm]');if(lm&&vista&&vista.t=='mapa')return marcaMapa(vista.m,lm.dataset.lm);
+ if(t.dataset.mapa)return telaMapa(t.dataset.mapa);
  if(t.dataset.fav)return favorita(t.dataset.fav,t);
  if(t.dataset.ed){const c=C.find(x=>cid(x)===t.dataset.ed);if(c)formCombo(c.r,{c,id:c.meu?c.id:c.meuId||null,alvo:c.meu?null:cid(c)});return}
  if(t.dataset.jn){juntar(t.dataset.jn);return}
@@ -343,8 +375,89 @@ ov.onToggle(f=>f&&!pn.hidden?close():open()); // Ctrl+Tab
 ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
 ov.onVoltar(()=>{if(!pn.hidden)voltar()});
+// ---- slimes do mapa (Tab) · beta: o leitor manda o texto lido abaixo do minimapa; aqui ele vira um mapa da base ----
+const MAPA_OK=ov.plataforma==='win32';let mapaOn=false,mapaAberto=false,mapaStatus='';try{mapaOn=MAPA_OK&&localStorage.getItem('mapa-tab')==='1'}catch{}
+// o OCR confunde letras parecidas: compara sem acento/espaço e com o/c/e, 1/l/i e rn/m 'achatados'; o número no fim tem que bater
+const planoM=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9|]/g,'').replace(/[ceo0]/g,'o').replace(/[il1|]/g,'i').replace(/rn/g,'m');
+const numFim=s=>((s||'').match(/(\d+)\s*$/)||[])[1]||'';
+function levM(a,b){const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const q=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=q}}return d[b.length]}
+const nomesMapas=()=>[...new Set([...(D.mapas||[]).map(m=>m.pt),...Object.keys((CM&&CM.loc)||{}),...Object.keys(M.loc||{})])];
+// corrige o que o OCR leu palavra por palavra, usando as palavras dos nomes de mapa conhecidos ("Ncecheon" -> "Noecheon")
+function corrigeNome(lido,regiao){const v=new Map();for(const n of [...nomesMapas(),regiao||''])for(const w of n.split(/\s+/))if(w&&!/\d/.test(w))v.set(planoM(w),w); // só palavras, sem números
+ const ws=(lido||'').replace(/([A-Za-zÀ-ÿ])(\d+)\b/g,'$1 $2').replace(/\s+/g,' ').trim().split(' ').filter(Boolean),out=[]; // "Ncecheon2" = "Ncecheon 2"
+ for(let i=0;i<ws.length;i++){const w=ws[i];if(/^\d+$/.test(w)){out.push(w);continue}
+  if(i+1<ws.length&&v.has(planoM(w+ws[i+1]))){out.push(v.get(planoM(w+ws[++i])));continue} // "L arus" = "Larus"
+  const p=planoM(w);if(v.has(p)){out.push(v.get(p));continue}
+  if(/[a-z][lI|]$/.test(w)&&v.has(planoM(w.slice(0,-1)))){out.push(v.get(planoM(w.slice(0,-1)))+' 1');continue} // "Ncecheonl" = "Noecheon 1"
+  let best=null;if(p.length>3)for(const [q,o] of v){const d=levM(p,q);if(d<=(p.length>6?2:1)&&(!best||d<best.d))best={d,o}}out.push(best?best.o:w)}
+ return out.join(' ')}
+function achaMapa(lido){const L=(lido||'').trim();if(L.length<3)return null;let melhor=null;
+ const extras=nomesMapas().filter(n=>!mapaPorPt(n)).map(n=>({pt:n,en:'',sl:[]}));
+ for(const m of [...(D.mapas||[]),...extras])for(const nome of [m.pt,m.en].filter(Boolean)){const nc=numFim(nome),nl=numFim(L);
+  if(nc?(nl?nl!==nc:!(nc==='1'&&/[a-z][lIi|]\s*$/.test(L))):nl)continue; // 'Monte Noecheon 1' não pode virar o 3 (o OCR lê 1 como l)
+  const a=planoM(nc?nome.replace(/\s*\d+\s*$/,''):nome),b=planoM(nc?L.replace(/\s*(\d+|[lIi|])\s*$/,''):L),dist=levM(a,b)/Math.max(a.length,b.length,1);
+  if(!melhor||dist<melhor.dist)melhor={m,dist}}
+ return melhor&&melhor.dist<=.2?melhor.m:null}
+function mostraMapa(e){mapaUlt=e;const m=achaMapa(e.branco),tx={fechar:t('pin_x'),dica:t('mapa_dica'),dia:t('pe_leg_dia'),noite:t('pe_leg_noite')},novo=!m&&corrigeNome(e.branco,e.azul); // a região (linha azul) o OCR lê bem: as palavras dela também corrigem
+ mapaStatus=t('mapa_ultimo',{m:m?(LANG==='en'&&m.en?m.en:m.pt):'? "'+(e.branco||'')+'"',ms:e.ms|0});if(vista&&vista.t==='meus'&&!pn.hidden)meus();
+ ov.mapa.mostrar(m?{titulo:LANG==='en'&&m.en?m.en:m.pt,sub:e.azul||'',msg:slimesDoMapa(m.pt).todos.length?'':t('mapa_vazio'),tx,
+  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?['imagens'+K[k].im,BASE+K[k].im]:null}))}
+  :{titulo:novo,sub:e.azul||'',msg:slimesDoMapa(novo).todos.length?'':t('mapa_novo'),tx,add:{txt:t('mapa_add'),id:'mapa:'+novo},
+   slimes:slimesDoMapa(novo).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?['imagens'+K[k].im,BASE+K[k].im]:null}))})}
+ov.mapa.onEvento(e=>{if(!mapaOn||!e)return;
+ if(e.ev==='pronto'){mapaStatus=t('mapa_pronto');if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
+ else if(e.ev==='erro'){mapaStatus=t('mapa_erro',{m:e.msg||''});if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
+ else if(e.ev==='esc'){if(!pn.hidden||Date.now()-fechouEm<600)return; // foi o Esc que fechou o painel (o leitor vê a tecla uns ms depois)
+  if(mapaAberto){mapaAberto=false;ov.mapa.esconder()}}
+ else if(e.ev==='tab'){if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return} // Tab de novo: o mapa do jogo fechou
+  if(!(e.branco||'').trim()||(e.branco||'').trim().length<3){mapaStatus=t('mapa_nada',{a:e.azul||'—'});if(vista&&vista.t==='meus'&&!pn.hidden)meus();return} // nada parecido com nome de mapa
+  mapaAberto=true;mostraMapa(e)}});
+ov.mapa.onFechado(()=>{mapaAberto=false});
+// ---- slimes de um mapa: os da base, os da comunidade e os que você marcou (M.loc, vai no envio) ----
+let mapaUlt=null; // última leitura mostrada na janelinha (para atualizar quando você marca um slime)
+const mapaPorPt=n=>(D.mapas||[]).find(m=>m.pt===n);
+const nomeMapa=n=>LANG==='en'?((D.locEn&&D.locEn[n])||(mapaPorPt(n)||{}).en||n):n;
+// 'SL_x' = visto aqui, '-SL_x' = não nasce aqui (corrige a base); o seu vale mais que o da comunidade, que vale mais que a base
+function slimesDoMapa(n){const m=mapaPorPt(n),cl=((CM&&CM.loc)||{})[n]||[],ml=(M.loc||{})[n]||[],mais=a=>new Set(a.filter(k=>k[0]!=='-')),menos=a=>new Set(a.filter(k=>k[0]==='-').map(k=>k.slice(1)));
+ const base=new Set(m?m.sl:[]),com=mais(cl),comTira=menos(cl),meu=mais(ml),meuTira=menos(ml);
+ const vis=k=>meu.has(k)||(!meuTira.has(k)&&(com.has(k)||(base.has(k)&&!comTira.has(k))));
+ const todos=[...new Set([...base,...com,...meu])].filter(k=>K[k]);
+ return{base,com,comTira,meu,meuTira,todos:todos.filter(vis),tirados:todos.filter(k=>!vis(k))}}
+function lugares(k){const l=new Set(K[k].lc);(D.mapas||[]).forEach(m=>{if(m.sl.includes(k))l.add(m.pt)});
+ for(const fonte of [(CM&&CM.loc)||{},M.loc||{}])for(const [n,ks] of Object.entries(fonte))if(Array.isArray(ks)&&ks.includes(k))l.add(n);
+ return[...l].filter(n=>!mapaPorPt(n)&&!((CM&&CM.loc)||{})[n]&&!(M.loc||{})[n]?true:slimesDoMapa(n).todos.includes(k))} // tirado do mapa: some do "Onde nasce"
+function resultadosMapa(n,q){const s=slimesDoMapa(n),w=norm(q||'').split(/\s+/).filter(Boolean);
+ return ALL.filter(x=>w.every(p=>x.h.includes(p))).slice(0,40).map(x=>{const on=s.todos.includes(x.k);
+  return`<div class="row" data-lm="${esc(x.k)}">${im(x.im)}<div><b>${esc(rot(x))}</b></div>${on?`<span class="ok">✓</span>`:''}</div>`}).join('')||`<p class="mu">${t('nothing')}</p>`}
+function telaMapa(n){cur=null;sel=-1;marca({t:'mapa',m:n});const s=slimesDoMapa(n),q=(document.getElementById('mq')||{}).value||'';
+ const novo=!mapaPorPt(n);
+ bd.innerHTML=`${voltarLk()}<h4>${t('mapa_tela_h',{m:esc(nomeMapa(n))})}</h4>
+ ${novo?`<p class="mu">${t('mapa_novo_tip')}</p><div class="lg" style="display:flex;gap:6px;margin-bottom:6px"><input id="mn" value="${esc(n)}" style="flex:1"><button class="btn" id="mnok">${t('mapa_renomear')}</button></div>`:''}
+ <div class="mlist">${s.todos.map(k=>{const so=s.meu.has(k)&&!s.base.has(k)&&!s.com.has(k);return`<span class="mchip${so?' sua':''}">${im(K[k].im)}${lk(k)} <span class="del" data-lm="${esc(k)}" title="${esc(t(so?'mapa_tirar':'mapa_tirar_base'))}">×</span></span>`}).join('')||`<span class="mu">${t('mapa_vazio')}</span>`}</div>
+ ${s.tirados.length?`<p class="mu" style="margin:4px 0 2px">${t('mapa_tirados')}</p><div class="mlist">${s.tirados.map(k=>`<span class="mchip fora">${im(K[k].im)}${lk(k)} <span class="del" data-lm="${esc(k)}" title="${esc(t('mapa_volta'))}">↺</span></span>`).join('')}</div>`:''}
+ <h4>${t('mapa_add_h')}</h4><p class="mu">${t('mapa_add_tip')}</p><input id="mq" placeholder="${esc(t('search_ph'))}" value="${esc(q)}" style="width:100%;margin:4px 0"><div id="mres">${resultadosMapa(n,q)}</div>`;
+ bd.scrollTop=0;mq.oninput=()=>{mres.innerHTML=resultadosMapa(n,mq.value)};
+ if(novo)mnok.onclick=()=>{const nn=mn.value.replace(/\s+/g,' ').trim().slice(0,80);if(!nn||nn===n)return;M.loc=M.loc||{};
+  const l=new Set([...(M.loc[nn]||[]),...(M.loc[n]||[])]);delete M.loc[n];if(l.size)M.loc[nn]=[...l];salva().then(()=>{telaMapa(nn);if(mapaAberto&&mapaUlt)mostraMapa({...mapaUlt,branco:nn})})}}
+function marcaMapa(n,k){if(!K[k])return;M.loc=M.loc||{};const s=slimesDoMapa(n),l=new Set(M.loc[n]||[]),fixo=s.base.has(k)||s.com.has(k),vis=s.todos.includes(k);
+ l.delete(k);l.delete('-'+k);
+ if(vis){if(fixo)l.add('-'+k)} // tirar: o que vem da base/comunidade vira "não nasce aqui"
+ else if(!fixo||s.comTira.has(k))l.add(k); // pôr: um da base volta só desfazendo o seu "-"; se a comunidade tirou, o seu volta
+ if(l.size)M.loc[n]=[...l];else delete M.loc[n];
+ const q=mq.value,foco=document.activeElement===mq;salva().then(()=>{telaMapa(n);mq.value=q;mres.innerHTML=resultadosMapa(n,q);if(foco)mq.focus();
+  if(mapaAberto&&mapaUlt)mostraMapa(mapaUlt)})}
+if(mapaOn){mapaStatus=t('mapa_iniciando');ov.mapa.ligar(true)}
+// ---- dia / noite: vale o seu (M.per), depois o da comunidade (CM.per), depois o da base (s.pe, da wiki) ----
+const IC={sol:'<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>',lua:'<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>',nao:'<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>',esp:'<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'};
+let peSel=null; // ficha com a escolha de dia/noite aberta
+const per=k=>(M.per||{})[k]||((CM&&CM.per)||{})[k]||(K[k]&&K[k].pe)||null;
+function peIco(k){const p=per(k),ic=p==='dia'?'<i class="sol">'+IC.sol+'</i>':p==='noite'?'<i class="lua">'+IC.lua+'</i>':p==='ambos'?'<i class="sol">'+IC.sol+'</i><i class="lua">'+IC.lua+'</i>':p==='esp'?'<i class="esp">'+IC.esp+'</i>':'<i class="nao">'+IC.nao+'</i>';
+ return`<span class="pe" data-pe="${esc(k)}" title="${esc(t('pe_'+(p||'nao'))+' · '+t('pe_clique'))}">${ic}</span>`}
+function peEscolha(k){const p=(M.per||{})[k];const b=(v,ic,txt)=>`<button class="btn${p===v?' on':''}" data-pev="${v}">${ic}${esc(txt)}</button>`;
+ return`<div class="pesel">${b('dia','<i class="sol" style="color:#ffd479">'+IC.sol+'</i>',t('pe_b_dia'))}${b('noite','<i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_noite'))}${b('ambos','<i style="color:#ffd479">'+IC.sol+'</i><i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_ambos'))}${p?b('','',t('pe_b_limpa')):''}</div><p class="mu">${t('pe_tip')}</p>`}
 ov.fav.onRemovido(id=>{M.fav=M.fav.filter(f=>f.id!==id);atualiza()}); // × na combinação fixada
-ov.fav.onAbrir(k=>{if(!K[k])return;if(pn.hidden)open();ficha(k)}); // clique na combinação fixada: abre a ficha // botão voltar do mouse no Windows (vem do main como app-command)
+ov.fav.onAbrir(k=>{if(typeof k=='string'&&k.startsWith('mapa:')){if(pn.hidden)open();telaMapa(k.slice(5));mq.focus({preventScroll:true});return bd.scrollTop=0} // foco na busca sem rolar a tela // + adicionar slime (janelinha do mapa)
+ if(!K[k])return;if(pn.hidden)open();ficha(k);bd.scrollTop=0;requestAnimationFrame(()=>bd.scrollTop=0)}); // a ficha começa do topo // clique na combinação fixada: abre a ficha // botão voltar do mouse no Windows (vem do main como app-command)
 if(ov.plataforma==='darwin')addEventListener('mouseup',e=>{if(e.button===3&&!pn.hidden){e.preventDefault();voltar()}}); // no Mac chega como clique
 // teclado fora de campos de texto: V = voltar, Esc = fechar, outra letra = começa a buscar
 addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)return;const t=e.target;
@@ -353,7 +466,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],...d};monta()});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
