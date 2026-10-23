@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-23T13:11:37.014Z",
+ "gerado": "2026-10-23T13:15:17.762Z",
  "pessoas": 4,
  "combos": [
   {
@@ -13,26 +13,6 @@
    "n": 2
   },
   {
-   "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Beholder_DarkMagic",
-   "r": "SL_Beholder_DarkMagic",
-   "a": "SL_Cauldron_MagicSteel",
-   "b": "SL_Bat_WindDark",
-   "m": "Tentáculo de Aqua Melon (Aqua Melon's Tentacle)",
-   "l": "25",
-   "ch": null,
-   "n": 1
-  },
-  {
-   "id": "c:SL_Bat_WindDark+SL_Cauldron_MagicSteel>SL_Ghost_Magic",
-   "r": "SL_Ghost_Magic",
-   "a": "SL_Cauldron_MagicSteel",
-   "b": "SL_Bat_WindDark",
-   "m": "",
-   "l": "31",
-   "ch": 8.8,
-   "n": 1
-  },
-  {
    "id": "c:SL_Bat_WindDark+SL_ElecChicken_WindElectric>SL_Crow_WindDark",
    "r": "SL_Crow_WindDark",
    "a": "SL_Bat_WindDark",
@@ -43,13 +23,43 @@
    "n": 1
   },
   {
-   "id": "c:SL_Bat_WindPoison+SL_Beholder_DarkMagic>SL_Ghost_Magic",
+   "id": "c:SL_Bat_WindDark+SL_Embers_MagicIce>SL_Beholder_DarkMagic",
+   "r": "SL_Beholder_DarkMagic",
+   "a": "SL_Bat_WindDark",
+   "b": "SL_Embers_MagicIce",
+   "m": "Tentáculo (Tentacle)",
+   "l": "25",
+   "ch": 55,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Beholder_DarkMagic+SL_Bat_WindPoison>SL_Ghost_Magic",
    "r": "SL_Ghost_Magic",
    "a": "SL_Beholder_DarkMagic",
    "b": "SL_Bat_WindPoison",
    "m": "Anel de Ladyf (Ladif's Ring)",
    "l": "31",
    "ch": 15,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Cauldron_MagicSteel+SL_Bat_WindDark>SL_Beholder_DarkMagic",
+   "r": "SL_Beholder_DarkMagic",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_Bat_WindDark",
+   "m": "Tentáculo de Aqua Melon (Aqua Melon's Tentacle)",
+   "l": "25",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Cauldron_MagicSteel+SL_Bat_WindDark>SL_Ghost_Magic",
+   "r": "SL_Ghost_Magic",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_Bat_WindDark",
+   "m": "",
+   "l": "31",
+   "ch": 8.8,
    "n": 1
   },
   {
@@ -63,7 +73,17 @@
    "n": 1
   },
   {
-   "id": "c:SL_Honet_WindElectric+SL_Rat_PoisonDark>SL_Bat_WindDark",
+   "id": "c:SL_Frog_WaterMagic+SL_Mandrake_GrassFire>SL_Starfish_WaterFire",
+   "r": "SL_Starfish_WaterFire",
+   "a": "SL_Frog_WaterMagic",
+   "b": "SL_Mandrake_GrassFire",
+   "m": "Wisp's Sigil",
+   "l": "13",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Rat_PoisonDark+SL_Honet_WindElectric>SL_Bat_WindDark",
    "r": "SL_Bat_WindDark",
    "a": "SL_Rat_PoisonDark",
    "b": "SL_Honet_WindElectric",
@@ -73,12 +93,12 @@
    "n": 1
   },
   {
-   "id": "c:SL_Honet_WindElectric+SL_Tricky_Light>SL_Bushtit_WindLight",
-   "r": "SL_Bushtit_WindLight",
-   "a": "SL_Tricky_Light",
-   "b": "SL_Honet_WindElectric",
-   "m": "Pena de Fluffy (Fluffy's Feather)",
-   "l": "22",
+   "id": "c:SL_Rat_PoisonGround+SL_Dwarf_MagicDark>SL_Rat_PoisonDark",
+   "r": "SL_Rat_PoisonDark",
+   "a": "SL_Rat_PoisonGround",
+   "b": "SL_Dwarf_MagicDark",
+   "m": "",
+   "l": "19",
    "ch": 100,
    "n": 1
   },
@@ -93,13 +113,53 @@
    "n": 1
   },
   {
-   "id": "c:SL_Slime_Water+SL_Sword_SteelDark>SL_Shade_DarkWater",
+   "id": "c:SL_SeedOcto_GrassGround+SL_Honet_WindElectric>SL_LightningBug_GroundElectric",
+   "r": "SL_LightningBug_GroundElectric",
+   "a": "SL_SeedOcto_GrassGround",
+   "b": "SL_Honet_WindElectric",
+   "m": "Kobold's Crystal",
+   "l": "19",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Sword_SteelDark+SL_Slime_Water>SL_Shade_DarkWater",
    "r": "SL_Shade_DarkWater",
    "a": "SL_Sword_SteelDark",
    "b": "SL_Slime_Water",
    "m": "Duto de Escape (Exhaust Vent)",
    "l": "",
    "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Tricky_Light+SL_Honet_WindElectric>SL_Bushtit_WindLight",
+   "r": "SL_Bushtit_WindLight",
+   "a": "SL_Tricky_Light",
+   "b": "SL_Honet_WindElectric",
+   "m": "Pena de Fluffy (Fluffy's Feather)",
+   "l": "22",
+   "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Wicked+SL_Lizard_Poison>SL_Rat_PoisonDark",
+   "r": "SL_Rat_PoisonDark",
+   "a": "SL_Wicked",
+   "b": "SL_Lizard_Poison",
+   "m": "Tweety's Hide",
+   "l": "19",
+   "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Wicked+SL_Rat_PoisonGround>SL_Rat_PoisonDark",
+   "r": "SL_Rat_PoisonDark",
+   "a": "SL_Wicked",
+   "b": "SL_Rat_PoisonGround",
+   "m": "",
+   "l": "19",
+   "ch": null,
    "n": 1
   }
  ],
@@ -112,17 +172,13 @@
    "ch": 100,
    "n": 1
   },
-  "SL_Dwarf_MagicDark|SL_Rat_PoisonGround|SL_Rat_PoisonDark|": {
-   "ch": 100,
-   "n": 1
-  },
   "SL_ElecChicken_WindElectric|SL_Wisp_LightElectric||": {
    "ch": 95,
    "n": 1
   },
   "SL_Embers_MagicIce|SL_Bat_WindDark|SL_Beholder_DarkMagic|Tentacle": {
-   "ch": 55,
-   "n": 2
+   "ch": 10,
+   "n": 1
   }
  },
  "pt": {
