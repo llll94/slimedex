@@ -33,7 +33,7 @@ const RAIZ = path.join(__dirname, '..');
 const D = JSON.parse(fs.readFileSync(path.join(RAIZ, 'data.json'), 'utf8'));
 const SLIMES = new Set(D.slimes.map(s => s.k));
 const cidBase = c => [c.a, c.b, c.r, c.m].join('|'); // mesmo id que o app usa para combinações da base
-const par = (a, b, r) => [a, b].sort().join('+') + '>' + r;
+const par = (a, b, r) => a + '+' + b + '>' + r; // a ordem importa: A + B e B + A são combinações diferentes (chance diferente)
 // "base" = o data.json que os apps já têm (o da última versão publicada). O data.json do repositório pode estar à
 // frente: o que ele tem a mais (PENDENTES) vai no comunidade.json até sair uma versão nova com ele.
 let baseIdx, baseCids, PENDENTES = [];
@@ -91,7 +91,16 @@ async function lerEnvios() {
   PENDENTES = D.combos.filter(c => c.r && SLIMES.has(c.r) && SLIMES.has(c.a) && SLIMES.has(c.b) && !baseIdx.has(par(c.a, c.b, c.r)));
   const linhas =(await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object');
   // cada envio é uma "foto" completa dos dados da pessoa: vale o mais recente de cada autor
-  const ultimo = new Map(), ordem = new Map(); linhas.forEach((l, i) => { ultimo.set(l.autor, l.payload); ordem.set(l.autor, i) });
+  const ultimo = new Map(), anterior = new Map(), ordem = new Map();
+  linhas.forEach((l, i) => { if (ultimo.has(l.autor)) anterior.set(l.autor, ultimo.get(l.autor)); ultimo.set(l.autor, l.payload); ordem.set(l.autor, i) });
+  // chances que uma pessoa mandou: id da base (ou 'c:'+par) -> valores, na ordem (o % editado na linha vem por último)
+  const relatos = p => { const r = new Map(), add = (id, ch) => (r.get(id) || r.set(id, []).get(id)).push(ch);
+    for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) { if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b)) continue;
+      const ch = chance(c.ch); if (ch == null) continue; const k = par(c.a, c.b, c.r), base = baseIdx.get(k); add(base ? cidBase(base) : 'c:' + k, ch) }
+    for (const [id, v] of Object.entries(p.pc && typeof p.pc === 'object' ? p.pc : {})) { const ch = chance(v); if (ch != null) add(id, ch) }
+    return r };
+  // a mesma combinação repetida com % diferentes: vale o que a pessoa mudou desde o envio anterior, senão o último
+  const escolhe = (vals, antes) => { const u = [...new Set(vals)]; if (u.length === 1) return u[0]; const novo = u.filter(v => !(antes || []).includes(v)); return novo.length ? novo[novo.length - 1] : vals[vals.length - 1] };
 
   const novos = new Map();   // par -> { a,b,r, quem:Set, m:[], l:[], ch:[] }
   const chances = new Map(); // id da combinação -> [valores]
@@ -105,18 +114,17 @@ async function lerEnvios() {
   for (const [autor, p] of [...ultimo].sort((x, y) => ordem.get(x[0]) - ordem.get(y[0]))) { // do envio mais antigo ao mais recente
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
       if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b)) continue;
-      const k = par(c.a, c.b, c.r), ch = chance(c.ch), base = baseIdx.get(k);
+      const k = par(c.a, c.b, c.r), base = baseIdx.get(k);
       if (BQ_COMBO.has(base ? cidBase(base) : 'c:' + k)) continue;
-      if (base) { if (ch != null) (chances.get(cidBase(base)) || chances.set(cidBase(base), []).get(cidBase(base))).push(ch); continue }
+      if (base) continue; // na base: só conta como relato de chance (abaixo, um por pessoa)
       const n = novos.get(k) || novos.set(k, { a: c.a, b: c.b, r: c.r, quem: new Set(), m: [], l: [], ch: [] }).get(k);
       if (n.quem.has(autor)) continue;
-      n.quem.add(autor); n.m.push(txt(c.m, 60)); n.l.push(txt(c.l, 10)); if (ch != null) n.ch.push(ch);
+      n.quem.add(autor); n.m.push(txt(c.m, 60)); n.l.push(txt(c.l, 10));
     }
-    for (const [id, v] of Object.entries(p.pc && typeof p.pc === 'object' ? p.pc : {})) {
-      const ch = chance(v); if (ch == null || BQ_COMBO.has(id)) continue;
+    const ant = relatos(anterior.get(autor) || {});
+    for (const [id, vals] of relatos(p)) { if (BQ_COMBO.has(id)) continue; const ch = escolhe(vals, ant.get(id));
       if (baseCids.has(id)) (chances.get(id) || chances.set(id, []).get(id)).push(ch);
-      else if (id.startsWith('c:') && novos.has(id.slice(2))) novos.get(id.slice(2)).ch.push(ch);
-    }
+      else if (id.startsWith('c:') && novos.has(id.slice(2))) novos.get(id.slice(2)).ch.push(ch) }
     for (const [k, v] of Object.entries(p.num && typeof p.num === 'object' ? p.num : {})) {
       if (!SLIMES.has(k) || BQ_NUM.has(k) || !Number.isInteger(v) || v < 1 || v > 9999) continue;
       const m = numeros.get(k) || numeros.set(k, new Map()).get(k); (m.get(v) || m.set(v, new Set()).get(v)).add(autor);
