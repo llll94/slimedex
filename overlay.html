@@ -34,6 +34,8 @@ input.mini{flex:none;width:58px;margin-left:auto;padding:1px 6px;font-size:12px}
 .vb i{font-style:normal;font-size:10px;line-height:14px;color:#9aa3ad}.vb.on i{color:inherit}
 .meu{font-size:10px;padding:0 5px;border-radius:6px;background:#2b3440;color:#8fb8ff}
 .del{cursor:pointer;font-size:11px;color:#9aa3ad}.del:hover{color:#ff7b7b}
+/* ☆ fixar na tela */
+.fv{cursor:pointer;color:#5c6670;font-size:15px;line-height:14px;margin-left:4px}.fv:hover,.fv.on{color:#ffd479}.fv.cheio{color:#ff7b7b}
 /* formulário de nova combinação */
 .form{display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center;padding:8px;margin:6px 0;border:1px solid #2d333a;border-radius:10px;background:#1b1f24}
 .form input{padding:4px 8px}.form label{font-size:11px;color:#9aa3ad}
@@ -82,7 +84,7 @@ const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // mater
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
-let M={pt:{},pc:{},combos:[],votos:{},num:{}},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[]},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>[c.a,c.b].sort().join('+')+'>'+c.r; // mesmos slimes e resultado
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -113,7 +115,8 @@ function monta(){
  const byCh=(a,b)=>(b.ch??-1)-(a.ch??-1);Object.values(made).forEach(v=>v.sort(byCh)); // maior chance primeiro
  ordena();LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
  // sugestões do campo Material: "Couro (Hide)" em PT, "Hide (Couro)" em EN — acha digitando nas duas línguas
- materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('')}
+ materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('');
+ syncFav()}
 const rot=s=>`${s.n!=null?'#'+s.n+' ':''}${dn(s)}${s.el.length?' ('+s.el.map(elN).join('/')+')':''}`; // rótulo único da lista de sugestões
 function salva(){return ov.meus.salvar(M)}
 // nome digitado -> chave do slime: rótulo da lista, senão nome único (nome principal/PT antes de apelido)
@@ -146,6 +149,20 @@ const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(
 const UP='<svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
 const DN='<svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>';
 const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt"><button class="vb up${v==1?" on":""}" data-voto="${esc(id)}" data-v="1" title="${esc(t('up'))}">${UP}${p.u?`<i>${p.u}</i>`:""}</button><button class="vb dn${v==-1?" on":""}" data-voto="${esc(id)}" data-v="-1" title="${esc(t('down'))}">${DN}${p.d?`<i>${p.d}</i>`:""}</button></span>`};
+// ☆ fixar na tela: M.fav guarda o id e uma cópia do que a janelinha mostra (vale mesmo se a combinação sumir da base)
+const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
+const fv=c=>{if(!c.r)return'';const on=ehFav(c);return`<span class="fv${on?' on':''}" data-fav="${esc(cid(c))}" title="${esc(t(on?'fav_off':'fav_title'))}">${on?'★':'☆'}</span>`};
+const favDados=c=>({id:cid(c),r:c.r,l:c.l||'',m:c.m?matN(c.m):'',ch:c.ch??null,lv:t('lv'),lang:LANG,
+ tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),dica:t('pin_tip')},
+ im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?['imagens'+p,BASE+p]:null]}))});
+function syncFav(){const porId=new Map(C.map(c=>[cid(c),c]));
+ M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);return c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),dica:t('pin_tip')}}});
+ ov.fav.sync(M.fav)}
+function favorita(id,el){const i=M.fav.findIndex(f=>f.id===id);
+ if(i>=0)M.fav.splice(i,1);else{const c=C.find(x=>cid(x)===id);if(!c||!c.r)return;
+  if(M.fav.length>=MAX_FAV){el.classList.add('cheio');el.title=t('fav_limite',{n:MAX_FAV});setTimeout(()=>el.classList.remove('cheio'),800);return}
+  M.fav.push(favDados(c))}
+ atualiza()}
 // combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
 const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(c.r)} =`:''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
  [c.m?esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
@@ -153,7 +170,7 @@ const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
  `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
  ` <span class="lk sm" data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}">✎</span>${c.meu&&c.gemeo?` <span class="lk sm" data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
- `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}</div></div>`;
+ `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}${fv(c)}</div></div>`;
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
 function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys(T);
  const ch=(a,c)=>a.map(x=>`<span class="el ${c}">${esc(elN(x))}</span>`).join('');
@@ -305,9 +322,10 @@ bd.onclick=e=>{const t=e.target;
  if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
+ if(t.dataset.fav)return favorita(t.dataset.fav,t);
  if(t.dataset.ed){const c=C.find(x=>cid(x)===t.dataset.ed);if(c)formCombo(c.r,{c,id:c.meu?c.id:c.meuId||null,alvo:c.meu?null:cid(c)});return}
  if(t.dataset.jn){juntar(t.dataset.jn);return}
- if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);return atualiza()}
+ if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);M.fav=M.fav.filter(f=>f.id!==t.dataset.del);return atualiza()}
  if(t.id=='ptedit')return editaPT();
  if(t.id=='numedit')return editaNum();
  if(t.id=='addc')return formCombo(cur);
@@ -320,7 +338,9 @@ ico.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved)open()};
 ov.onToggle(f=>f&&!pn.hidden?close():open()); // Ctrl+Tab
 ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
-ov.onVoltar(()=>{if(!pn.hidden)voltar()}); // botão voltar do mouse no Windows (vem do main como app-command)
+ov.onVoltar(()=>{if(!pn.hidden)voltar()});
+ov.fav.onRemovido(id=>{M.fav=M.fav.filter(f=>f.id!==id);atualiza()}); // × na combinação fixada
+ov.fav.onAbrir(k=>{if(!K[k])return;if(pn.hidden)open();ficha(k)}); // clique na combinação fixada: abre a ficha // botão voltar do mouse no Windows (vem do main como app-command)
 if(ov.plataforma==='darwin')addEventListener('mouseup',e=>{if(e.button===3&&!pn.hidden){e.preventDefault();voltar()}}); // no Mac chega como clique
 // teclado fora de campos de texto: V = voltar, Esc = fechar, outra letra = começa a buscar
 addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)return;const t=e.target;
@@ -329,7 +349,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},...d};monta()});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],...d};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base

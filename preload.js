@@ -8,4 +8,7 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),
   comunidade:()=>ipcRenderer.invoke('comunidade'),idioma:l=>ipcRenderer.send('idioma',l),versao:()=>ipcRenderer.invoke('versao'),
   pasta:()=>ipcRenderer.invoke('pasta'),plataforma:process.platform,reiniciar:()=>ipcRenderer.send('reiniciar'),
   versaoNova:()=>ipcRenderer.invoke('versao-nova'),baixarAtualizacao:n=>ipcRenderer.invoke('baixar-atualizacao',n),instalarAtualizacao:()=>ipcRenderer.send('instalar-atualizacao'),
-  foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p))});
+  foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p)),
+  // combinações fixadas na tela: fav = lado do painel, pin = a janelinha de cada uma
+  fav:{sync:l=>ipcRenderer.send('fav-sync',l),onRemovido:cb=>ipcRenderer.on('fav-removido',(_,id)=>cb(id)),onAbrir:cb=>ipcRenderer.on('abrir-ficha',(_,k)=>cb(k))},
+  pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),abrir:k=>ipcRenderer.send('pin-abrir',k)}});

@@ -3,7 +3,8 @@ const atz=require('./atualizador');
 const path=require('path'),fs=require('fs'),crypto=require('crypto');
 const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação em 2 linhas; 100% dos "Como obter" e ~93% dos "Usado em" cabem (medido)
 const MAC=process.platform==='darwin';
-let win,tray,off=null,aberto=false,dialogo=false; // dialogo: janela de importar/exportar aberta
+if(process.env.SLIMEDEX_DADOS)app.setPath('userData',process.env.SLIMEDEX_DADOS); // só para teste: pasta de dados separada
+let win,tray,aberto=false,dialogo=false; // dialogo: janela de importar/exportar aberta
 function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?PANEL:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
   win.setBounds({x,y,width:w,height:h});if(!open){win.blur();salva()}} // ao fechar, devolve o foco pro jogo
@@ -43,6 +44,23 @@ ipcMain.handle('comunidade',async()=>{const cache=path.join(app.getPath('userDat
 // devolve o texto cru e a extensão; quem decide como ler (JSON ou CSV) é a interface
 ipcMain.handle('meus-importar',async()=>{const r=await comDialogo(()=>dialog.showOpenDialog(win,{properties:['openFile'],filters:[{name:'Meus dados ou planilha',extensions:['json','csv']}]}));
   if(r.canceled||!r.filePaths[0])return null;const f=r.filePaths[0];return{ext:path.extname(f).slice(1).toLowerCase(),texto:fs.readFileSync(f,'utf8').replace(/^﻿/,'')}});
+// combinações fixadas na tela (☆): uma janelinha por combinação, sempre no topo e sem pegar o foco do jogo.
+// Quem decide o que mostrar é o painel (textos já traduzidos); aqui só abre, fecha e lembra a posição.
+const PINS=()=>path.join(app.getPath('userData'),'favoritos.json'),MAX_PINS=8,pins=new Map(); // id da combinação -> {w, dados}
+let posPins={};
+function salvaPins(){for(const [id,p] of pins){const [x,y]=p.w.getPosition();posPins[id]={x,y}}try{gravaJson(PINS(),posPins)}catch{}}
+const naTela=(p,w,h)=>p&&screen.getAllDisplays().some(({workArea:a})=>p.x>=a.x&&p.y>=a.y&&p.x+w<=a.x+a.width&&p.y+h<=a.y+a.height);
+function abrePin(d,i){const p=pins.get(d.id);if(p){p.dados=d;p.w.webContents.send('pin-dados',d);return}
+  const W=300,H=58,b=win.getBounds(),wa=screen.getDisplayMatching(b).workArea; // sem posição salva: em fila, à esquerda do ícone
+  const pos=naTela(posPins[d.id],W,H)?posPins[d.id]:{x:Math.max(wa.x,b.x+b.width-ICON[0]-W-8),y:Math.min(wa.y+wa.height-H,b.y+i*(H+4))};
+  const w=new BrowserWindow({width:W,height:H,x:pos.x,y:pos.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,
+    hasShadow:false,focusable:false,show:false,useContentSize:true,webPreferences:{preload:path.join(__dirname,'preload.js')}});
+  w.setAlwaysOnTop(true,'screen-saver');if(MAC)w.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+  if(process.env.SLIME_DEBUG){console.log('pin',d.id,pos);w.on('move',()=>console.log('pin move',d.id,w.getBounds()))}
+  pins.set(d.id,{w,dados:d});w.loadFile('pin.html');
+  w.webContents.on('did-finish-load',()=>{const q=pins.get(d.id);if(q&&q.w===w)w.webContents.send('pin-dados',q.dados)});
+  w.on('closed',()=>{if(pins.get(d.id)?.w===w)pins.delete(d.id)})}
+const pinDe=s=>[...pins].find(([,p])=>!p.w.isDestroyed()&&p.w.webContents===s);
 function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 app.whenReady().then(()=>{
   if(MAC&&app.dock)app.dock.hide(); // Mac: overlay fica fora do Dock (só ícone na barra de menu)
@@ -76,10 +94,18 @@ app.whenReady().then(()=>{
   ipcMain.handle('novidades',async()=>{try{const r=await fetch(NOVIDADES,{signal:AbortSignal.timeout(6000)});if(r.ok)return await r.json()}catch{}return null});
   ipcMain.on('reiniciar',()=>{salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)});
   ipcMain.on('size',(_,o)=>size(o));
-  // arrastar o ícone: guarda a distância do cursor ao canto da janela e acompanha o cursor
-  ipcMain.on('drag-start',()=>{const c=screen.getCursorScreenPoint(),[x,y]=win.getPosition();off={x:c.x-x,y:c.y-y}});
-  ipcMain.on('drag-move',()=>{if(!off)return;const c=screen.getCursorScreenPoint();win.setPosition(c.x-off.x,c.y-off.y)});
-  ipcMain.on('drag-end',()=>{if(off)salva();off=null});
+  // arrastar (ícone ou combinação fixada): guarda a distância do cursor ao canto da janela e acompanha o cursor
+  const arrasto=new Map(),jan=e=>BrowserWindow.fromWebContents(e.sender);
+  ipcMain.on('drag-start',e=>{const w=jan(e);if(!w)return;const c=screen.getCursorScreenPoint(),[x,y]=w.getPosition();arrasto.set(w,{x:c.x-x,y:c.y-y})});
+  ipcMain.on('drag-move',e=>{const w=jan(e),o=w&&arrasto.get(w);if(!o)return;const c=screen.getCursorScreenPoint();w.setPosition(c.x-o.x,c.y-o.y)});
+  ipcMain.on('drag-end',e=>{const w=jan(e);if(!w||!arrasto.delete(w))return;w===win?salva():salvaPins()});
+  // combinações fixadas: o painel manda a lista toda (abre as novas, atualiza e fecha as que saíram)
+  try{posPins=JSON.parse(fs.readFileSync(PINS(),'utf8'))||{}}catch{}
+  ipcMain.on('fav-sync',(_,lista)=>{if(!Array.isArray(lista))return;lista=lista.filter(d=>d&&typeof d.id=='string').slice(0,MAX_PINS);
+    const ids=new Set(lista.map(d=>d.id));for(const [id,p] of [...pins])if(!ids.has(id)){pins.delete(id);p.w.close()}lista.forEach(abrePin)});
+  ipcMain.on('pin-tamanho',(e,w,h)=>{const x=jan(e);if(!x||!pinDe(e.sender))return;x.setContentSize(Math.ceil(w),Math.ceil(h));if(!x.isVisible())x.showInactive()});
+  ipcMain.on('pin-fechar',e=>{const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-removido',p[0])});
+  ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender))return;win.show();if(MAC)app.focus({steal:true});win.focus();win.webContents.send('abrir-ficha',k)});
   // atalho global: abre o painel já com foco na busca; se já estiver aberto e em foco, fecha
   if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus()}win.webContents.send('toggle',f)}))
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);

@@ -1,0 +1,30 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
+/* combinação fixada na tela: mesmo visual da linha de combinação do painel */
+*{box-sizing:border-box}html,body{margin:0;background:transparent;overflow:hidden;font:13px system-ui,sans-serif;color:#e8eaed;user-select:none}
+#p{display:inline-flex;flex-direction:column;gap:2px;margin:3px;padding:5px 24px 5px 8px;background:rgba(24,28,33,.92);border:1px solid #2d333a;border-radius:10px;
+  box-shadow:0 2px 8px #0008;cursor:grab;position:relative;white-space:nowrap;touch-action:none}
+#p:active{cursor:grabbing}#p:hover{border-color:#3d4650}
+.l1{display:flex;align-items:center;gap:4px}.l1 img{width:24px;height:24px;object-fit:contain}.l1 i{font-style:normal;color:#9aa3ad}
+.r{color:#ffd479;font-weight:600}
+.l2{display:flex;align-items:center;gap:4px;color:#9aa3ad;font-size:11px;padding-left:2px;min-height:16px}
+.pc{padding:0 5px;border-radius:8px;background:#1f3a2c;color:#7fe0a8;font-weight:600}
+#x{position:absolute;top:1px;right:3px;border:0;background:none;color:#9aa3ad;font-size:15px;line-height:16px;cursor:pointer;opacity:0;padding:0 3px}
+#p:hover #x{opacity:1}#x:hover{color:#ff7b7b}
+</style></head><body><div id="p"><button id="x">×</button><div class="l1" id="l1"></div><div class="l2" id="l2"></div></div><script>
+// só monta o que o painel mandou (textos já traduzidos); tudo via textContent, nada de HTML vindo de fora
+const p=document.getElementById('p'),l1=document.getElementById('l1'),l2=document.getElementById('l2');
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+function img(par){const i=el('img');i.alt='';if(!par||!par[0])return el('i',null,'?');i.src=par[0];i.onerror=()=>{i.onerror=null;if(par[1])i.src=par[1]};i.onload=mede;return i}
+function mede(){ov.pin.tamanho(p.offsetWidth+6,p.offsetHeight+6)}
+let D=null;
+ov.pin.onDados(d=>{if(!d)return;D=d;l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,'='),img(d.im.a),el('span',null,d.tx.a),el('i',null,'+'),img(d.im.b),el('span',null,d.tx.b));
+  const info=[d.l?d.lv+' '+d.l:'',d.m||''].filter(Boolean);l2.replaceChildren(el('span',null,info.join(' · ')||'—'));if(d.ch!=null)l2.append(el('span','pc','~'+d.ch+'%'));
+  x.title=d.tx.fechar;p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';requestAnimationFrame(mede)});
+// arrastar move; clique simples abre a ficha do resultado no painel; × tira da tela
+const x=document.getElementById('x');let drag=null;
+x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};
+p.onpointerdown=e=>{if(e.button||e.target===x)return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false};ov.dragStart()};
+p.onpointermove=e=>{if(!drag)return;if(!(e.buttons&1)){drag=null;ov.dragEnd();return} // soltou fora (evento perdido): não fica grudado no cursor
+if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
+p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&D)ov.pin.abrir(D.r)};
+</script></body></html>

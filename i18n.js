@@ -9,7 +9,8 @@ const TXT = {
     community: 'comunidade', community_title: 'Enviada por {n} pessoas e confirmada no merge diário',
     contested: 'contestada', contested_title: 'Muita gente votou que não funciona',
     mine: 'meu', del_title: 'Apagar esta combinação', del_title_junta: 'Apagar a sua cópia (a da comunidade continua)', del_title_edit: 'Desfazer a sua edição (volta à original)', editado: 'editado',
-    edit_title: 'Editar esta combinação', juntar_title: 'Juntar com a combinação igual', form_h_edit: 'Editar combinação',
+    edit_title: 'Editar esta combinação', fav_title: 'Fixar na tela (fica por cima do jogo)', fav_off: 'Tirar da tela', fav_limite: 'Dá para fixar até {n} combinações',
+    pin_x: 'Tirar da tela', pin_tip: 'Arraste para mover · clique para abrir a ficha', juntar_title: 'Juntar com a combinação igual', form_h_edit: 'Editar combinação',
     form_tip_edit: 'A correção fica no seu app, por cima da original; a lixeira na linha desfaz. Ela também vai quando você enviar suas descobertas.', chance_title: 'Chance — clique para editar',
     elements: 'Elementos', green: 'verde', adv: 'vantagem', red: 'vermelho', disadv: 'desvantagem',
     attack: '⚔ Ataque', defense: '🛡 Defesa', neutral: 'neutro',
@@ -54,6 +55,7 @@ const TXT = {
 <h4>Na ficha</h4><ul>
 <li><b>Como obter</b>: combinações, da maior chance para a menor — clique no <b>%</b> para editar</li>
 <li><b>👍 / 👎</b>: diga se a combinação funciona; o número ao lado é o placar da comunidade</li>
+<li><b>☆</b>: fixa a combinação na tela, por cima do jogo — arraste para onde quiser; clique abre a ficha; <b>×</b> tira (até 8)</li>
 <li><b>＋ Nova combinação</b>: cadastre o que você descobriu (com sugestões de slimes e materiais)</li>
 <li><b>✎ nome em PT-BR</b> e <b>✎ número</b>: dê um nome em português e o número da Slimepedia do jogo</li>
 <li><b>Elementos</b> (abre e fecha): contra quem o ataque é forte/fraco e de quem ele toma mais/menos dano</li></ul>
@@ -77,7 +79,8 @@ const TXT = {
     community: 'community', community_title: 'Sent by {n} people and confirmed in the daily merge',
     contested: 'disputed', contested_title: 'Many people voted that it does not work',
     mine: 'mine', del_title: 'Delete this combination', del_title_junta: 'Delete your copy (the community one stays)', del_title_edit: 'Undo your edit (back to the original)', editado: 'edited',
-    edit_title: 'Edit this combination', juntar_title: 'Merge with the matching combination', form_h_edit: 'Edit combination',
+    edit_title: 'Edit this combination', fav_title: 'Pin on screen (stays on top of the game)', fav_off: 'Unpin', fav_limite: 'You can pin up to {n} combinations',
+    pin_x: 'Unpin', pin_tip: 'Drag to move · click to open the entry', juntar_title: 'Merge with the matching combination', form_h_edit: 'Edit combination',
     form_tip_edit: 'Your correction stays on your app, on top of the original; the trash icon on the row undoes it. It is also sent when you send your discoveries.', chance_title: 'Chance — click to edit',
     elements: 'Elements', green: 'green', adv: 'advantage', red: 'red', disadv: 'disadvantage',
     attack: '⚔ Attack', defense: '🛡 Defense', neutral: 'neutral',
@@ -122,6 +125,7 @@ const TXT = {
 <h4>On an entry</h4><ul>
 <li><b>How to get</b>: combinations, highest chance first — click the <b>%</b> to edit it</li>
 <li><b>👍 / 👎</b>: say whether a combination works; the number next to it is the community score</li>
+<li><b>☆</b>: pins the combination on screen, on top of the game — drag it anywhere; click opens the entry; <b>×</b> removes it (up to 8)</li>
 <li><b>＋ New combination</b>: add something you discovered (with slime and material suggestions)</li>
 <li><b>✎ Portuguese name</b> and <b>✎ number</b>: give the slime a Portuguese name and its in-game Slimepedia number</li>
 <li><b>Elements</b> (collapsible): what its attacks are strong/weak against and what hurts it more/less</li></ul>
