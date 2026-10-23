@@ -203,17 +203,17 @@ function editaChance(el){const id=el.dataset.pc,c=C.find(x=>cid(x)===id);if(!c)r
  const ok=()=>{if(feito)return;feito=true;const v=i.value.trim(),val=v===''?null:Math.max(0,Math.min(100,+v));
   if(c.meu){const u=M.combos.find(x=>x.id===c.id);if(u)u.ch=val}else if(val==null)delete M.pc[id];else M.pc[id]=val; // vazio = volta ao valor da base
   atualiza()};
- i.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};i.onblur=ok}
+ i.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};i.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
 function editaNum(){const s=K[cur];ptw.innerHTML=`<input id="nmi" type="number" min="1" max="9999" placeholder="${esc(t('num_ph'))}" value="${s.n??''}" style="padding:2px 6px;font-size:12px;width:90px">`;nmi.focus();nmi.select();let feito=false;
  const ok=()=>{if(feito)return;const v=nmi.value.trim();
   if(v===''){feito=true;delete M.num[cur];return atualiza()}
   const n=Number(v);if(!Number.isInteger(n)||n<1||n>9999){nume.textContent=t('num_invalido');return}
   const dono=S.find(x=>x.k!==cur&&x.n===n);if(dono){nume.textContent=t('num_dup',{n,s:dn(dono)});return} // número já é de outro slime
   feito=true;M.num[cur]=n;atualiza()};
- nmi.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};nmi.onblur=()=>{if(!feito)ficha(cur,true)}}
+ nmi.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};nmi.onblur=()=>{if(!feito&&document.hasFocus()&&!pn.hidden)ficha(cur,true)}}
 function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="${esc(t('pt_ph'))}" value="${esc(s.pt)}" style="padding:2px 6px;font-size:12px;width:170px">`;pti.focus();pti.select();let feito=false;
  const ok=()=>{if(feito)return;feito=true;const v=pti.value.trim();if(v)M.pt[cur]=v;else delete M.pt[cur];atualiza()};
- pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=ok}
+ pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
 // tela "Nova combinação": aberta pelo ＋ do topo ou pelo botão da ficha (já vem com o resultado preenchido)
 // ed = {c: combinação sendo editada, id: sua cópia (se houver), alvo: id da original da base/comunidade}
 function formCombo(r,ed){const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;marca({t:'form',r:r||null});
@@ -308,8 +308,12 @@ function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorag
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
  r.forEach((e,j)=>e.classList.toggle('on',j==sel));r[sel].scrollIntoView({block:'nearest'})}
-function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;ov.size(true);qi.value='';hist=[];vista=null;list();qi.focus()}
-function close(){pn.hidden=true;ico.hidden=false;ov.size(false)}
+// último campo de edição usado no painel: se o painel fechar no meio (clicou fora, Ctrl+Tab, Alt+Tab), reabre nele com o que já foi digitado
+let campo=null;bd.addEventListener('focusin',e=>{if(e.target.tagName=='INPUT')campo=e.target});
+function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;ov.size(true);
+ if(vista&&(vista.t=='form'||vista.t=='ficha')&&campo&&bd.contains(campo)){campo.focus();return}
+ qi.value='';hist=[];vista=null;list();qi.focus()}
+function close(){const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false)}
 x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=info;qi.oninput=list;
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
