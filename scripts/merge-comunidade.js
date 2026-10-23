@@ -31,8 +31,20 @@ const D = JSON.parse(fs.readFileSync(path.join(RAIZ, 'data.json'), 'utf8'));
 const SLIMES = new Set(D.slimes.map(s => s.k));
 const cidBase = c => [c.a, c.b, c.r, c.m].join('|'); // mesmo id que o app usa para combinações da base
 const par = (a, b, r) => [a, b].sort().join('+') + '>' + r;
-const baseIdx = new Map(D.combos.filter(c => c.r).map(c => [par(c.a, c.b, c.r), c]));
-const baseCids = new Set(D.combos.map(cidBase));
+// "base" = o data.json que os apps já têm (o da última versão publicada). O data.json do repositório pode estar à
+// frente: o que ele tem a mais (PENDENTES) vai no comunidade.json até sair uma versão nova com ele.
+let baseIdx, baseCids, PENDENTES = [];
+const pcNota = c => { const m = (c.nt || []).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/); return m ? +m[1].replace(',', '.') : null }; // igual ao app
+async function baseDoApp() {
+  if (process.env.BASE_APP_JSON) return { tag: 'arquivo', D: JSON.parse(fs.readFileSync(process.env.BASE_APP_JSON, 'utf8')) };
+  if (process.argv[2]) return { tag: 'repo', D };
+  const h = { 'User-Agent': 'slimedex-merge', ...(process.env.GH_TOKEN ? { Authorization: `Bearer ${process.env.GH_TOKEN}` } : {}) };
+  const rel = await (await fetch('https://api.github.com/repos/llll94/slimedex/releases/latest', { headers: h })).json();
+  if (!rel.tag_name) throw new Error('não achei a última versão publicada');
+  const r = await fetch(`https://raw.githubusercontent.com/llll94/slimedex/${rel.tag_name}/data.json`);
+  if (!r.ok) throw new Error(`data.json da ${rel.tag_name}: HTTP ${r.status}`); // falha em vez de tirar as pendentes de quem usa
+  return { tag: rel.tag_name, D: await r.json() };
+}
 const K = Object.fromEntries(D.slimes.map(s => [s.k, s]));
 let BQ = {}; try { BQ = JSON.parse(fs.readFileSync(path.join(RAIZ, 'bloqueios.json'), 'utf8')) } catch {}
 const bloq = n => new Set(Array.isArray(BQ[n]) ? BQ[n] : []);
@@ -61,7 +73,11 @@ async function lerEnvios() {
 }
 
 (async () => {
-  const linhas = (await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object');
+  const app = await baseDoApp();
+  baseIdx = new Map(app.D.combos.filter(c => c.r).map(c => [par(c.a, c.b, c.r), c]));
+  baseCids = new Set(app.D.combos.map(cidBase));
+  PENDENTES = D.combos.filter(c => c.r && SLIMES.has(c.r) && SLIMES.has(c.a) && SLIMES.has(c.b) && !baseIdx.has(par(c.a, c.b, c.r)));
+  const linhas =(await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object');
   // cada envio é uma "foto" completa dos dados da pessoa: vale o mais recente de cada autor
   const ultimo = new Map(); for (const l of linhas) ultimo.set(l.autor, l.payload);
 
@@ -70,6 +86,7 @@ async function lerEnvios() {
   const nomes = new Map();   // slime -> Map(nome normalizado -> { nome, quem:Set })
   const numeros = new Map(); // slime -> Map(número -> Set(autores))
   const votos = new Map();   // id da combinação -> { u, d }
+  for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
 
   for (const [autor, p] of ultimo) {
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
@@ -132,6 +149,7 @@ async function lerEnvios() {
   const resumo = [
     `## Base colaborativa — ${new Date().toISOString().slice(0, 10)}`, '',
     `- Envios lidos: **${linhas.length}** de **${ultimo.size}** pessoa(s)`,
+    `- Base do app: **${app.tag}** · combinações do data.json que ainda não estão nela (vão pela comunidade): **${PENDENTES.length}**`,
     `- Combinações novas aceitas (≥${MIN_PESSOAS} pessoas): **${combos.length}** · candidatas ainda sem consenso: ${[...novos.values()].filter(n => n.quem.size < MIN_PESSOAS).length}`,
     `- Chances com consenso: **${Object.keys(pc).length}** · nomes PT-BR: **${Object.keys(pt).length}** · números: **${Object.keys(numOrd).length}** · combinações com votos: **${Object.keys(vt).length}**`,
     `- Contestadas (muitos 👎): ${Object.entries(vt).filter(([, v]) => contestada(v)).length}`, '',
@@ -159,9 +177,11 @@ function verifica(antes, agora, nm) {
   const barrados = []; let novidades = 0, removidos = 0;
 
   const ant = new Map(antes.combos.map(c => [c.id, c])), ids = new Set(agora.combos.map(c => c.id));
+  const pend = new Set(PENDENTES.map(c => 'c:' + par(c.a, c.b, c.r)));
   for (const c of agora.combos) {
     const o = ant.get(c.id); if (o && o.m === c.m && o.l === c.l && o.ch === c.ch) continue;
     novidades++;
+    if (pend.has(c.id) && c.n === 1) continue; // veio do data.json do repositório (revisado no commit), não de envio
     const desc = `${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}`, el = new Set([...K[c.a].el, ...K[c.b].el]);
     if (!K[c.r].el.some(e => el.has(e))) barrados.push(`${desc}: nenhum elemento em comum com os pais`);
     if (c.m && !ehItem(c.m)) barrados.push(`${desc}: material "${c.m}" não está na lista de itens`);
@@ -169,7 +189,7 @@ function verifica(antes, agora, nm) {
     else if (c.l && nivelBase.has(c.r) && !nivelBase.get(c.r).has(c.l)) barrados.push(`${desc}: nível ${c.l}, a base diz ${[...nivelBase.get(c.r)].join('/')}`);
     if (o && o.ch != null && c.ch != null && Math.abs(o.ch - c.ch) > 25) barrados.push(`${desc}: chance mudaria de ${o.ch}% para ${c.ch}%`);
   }
-  removidos += antes.combos.filter(c => !ids.has(c.id)).length;
+  removidos += antes.combos.filter(c => !ids.has(c.id) && !baseIdx.has(c.id.slice(2))).length; // as que viraram base não contam
 
   for (const [id, v] of Object.entries(agora.pc)) {
     const o = antes.pc[id]; if (o && o.ch === v.ch) continue;

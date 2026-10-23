@@ -28,6 +28,7 @@ jobs:
         env:
           SUPABASE_URL: https://pwletsegcprygxgoduvp.supabase.co
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: node scripts/merge-comunidade.js
 
       - name: Abrir ou atualizar o PR (só se mudou algo)
