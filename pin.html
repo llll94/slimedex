@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
 /* combinação fixada na tela: mesmo visual da linha de combinação do painel */
 *{box-sizing:border-box}html,body{margin:0;background:transparent;overflow:hidden;font:13px system-ui,sans-serif;color:#e8eaed;user-select:none}
-#p{display:inline-flex;flex-direction:column;gap:2px;margin:3px;padding:5px 24px 5px 8px;background:rgba(24,28,33,.92);border:1px solid #2d333a;border-radius:10px;
+#p{display:inline-flex;flex-direction:column;gap:2px;margin:3px;padding:5px 42px 5px 8px;background:rgba(24,28,33,.92);border:1px solid #2d333a;border-radius:10px;
   box-shadow:0 2px 8px #0008;cursor:grab;position:relative;white-space:nowrap;touch-action:none}
 #p:active{cursor:grabbing}#p:hover{border-color:#3d4650}
 .l1{display:flex;align-items:center;gap:4px}.l1 img{width:24px;height:24px;object-fit:contain}.l1 i{font-style:normal;color:#9aa3ad}
@@ -11,9 +11,11 @@
 .s .l2 img{width:27px;height:27px}.l2 .it{display:inline-flex;align-items:center}.sep{color:#5c6670}
 .s .l1 img{width:30px;height:30px}
 .pc{padding:0 5px;border-radius:8px;background:#1f3a2c;color:#7fe0a8;font-weight:600}
-#x{position:absolute;top:1px;right:3px;border:0;background:none;color:#9aa3ad;font-size:15px;line-height:16px;cursor:pointer;opacity:0;padding:0 3px}
-#p:hover #x{opacity:1}#x:hover{color:#ff7b7b}
-</style></head><body><div id="p"><button id="x">×</button><div class="l1" id="l1"></div><div class="l2" id="l2"></div></div><script>
+/* ★ desfixa; × só esconde (continua fixado) — aparecem ao passar o mouse */
+#bt{position:absolute;top:1px;right:3px;display:flex;gap:1px;opacity:0}#p:hover #bt{opacity:1}
+#bt button{border:0;background:none;cursor:pointer;padding:0 3px;line-height:16px}#st{color:#ffd479;font-size:13px}#st:hover{color:#5c6670}
+#x{color:#9aa3ad;font-size:15px}#x:hover{color:#fff}
+</style></head><body><div id="p"><span id="bt"><button id="st">★</button><button id="x">×</button></span><div class="l1" id="l1"></div><div class="l2" id="l2"></div></div><script>
 // só monta o que o painel mandou (textos já traduzidos); tudo via textContent, nada de HTML vindo de fora
 const p=document.getElementById('p'),l1=document.getElementById('l1'),l2=document.getElementById('l2');
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
@@ -27,11 +29,13 @@ ov.pin.onDados(d=>{if(!d)return;D=d;p.className=d.tipo==='s'?'s':'';
   if(d.tipo==='s'){l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,d.tx.el||''));junta(d.dr.length?d.dr.map(([u,n])=>item(u,n)):[el('span',null,'—')])}
   else{l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,'='),img(d.im.a),el('span',null,d.tx.a),el('i',null,'+'),img(d.im.b),el('span',null,d.tx.b));
    const partes=[];if(d.l)partes.push(el('span',null,d.lv+' '+d.l));if(d.m)partes.push(item(d.mi,d.m));junta(partes.length?partes:[el('span',null,'—')]);if(d.ch!=null)l2.append(el('span','pc','~'+d.ch+'%'))}
-  x.title=d.tx.fechar;p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';mede();requestAnimationFrame(mede)});
+  st.title=d.tx.desfixar||'';x.title=d.tx.esconder||'';p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';mede();requestAnimationFrame(mede)});
 // arrastar move; clique simples abre a ficha do resultado no painel; × tira da tela
 const x=document.getElementById('x');let drag=null;
-x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};
-p.onpointerdown=e=>{if(e.button||e.target===x)return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false};ov.dragStart()};
+const st=document.getElementById('st');
+st.onclick=e=>{e.stopPropagation();ov.pin.fechar()}; // desfixa
+x.onclick=e=>{e.stopPropagation();ov.pin.ocultar()}; // só esconde
+p.onpointerdown=e=>{if(e.button||e.target.closest('#bt'))return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false};ov.dragStart()};
 p.onpointermove=e=>{if(!drag)return;if(!(e.buttons&1)){drag=null;ov.dragEnd();return} // soltou fora (evento perdido): não fica grudado no cursor
 if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
 p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&D)ov.pin.abrir(D.r)};

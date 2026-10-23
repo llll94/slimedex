@@ -45,6 +45,9 @@ input.mini{flex:none;width:58px;margin-left:auto;padding:1px 6px;font-size:12px}
 .pe{display:inline-flex;gap:1px;vertical-align:-3px;cursor:pointer;margin-left:4px;padding:1px 3px;border-radius:7px}.pe:hover{background:#262c33}.pe svg{width:16px;height:16px;fill:currentColor}
 .pe .sol{color:#ffd479}.pe .lua{color:#b9a6ff}.pe .esp{color:#ffd479}.pe .nao{color:#5c6670}
 .pesel{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.pesel .btn{display:inline-flex;align-items:center;gap:4px}.pesel svg{width:14px;height:14px;fill:currentColor}
+/* chave liga/desliga dos fixados: bolinha à direita = na tela */
+.sw{margin-left:auto;flex:none;width:30px;height:16px;border-radius:9px;background:#3a414a;position:relative;cursor:pointer;transition:background .15s}
+.sw i{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#9aa3ad;transition:left .15s,background .15s}.sw.on{background:#2f6f4f}.sw.on i{left:16px;background:#7fe0a8}
 /* ☆ fixar na tela */
 .fv{cursor:pointer;color:#5c6670;font-size:15px;line-height:14px;margin-left:4px}.fv:hover,.fv.on{color:#ffd479}.fv.cheio{color:#ff7b7b}
 /* formulário de nova combinação */
@@ -103,7 +106,7 @@ let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base no
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
-const chaveC=c=>[c.a,c.b].sort().join('+')+'>'+c.r; // mesmos slimes e resultado
+const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resultado (A + B e B + A são combinações diferentes)
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
 const dn=s=>LANG==='pt'?(s.pt||s.nm):s.nm,nm=k=>K[k]?dn(K[k]):k;
 const alt=s=>LANG==='pt'?(s.pt?s.nm:''):(s.pt||''); // nome no outro idioma, se houver
@@ -158,8 +161,10 @@ function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();q
 function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m)}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
- const fs=(M.fav||[]).filter(f=>f.id.startsWith('s:')&&K[f.id.slice(2)]).map(f=>K[f.id.slice(2)]);
- if(!q)bd.innerHTML=(fs.length?`<h4>${t('favs')}</h4>${fs.map(row).join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
+ const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
+ const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
+  :`<div class="row" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
+ if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
  else{const w=norm(q).split(/\s+/);bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map(row).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
@@ -172,24 +177,29 @@ const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt">
 const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
 const fvS=k=>{const on=(M.fav||[]).some(f=>f.id==='s:'+k);return`<span class="fv${on?' on':''}" data-fav="s:${esc(k)}" title="${esc(t(on?'fav_off':'fav_slime_title'))}">${on?'★':'☆'}</span>`};
 const favSlime=k=>{const s=K[k];return{id:'s:'+k,tipo:'s',r:k,lang:LANG,
- tx:{r:(s.n!=null?'#'+s.n+' ':'')+dn(s),el:s.el.map(elN).join(' / '),fechar:t('pin_x'),dica:t('pin_tip')},
+ tx:{r:(s.n!=null?'#'+s.n+' ':'')+dn(s),el:s.el.map(elN).join(' / '),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},
  im:{r:s.im?['imagens'+s.im,BASE+s.im]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
 const fv=c=>{if(!c.r)return'';const on=ehFav(c);return`<span class="fv${on?' on':''}" data-fav="${esc(cid(c))}" title="${esc(t(on?'fav_off':'fav_title'))}">${on?'★':'☆'}</span>`};
 const favDados=c=>({id:cid(c),r:c.r,l:c.l||'',m:c.m?matN(c.m):'',ch:c.ch??null,lv:t('lv'),lang:LANG,
- tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),dica:t('pin_tip')},mi:c.m?matIco(c.m):null,
+ tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},mi:c.m?matIco(c.m):null,
  im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?['imagens'+p,BASE+p]:null]}))});
 function syncFav(){const porId=new Map(C.map(c=>[cid(c),c]));
- M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);if(f.id.startsWith('s:'))return K[f.id.slice(2)]?favSlime(f.id.slice(2)):f;return c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),dica:t('pin_tip')}}});
- ov.fav.sync(M.fav)}
+ M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);
+  const n=f.id.startsWith('s:')?(K[f.id.slice(2)]?favSlime(f.id.slice(2)):f):c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')}};
+  return f.oculto?{...n,oculto:true}:n});
+ ov.fav.sync(M.fav.filter(f=>!f.oculto))} // desligado na lista de fixados: some da tela, mas continua fixado
 function favorita(id,el){const i=M.fav.findIndex(f=>f.id===id);
  if(i>=0)M.fav.splice(i,1);else{const s=id.startsWith('s:')&&K[id.slice(2)],c=!s&&C.find(x=>cid(x)===id);if(!s&&(!c||!c.r))return;
   if(M.fav.length>=MAX_FAV){el.classList.add('cheio');el.title=t('fav_limite',{n:MAX_FAV});setTimeout(()=>el.classList.remove('cheio'),800);return}
   M.fav.push(s?favSlime(s.k):favDados(c))}
  atualiza()}
+// selo "teste": veio da planilha e ninguém confirmou (👍 ou envio); o seu 👍 já tira no seu app
+const confirmada=c=>!!c.r&&((M.votos||{})[cid(c)]===1||(CM&&Array.isArray(CM.conf)&&CM.conf.includes(cid(c)))); // sem resultado não tem o que confirmar
 // combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
 const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(c.r)} =`:''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
  [c.m?ii(matIco(c.m))+esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
  `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
+ `${c.ts&&!confirmada(c)?` <span class="meu" style="background:#3a3220;color:#ffd479" title="${esc(t(c.r?'teste_title':'teste_title_sem'))}">${t('teste')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
  `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
  ` <span class="lk sm" data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}">✎</span>${c.meu&&c.gemeo?` <span class="lk sm" data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
@@ -270,7 +280,7 @@ const chaveCsv=n=>{const t=TYPO[norm((n||'').trim())];return chave(t||n)};
 // nome ambíguo (ex.: 4 "Skull") -> usa o número da coluna ID, se ele bater com um slime de mesmo nome
 const porNumero=(id,nome)=>{const n=parseInt(id,10);if(!n)return null;const s=S.find(x=>x.n===n);return s&&[s.pt,s.nm,...s.al].some(v=>v&&norm(v)===norm(nome||''))?s.k:null};
 function importaCsv(texto){const rows=lerCsv(texto);if(rows[0]&&/result|resultado/i.test(rows[0][0]))rows.shift();
- const par=(a,b,r)=>[a,b].sort().join('+')+'>'+r,idx={};C.forEach(c=>idx[par(c.a,c.b,c.r)]=c);const o={novas:0,pcs:0,ja:0,falha:new Set()};
+ const par=(a,b,r)=>a+'+'+b+'>'+r,idx={}; // a ordem importaC.forEach(c=>idx[par(c.a,c.b,c.r)]=c);const o={novas:0,pcs:0,ja:0,falha:new Set()};
  for(const [res,idn,lv,a1,a2,mat,...rest] of rows){if(!res||/^\?+$/.test(res.trim())||/^\*/.test(res.trim())||res.length>60)continue; // pula "?" e linhas de nota
   const k={r:chaveCsv(res)||porNumero(idn,res),a:chaveCsv(a1),b:chaveCsv(a2)};
   if(!k.r||!k.a||!k.b){[[res,k.r],[a1,k.a],[a2,k.b]].forEach(([n,v])=>{if(!v&&n&&n.trim())o.falha.add(n.trim())});continue}
@@ -356,6 +366,7 @@ bd.onclick=e=>{const t=e.target;
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
  const pe=t.closest('[data-pe]');if(pe){peSel=peSel===pe.dataset.pe?null:pe.dataset.pe;return ficha(pe.dataset.pe,true)}
  const pv=t.closest('[data-pev]');if(pv&&cur){M.per=M.per||{};if(pv.dataset.pev)M.per[cur]=pv.dataset.pev;else delete M.per[cur];peSel=null;return atualiza()}
+ const fxb=t.closest('[data-fx]');if(fxb){const f=(M.fav||[]).find(x=>x.id===fxb.dataset.fx);if(f){f.oculto=!f.oculto;if(!f.oculto)delete f.oculto;salva();syncFav();list()}return}
  const lm=t.closest('[data-lm]');if(lm&&vista&&vista.t=='mapa')return marcaMapa(vista.m,lm.dataset.lm);
  if(t.dataset.mapa)return telaMapa(t.dataset.mapa);
  if(t.dataset.fav)return favorita(t.dataset.fav,t);
@@ -398,20 +409,24 @@ function achaMapa(lido){const L=(lido||'').trim();if(L.length<3)return null;let 
   const a=planoM(nc?nome.replace(/\s*\d+\s*$/,''):nome),b=planoM(nc?L.replace(/\s*(\d+|[lIi|])\s*$/,''):L),dist=levM(a,b)/Math.max(a.length,b.length,1);
   if(!melhor||dist<melhor.dist)melhor={m,dist}}
  return melhor&&melhor.dist<=.2?melhor.m:null}
-function mostraMapa(e){mapaUlt=e;const m=achaMapa(e.branco),tx={fechar:t('pin_x'),dica:t('mapa_dica'),dia:t('pe_leg_dia'),noite:t('pe_leg_noite')},novo=!m&&corrigeNome(e.branco,e.azul); // a região (linha azul) o OCR lê bem: as palavras dela também corrigem
- mapaStatus=t('mapa_ultimo',{m:m?(LANG==='en'&&m.en?m.en:m.pt):'? "'+(e.branco||'')+'"',ms:e.ms|0});if(vista&&vista.t==='meus'&&!pn.hidden)meus();
- ov.mapa.mostrar(m?{titulo:LANG==='en'&&m.en?m.en:m.pt,sub:e.azul||'',msg:slimesDoMapa(m.pt).todos.length?'':t('mapa_vazio'),tx,
-  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?['imagens'+K[k].im,BASE+K[k].im]:null}))}
-  :{titulo:novo,sub:e.azul||'',msg:slimesDoMapa(novo).todos.length?'':t('mapa_novo'),tx,add:{txt:t('mapa_add'),id:'mapa:'+novo},
-   slimes:slimesDoMapa(novo).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?['imagens'+K[k].im,BASE+K[k].im]:null}))})}
+function mostraMapa(e,lendo){mapaUlt=e;const m=achaMapa(e.branco),tx={fechar:t('pin_x'),dica:t('mapa_dica'),dia:t('pe_leg_dia'),noite:t('pe_leg_noite'),lendo:t('mapa_lendo')},novo=!m&&corrigeNome(e.branco,e.azul); // a região (linha azul) o OCR lê bem: as palavras dela também corrigem
+ if(!lendo){mapaStatus=t('mapa_ultimo',{m:m?(LANG==='en'&&m.en?m.en:m.pt):'? "'+(e.branco||'')+'"',ms:e.ms|0});if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
+ ov.mapa.mostrar(m?{lendo,titulo:LANG==='en'&&m.en?m.en:m.pt,sub:e.azul||'',msg:slimesDoMapa(m.pt).todos.length?'':t('mapa_vazio'),tx,
+  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))}
+  :{lendo,titulo:novo,sub:e.azul||'',msg:slimesDoMapa(novo).todos.length?'':t('mapa_novo'),tx,add:{txt:t('mapa_add'),id:'mapa:'+novo},
+   slimes:slimesDoMapa(novo).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))})}
 ov.mapa.onEvento(e=>{if(!mapaOn||!e)return;
- if(e.ev==='pronto'){mapaStatus=t('mapa_pronto');if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
+ if(e.ev==='pronto'){mapaStatus=t('mapa_pronto');if(vista&&vista.t==='meus'&&!pn.hidden)meus();
+  ov.mapa.preparar([...new Set([...(D.mapas||[]).flatMap(m=>m.sl),...Object.values((CM&&CM.loc)||{}).flat(),...Object.values(M.loc||{}).flat()])].map(k=>K[k]&&K[k].im&&BASE+K[k].im).filter(Boolean))}
+ // Tab: abre na hora (último mapa, apagado, "lendo…"); Tab de novo fecha. A leitura chega logo depois e completa
+ else if(e.ev==='tab-ini'){if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return}mapaAberto=true;
+  if(mapaUlt)mostraMapa(mapaUlt,true);else ov.mapa.mostrar({lendo:true,titulo:t('mapa_lendo'),sub:'',slimes:[],msg:'',tx:{fechar:t('pin_x'),dica:t('mapa_dica'),lendo:t('mapa_lendo')}})}
  else if(e.ev==='erro'){mapaStatus=t('mapa_erro',{m:e.msg||''});if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
  else if(e.ev==='esc'){if(!pn.hidden||Date.now()-fechouEm<600)return; // foi o Esc que fechou o painel (o leitor vê a tecla uns ms depois)
   if(mapaAberto){mapaAberto=false;ov.mapa.esconder()}}
- else if(e.ev==='tab'){if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return} // Tab de novo: o mapa do jogo fechou
-  if(!(e.branco||'').trim()||(e.branco||'').trim().length<3){mapaStatus=t('mapa_nada',{a:e.azul||'—'});if(vista&&vista.t==='meus'&&!pn.hidden)meus();return} // nada parecido com nome de mapa
-  mapaAberto=true;mostraMapa(e)}});
+ else if(e.ev==='tab'){const ok=(e.branco||'').trim().length>=3;
+  if(!ok){mapaStatus=t('mapa_nada',{a:e.azul||'—'});if(vista&&vista.t==='meus'&&!pn.hidden)meus();if(mapaAberto){mapaAberto=false;ov.mapa.esconder()}return} // não era o mapa do jogo
+  if(mapaAberto)mostraMapa(e);else mapaUlt=e}});
 ov.mapa.onFechado(()=>{mapaAberto=false});
 // ---- slimes de um mapa: os da base, os da comunidade e os que você marcou (M.loc, vai no envio) ----
 let mapaUlt=null; // última leitura mostrada na janelinha (para atualizar quando você marca um slime)
@@ -455,6 +470,7 @@ function peIco(k){const p=per(k),ic=p==='dia'?'<i class="sol">'+IC.sol+'</i>':p=
  return`<span class="pe" data-pe="${esc(k)}" title="${esc(t('pe_'+(p||'nao'))+' · '+t('pe_clique'))}">${ic}</span>`}
 function peEscolha(k){const p=(M.per||{})[k];const b=(v,ic,txt)=>`<button class="btn${p===v?' on':''}" data-pev="${v}">${ic}${esc(txt)}</button>`;
  return`<div class="pesel">${b('dia','<i class="sol" style="color:#ffd479">'+IC.sol+'</i>',t('pe_b_dia'))}${b('noite','<i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_noite'))}${b('ambos','<i style="color:#ffd479">'+IC.sol+'</i><i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_ambos'))}${p?b('','',t('pe_b_limpa')):''}</div><p class="mu">${t('pe_tip')}</p>`}
+ov.fav.onOculto(id=>{const f=(M.fav||[]).find(x=>x.id===id);if(!f)return;f.oculto=true;salva();if(vista&&vista.t==='lista'&&!pn.hidden)list()}); // × na janelinha: escondida, continua fixada
 ov.fav.onRemovido(id=>{M.fav=M.fav.filter(f=>f.id!==id);atualiza()}); // × na combinação fixada
 ov.fav.onAbrir(k=>{if(typeof k=='string'&&k.startsWith('mapa:')){if(pn.hidden)open();telaMapa(k.slice(5));mq.focus({preventScroll:true});return bd.scrollTop=0} // foco na busca sem rolar a tela // + adicionar slime (janelinha do mapa)
  if(!K[k])return;if(pn.hidden)open();ficha(k);bd.scrollTop=0;requestAnimationFrame(()=>bd.scrollTop=0)}); // a ficha começa do topo // clique na combinação fixada: abre a ficha // botão voltar do mouse no Windows (vem do main como app-command)

@@ -10,8 +10,8 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),
   versaoNova:()=>ipcRenderer.invoke('versao-nova'),baixarAtualizacao:n=>ipcRenderer.invoke('baixar-atualizacao',n),instalarAtualizacao:()=>ipcRenderer.send('instalar-atualizacao'),
   foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p)),
   // combinações fixadas na tela: fav = lado do painel, pin = a janelinha de cada uma
-  fav:{sync:l=>ipcRenderer.send('fav-sync',l),onRemovido:cb=>ipcRenderer.on('fav-removido',(_,id)=>cb(id)),onAbrir:cb=>ipcRenderer.on('abrir-ficha',(_,k)=>cb(k))},
+  fav:{sync:l=>ipcRenderer.send('fav-sync',l),onRemovido:cb=>ipcRenderer.on('fav-removido',(_,id)=>cb(id)),onAbrir:cb=>ipcRenderer.on('abrir-ficha',(_,k)=>cb(k)),onOculto:cb=>ipcRenderer.on('fav-oculto',(_,id)=>cb(id))},
   // slimes do mapa (Tab): liga o leitor de tela e mostra/esconde a janelinha; a janelinha usa a mesma ponte 'pin'
-  mapa:{ligar:on=>ipcRenderer.send('mapa-ligar',on),mostrar:d=>ipcRenderer.send('mapa-mostrar',d),esconder:()=>ipcRenderer.send('mapa-esconder'),
+  mapa:{ligar:on=>ipcRenderer.send('mapa-ligar',on),preparar:f=>ipcRenderer.send('mapa-preparar',f),mostrar:d=>ipcRenderer.send('mapa-mostrar',d),esconder:()=>ipcRenderer.send('mapa-esconder'),
     onEvento:cb=>ipcRenderer.on('mapa-evento',(_,e)=>cb(e)),onFechado:cb=>ipcRenderer.on('mapa-fechado',()=>cb())},
-  pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),abrir:k=>ipcRenderer.send('pin-abrir',k)}});
+  pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),onFotos:cb=>ipcRenderer.on('pre-fotos',(_,f)=>cb(f)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),ocultar:()=>ipcRenderer.send('pin-ocultar'),abrir:k=>ipcRenderer.send('pin-abrir',k)}});

@@ -27,7 +27,7 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 | Dicas | botão **i** ao lado da busca — atalhos e recursos explicados |
 | Idioma | botão **⋯** → **Português / English** |
 | Limpar a busca | **×** dentro do campo |
-| Fixar na tela | **☆** numa combinação ou ao lado do nome do slime — vira uma janelinha por cima do jogo, arrastável (até 8) |
+| Fixar na tela | **☆** numa combinação ou ao lado do nome do slime — vira uma janelinha por cima do jogo, arrastável (até 8). Na janelinha, **★** desfixa e **×** só esconde; em **Fixados** (busca vazia) cada um tem uma chave liga/desliga |
 | Slimes do mapa (beta, Windows) | **⋯** → ligar; no jogo, **Tab** mostra os slimes que nascem no mapa atual |
 | Sair | botão direito no ícone da bandeja → **Sair** |
 
@@ -38,7 +38,7 @@ Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 - **Dia e noite** — ícone ao lado do nome: nasce só de dia, só de noite ou nos dois. Clique para corrigir.
 - **Onde nasce** — os mapas em que ele aparece (clique num mapa para ver ou editar os slimes dele).
 - **Drops** — os itens que ele solta, com ícone.
-- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance.
+- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍.
 - **Usado em** — combinações em que ele é ingrediente.
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
@@ -102,6 +102,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 1.6.1 (Windows) | `852A2E3C9244C408D42B0DC9555CA2C955C74F5E6BDD406641CBE82F3EC86905` | _em análise_ |
 | 1.6.0 (Windows) | `31D1D1A9588BD71EB304007C1780E186336529B35298FF67218A47C80002AF68` | [**1/67** — ver análise](https://www.virustotal.com/gui/file/31d1d1a9588bd71eb304007c1780e186336529b35298ff67218a47c80002af68/detection) |
 | 1.6.0 (Mac, chip Apple) | `948049391ECAA4B8D2670157C3A07B2494D99FEF9F5DDB9C08BD2B06CABF852A` | — |
 | 1.6.0 (Mac, Intel) | `0D818054F13846F7633B0F2071699CB55DAF246CF63BD7D388093166866B5A0E` | — |

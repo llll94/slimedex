@@ -2,6 +2,25 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.6.1",
+      "pt": [
+        "Slimes do mapa (Tab) abrem na hora, com o último mapa, e se completam em seguida",
+        "Fixados: chave liga/desliga na lista (Ctrl+Tab). Desligado some da tela, mas continua fixado",
+        "Na janelinha fixada: ★ desfixa e × só esconde",
+        "Selo \"teste\" nas combinações que ninguém confirmou ainda (as da planilha e as sem resultado): fez? Dê 👍",
+        "A ordem dos slimes agora conta: A + B e B + A são combinações diferentes, cada uma com sua chance",
+        "A chance da comunidade agora é a mais enviada, e a base da comunidade atualiza de hora em hora"
+      ],
+      "en": [
+        "Map slimes (Tab) open instantly with the last map and fill in right after",
+        "Pinned: on/off switch in the list (Ctrl+Tab). Off hides it from the screen, but it stays pinned",
+        "On a pinned window: ★ unpins and × only hides",
+        "\"test\" badge on combinations nobody has confirmed yet (from the spreadsheet and the ones without a result): did it work? Give it a 👍",
+        "Slime order now matters: A + B and B + A are different combinations, each with its own chance",
+        "The community chance is now the most reported one, and the community database updates every hour"
+      ]
+    },
+    {
       "v": "1.6.0",
       "pt": [
         "☆ Fixe combinações e slimes na tela: uma janelinha por cima do jogo, que você arrasta para onde quiser (até 8)",

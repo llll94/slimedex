@@ -6,10 +6,10 @@ const TXT = {
     back: '← voltar', back_title: 'Voltar (tecla V ou botão voltar do mouse)',
     recent: 'Recentes', all: 'Todos ({n})', nothing: 'Nada encontrado.',
     up: 'Funciona', down: 'Não funciona / não existe', lv: 'nv',
-    community: 'comunidade', community_title: 'Enviada por {n} pessoas e confirmada no merge diário',
+    community: 'comunidade', community_title: 'Enviada por {n} pessoas e confirmada no merge da comunidade',
     contested: 'contestada', contested_title: 'Muita gente votou que não funciona',
     mine: 'meu', del_title: 'Apagar esta combinação', del_title_junta: 'Apagar a sua cópia (a da comunidade continua)', del_title_edit: 'Desfazer a sua edição (volta à original)', editado: 'editado',
-    edit_title: 'Editar esta combinação', mapa_add: 'Adicionar / editar',
+    edit_title: 'Editar esta combinação', mapa_add: 'Adicionar / editar', fx_on: 'Na tela · clique para esconder (continua fixado)', teste: 'teste', teste_title_sem: 'Resultado ainda desconhecido: só foi testada. Fez? Cadastre o resultado em ＋ Nova combinação.', teste_title: 'Veio da planilha da comunidade e ainda ninguém confirmou no Slimedex. Fez essa combinação? Dê 👍 para confirmar.', pin_desfixar: 'Desfixar (tira a ★ e some da tela)', pin_esconder: 'Esconder (continua fixado: religue em Fixados, com Ctrl+Tab)', fx_off: 'Escondido · clique para mostrar na tela', mapa_lendo: 'lendo…',
     pe_dia: 'Nasce só de dia', pe_noite: 'Nasce só de noite', pe_ambos: 'Nasce de dia e de noite', pe_esp: 'Só depois de derrotar o chefe Dwarf', pe_nao: 'Ainda não sabemos se nasce de dia ou de noite',
     pe_clique: 'clique para marcar', pe_b_dia: 'Só de dia', pe_b_noite: 'Só de noite', pe_b_ambos: 'Dia e noite', pe_b_limpa: 'Tirar o meu',
     pe_tip: 'Vale na hora no seu app e vai para a comunidade em ⋯ → Enviar minhas descobertas.', pe_leg_dia: 'dia', pe_leg_noite: 'noite', mapa_novo: 'Mapa novo: ainda sem slimes. Marque os que você vir aqui.', mapa_renomear: 'Corrigir nome', mapa_nada: 'Tab ignorado: não achei o nome do mapa (região lida: {a})',
@@ -34,7 +34,7 @@ const TXT = {
     form_err: 'Escolha o resultado e os dois slimes da lista',
     form_tip: 'Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR · {u} número(s) · {lo} slime(s) em mapas · {pe} dia/noite',
-    send_info: 'Vai para a base colaborativa. Uma vez por dia os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
+    send_info: 'Vai para a base colaborativa. De hora em hora os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
     send_empty: 'Você ainda não tem nada para enviar.', send_same: 'Isso já foi enviado. Cadastre ou vote em algo novo para enviar de novo.',
     send_btn: 'Enviar', sending: 'Enviando…', sent_ok: 'Enviado, obrigado! Vai aparecer pra todo mundo depois da revisão diária.', sent: 'Enviado',
     send_fail: 'Não consegui enviar: {e}', retry: 'Tentar de novo',
@@ -74,7 +74,7 @@ const TXT = {
 <li>Importe/exporte CSV no formato da planilha da comunidade ou faça backup em JSON</li></ul>
 <h4>Base colaborativa</h4><ul>
 <li><b>⋯ → Enviar minhas descobertas</b> manda suas combinações, chances, votos e nomes</li>
-<li>Uma vez por dia os envios são revisados e o que for aprovado entra para todo mundo (selo <b>comunidade</b>); os 👎 tiram o que estiver errado</li>
+<li>De hora em hora os envios são revisados e o que for aprovado entra para todo mundo (selo <b>comunidade</b>); os 👎 tiram o que estiver errado</li>
 <li>Nada pessoal é enviado — só um código aleatório deste PC</li></ul>`,
     info_foot: 'Slimedex v{v} · dados da World of Slime Wiki e da comunidade · código aberto em github.com/llll94/slimedex',
     err: {}
@@ -88,7 +88,7 @@ const TXT = {
     community: 'community', community_title: 'Sent by {n} people and confirmed in the daily merge',
     contested: 'disputed', contested_title: 'Many people voted that it does not work',
     mine: 'mine', del_title: 'Delete this combination', del_title_junta: 'Delete your copy (the community one stays)', del_title_edit: 'Undo your edit (back to the original)', editado: 'edited',
-    edit_title: 'Edit this combination', mapa_add: 'Add / edit',
+    edit_title: 'Edit this combination', mapa_add: 'Add / edit', fx_on: 'On screen · click to hide (stays pinned)', teste: 'test', teste_title_sem: 'Result still unknown: it was only tested. Did it? Add the result with ＋ New combination.', teste_title: 'Came from the community spreadsheet and nobody has confirmed it in Slimedex yet. Did it work for you? Give it a 👍 to confirm.', pin_desfixar: 'Unpin (removes the ★ and the window)', pin_esconder: 'Hide (stays pinned: turn it back on in Pinned, with Ctrl+Tab)', fx_off: 'Hidden · click to show on screen', mapa_lendo: 'reading…',
     pe_dia: 'Spawns only during the day', pe_noite: 'Spawns only at night', pe_ambos: 'Spawns day and night', pe_esp: 'Only after defeating the Dwarf boss', pe_nao: 'We don\'t know yet if it spawns by day or night',
     pe_clique: 'click to mark', pe_b_dia: 'Day only', pe_b_noite: 'Night only', pe_b_ambos: 'Day and night', pe_b_limpa: 'Remove mine',
     pe_tip: 'It applies right away on your app and goes to the community in ⋯ → Send my discoveries.', pe_leg_dia: 'day', pe_leg_noite: 'night', mapa_novo: 'New map: no slimes yet. Mark the ones you see here.', mapa_renomear: 'Fix name', mapa_nada: 'Tab ignored: could not find the map name (region read: {a})',
@@ -113,7 +113,7 @@ const TXT = {
     form_err: 'Pick the result and both slimes from the list',
     form_tip: 'To add many at once, use ⋯ → Import with a CSV in the spreadsheet format (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s) · {u} number(s) · {lo} slime(s) on maps · {pe} day/night',
-    send_info: 'It goes to the collaborative database. Once a day submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
+    send_info: 'It goes to the collaborative database. Every hour submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
     send_empty: "You don't have anything to send yet.", send_same: 'This was already sent. Add or vote on something new to send again.',
     send_btn: 'Send', sending: 'Sending…', sent_ok: 'Sent, thank you! It will show up for everyone after the daily review.', sent: 'Sent',
     send_fail: 'Could not send: {e}', retry: 'Try again',
@@ -153,7 +153,7 @@ const TXT = {
 <li>Import/export CSV in the community spreadsheet format, or back up everything as JSON</li></ul>
 <h4>Collaborative database</h4><ul>
 <li><b>⋯ → Send my discoveries</b> uploads your combinations, chances, votes and names</li>
-<li>Once a day submissions are reviewed and approved ones are added for everyone (<b>community</b> badge); 👎 votes remove wrong ones</li>
+<li>Every hour submissions are reviewed and approved ones are added for everyone (<b>community</b> badge); 👎 votes remove wrong ones</li>
 <li>Nothing personal is sent — only a random code for this PC</li></ul>`,
     info_foot: 'Slimedex v{v} · data from the World of Slime Wiki and the community · open source at github.com/llll94/slimedex',
     err: { 'limite diário de envios atingido': 'daily upload limit reached', 'muitos envios agora, tente mais tarde': 'too many uploads right now, try again later',

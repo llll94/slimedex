@@ -62,8 +62,8 @@ public static class LeitorTela {
   Manda @{ ev = 'pronto'; ocr = $ocr.RecognizerLanguage.LanguageTag }
   $tab = $false; $esc = $false; $volta = 0
   while ($true) {
-    Start-Sleep -Milliseconds 40
-    if ($pai -and ++$volta % 50 -eq 0 -and -not (Get-Process -Id $pai -ErrorAction SilentlyContinue)) { exit 0 } # o Slimedex fechou
+    Start-Sleep -Milliseconds 20
+    if ($pai -and ++$volta % 100 -eq 0 -and -not (Get-Process -Id $pai -ErrorAction SilentlyContinue)) { exit 0 } # o Slimedex fechou
     $t = [LeitorTela]::Apertada(0x09); $e = [LeitorTela]::Apertada(0x1B)
     if ($e -and -not $esc) { # Esc no próprio Slimedex só fecha o painel; os slimes do mapa ficam
       $je = [LeitorTela]::Janela(); $ne = try { (Get-Process -Id $je[4]).ProcessName } catch { '' }
@@ -74,6 +74,7 @@ public static class LeitorTela {
       $j = [LeitorTela]::Janela()
       $nome = try { (Get-Process -Id $j[4]).ProcessName } catch { '' }
       if ($meus -notcontains $nome -and $j[2] -gt 200 -and $j[3] -gt 200) {
+        Manda @{ ev = 'tab-ini' } # avisa já: o Slimedex abre a janelinha enquanto a tela é lida
         $ini = Get-Date
         try {
           # bloco abaixo do minimapa: x 88,5–99,5% e y 16,3–23,8% da janela (medido em prints de 2560x1440)
