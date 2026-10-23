@@ -1,0 +1,7 @@
+{
+ "_como_usar": "O merge diário ignora o que estiver aqui. autores: id do envio (autor.txt). combos: id da combinação da comunidade (c:SL_A+SL_B>SL_R) ou id da base (para chance). pt: SL_Slime (qualquer nome) ou SL_Slime=Nome. num: SL_Slime.",
+ "autores": [],
+ "combos": [],
+ "pt": [],
+ "num": []
+}

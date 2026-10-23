@@ -24,6 +24,7 @@ jobs:
           node-version: 22
 
       - name: Consolidar envios do Supabase
+        id: consolidar
         env:
           SUPABASE_URL: https://pwletsegcprygxgoduvp.supabase.co
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
@@ -32,6 +33,7 @@ jobs:
       - name: Abrir ou atualizar o PR (só se mudou algo)
         env:
           GH_TOKEN: ${{ github.token }}
+          AUTO: ${{ steps.consolidar.outputs.auto }}
         run: |
           if git diff --quiet -- comunidade.json && [ -z "$(git status --porcelain -- comunidade.json)" ]; then
             echo "Nada novo hoje."; exit 0
@@ -47,4 +49,14 @@ jobs:
             gh pr edit "$branch" --title "Base colaborativa — $(date -u +%Y-%m-%d)" --body-file resumo-merge.md
           else
             gh pr create --base main --head "$branch" --title "Base colaborativa — $(date -u +%Y-%m-%d)" --body-file resumo-merge.md
+          fi
+          # tudo dentro do padrão da base: aprova sozinho (squash = um commit só, fácil de reverter pelo botão Revert do PR)
+          if [ "$AUTO" = "true" ]; then
+            for i in 1 2 3 4 5; do
+              gh pr merge "$branch" --squash --delete-branch && exit 0
+              sleep 10
+            done
+            echo "::warning::Não consegui fazer o merge automático; o PR ficou aberto para revisão."
+          else
+            echo "Fora do padrão: PR aberto para revisão manual."
           fi

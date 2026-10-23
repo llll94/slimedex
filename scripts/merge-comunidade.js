@@ -10,6 +10,16 @@
 //   - nome PT-BR entra se >= MIN_PESSOAS pessoas usaram o mesmo nome
 //   - número do slime (só para slimes sem número na base): o mais enviado; número que já é de outro slime é descartado
 //   - votos 👍/👎 viram placar; combinação da comunidade muito negativada (CONTESTADA) é descartada
+//   - bloqueios.json: autores, combinações, nomes e números que o merge ignora (rollback de verdade: o revert do PR
+//     sozinho não basta, porque o merge seguinte recalcularia tudo do Supabase)
+//
+// Aprovação automática: compara com o comunidade.json atual e, se TUDO o que mudou segue o padrão da base, avisa o
+// Actions (auto=true) para fazer o merge do PR sozinho. Padrões tirados das 176 combinações da base com resultado:
+//   - resultado divide ao menos 1 elemento com os pais (98% da base)
+//   - nível é praticamente fixo por resultado (só 4 de 44 variam): tem que bater com o da base quando ela sabe
+//   - material vazio ou um item da lista do wiki; chance que já existia não pode pular mais de 25 pontos
+//   - nome PT novo só com letras (2–30) e que não seja nome de slime em inglês; trocar nome ou número já aprovado,
+//     tirar mais de 3 itens de uma vez ou mais de 30 novidades num dia → revisão manual
 const fs = require('fs'), path = require('path');
 
 const MIN_PESSOAS = 1; // 1 = a descoberta de uma pessoa já entra (a revisão do PR e os votos 👎 seguram erros)
@@ -23,6 +33,10 @@ const cidBase = c => [c.a, c.b, c.r, c.m].join('|'); // mesmo id que o app usa p
 const par = (a, b, r) => [a, b].sort().join('+') + '>' + r;
 const baseIdx = new Map(D.combos.filter(c => c.r).map(c => [par(c.a, c.b, c.r), c]));
 const baseCids = new Set(D.combos.map(cidBase));
+const K = Object.fromEntries(D.slimes.map(s => [s.k, s]));
+let BQ = {}; try { BQ = JSON.parse(fs.readFileSync(path.join(RAIZ, 'bloqueios.json'), 'utf8')) } catch {}
+const bloq = n => new Set(Array.isArray(BQ[n]) ? BQ[n] : []);
+const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'), BQ_NUM = bloq('num');
 
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
@@ -47,7 +61,7 @@ async function lerEnvios() {
 }
 
 (async () => {
-  const linhas = (await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && l.payload && typeof l.payload === 'object');
+  const linhas = (await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object');
   // cada envio é uma "foto" completa dos dados da pessoa: vale o mais recente de cada autor
   const ultimo = new Map(); for (const l of linhas) ultimo.set(l.autor, l.payload);
 
@@ -61,22 +75,23 @@ async function lerEnvios() {
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
       if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b)) continue;
       const k = par(c.a, c.b, c.r), ch = chance(c.ch), base = baseIdx.get(k);
+      if (BQ_COMBO.has(base ? cidBase(base) : 'c:' + k)) continue;
       if (base) { if (ch != null) (chances.get(cidBase(base)) || chances.set(cidBase(base), []).get(cidBase(base))).push(ch); continue }
       const n = novos.get(k) || novos.set(k, { a: c.a, b: c.b, r: c.r, quem: new Set(), m: [], l: [], ch: [] }).get(k);
       if (n.quem.has(autor)) continue;
       n.quem.add(autor); n.m.push(txt(c.m, 60)); n.l.push(txt(c.l, 10)); if (ch != null) n.ch.push(ch);
     }
     for (const [id, v] of Object.entries(p.pc && typeof p.pc === 'object' ? p.pc : {})) {
-      const ch = chance(v); if (ch == null) continue;
+      const ch = chance(v); if (ch == null || BQ_COMBO.has(id)) continue;
       if (baseCids.has(id)) (chances.get(id) || chances.set(id, []).get(id)).push(ch);
       else if (id.startsWith('c:') && novos.has(id.slice(2))) novos.get(id.slice(2)).ch.push(ch);
     }
     for (const [k, v] of Object.entries(p.num && typeof p.num === 'object' ? p.num : {})) {
-      if (!SLIMES.has(k) || !Number.isInteger(v) || v < 1 || v > 9999) continue;
+      if (!SLIMES.has(k) || BQ_NUM.has(k) || !Number.isInteger(v) || v < 1 || v > 9999) continue;
       const m = numeros.get(k) || numeros.set(k, new Map()).get(k); (m.get(v) || m.set(v, new Set()).get(v)).add(autor);
     }
     for (const [k, v] of Object.entries(p.pt && typeof p.pt === 'object' ? p.pt : {})) {
-      const nome = txt(v, 40); if (!SLIMES.has(k) || !nome) continue;
+      const nome = txt(v, 40); if (!SLIMES.has(k) || !nome || BQ_PT.has(k) || BQ_PT.has(k + '=' + nome)) continue;
       const m = nomes.get(k) || nomes.set(k, new Map()).get(k), nn = norm(nome);
       (m.get(nn) || m.set(nn, { nome, quem: new Set() }).get(nn)).quem.add(autor);
     }
@@ -106,11 +121,14 @@ async function lerEnvios() {
   const numOrd = Object.fromEntries(Object.keys(num).sort().map(k => [k, num[k]]));
   const essencial = { combos, pc, pt, votos: vt, num: numOrd };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = JSON.stringify({ combos: a.combos, pc: a.pc, pt: a.pt, votos: a.votos, num: a.num || {} }) } catch {}
-  const mudou = antes !== JSON.stringify(essencial);
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {} } } catch {}
+  const mudou = JSON.stringify(antes) !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
-  const nm = k => (D.slimes.find(s => s.k === k) || {}).nm || k;
+  const nm = k => (K[k] || {}).nm || k;
+  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {} }, essencial, nm);
+  const auto = mudou && barrados.length === 0;
+  if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `auto=${auto}\n`);
   const resumo = [
     `## Base colaborativa — ${new Date().toISOString().slice(0, 10)}`, '',
     `- Envios lidos: **${linhas.length}** de **${ultimo.size}** pessoa(s)`,
@@ -119,9 +137,59 @@ async function lerEnvios() {
     `- Contestadas (muitos 👎): ${Object.entries(vt).filter(([, v]) => contestada(v)).length}`, '',
     ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)`), ''] : []),
     ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
-    ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : [])
+    ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : []),
+    ...(mudou ? ['### Aprovação automática', '', auto
+      ? `✅ ${novidades} novidade(s)${removidos ? ` e ${removidos} remoção(ões)` : ''} dentro do padrão da base — **aprovado sozinho**. Se der problema: **Revert** neste PR e coloque o item em \`bloqueios.json\` (senão o próximo merge traz de volta).`
+      : '⚠️ **Precisa de revisão** — fora do padrão:', ...barrados.map(b => `- ${b}`), ''] : [])
   ].join('\n');
   fs.writeFileSync(path.join(RAIZ, 'resumo-merge.md'), resumo + '\n');
   console.log(resumo);
-  console.log(mudou ? '\ncomunidade.json ATUALIZADO' : '\ncomunidade.json sem mudanças');
+  console.log(mudou ? '\ncomunidade.json ATUALIZADO' + (auto ? ' (aprovação automática)' : '') : '\ncomunidade.json sem mudanças');
 })().catch(e => { console.error(e.message || e); process.exit(1) });
+
+// ---------- aprovação automática: o que mudou em relação ao comunidade.json atual segue o padrão da base? ----------
+function verifica(antes, agora, nm) {
+  const normI = s => norm(s || '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const ITENS = new Set(D.itens.flatMap(i => [normI(i.en), normI(i.pt), normI(i.k)]));
+  const partes = m => { const x = /^(.*?)\s*\(([^()]*)\)\s*$/.exec(m); return x ? [x[1], x[2]] : [m] }; // "PT (EN)"
+  const ehItem = m => partes(m).some(p => ITENS.has(normI(p)));
+  const NOMES_EN = new Set(D.slimes.flatMap(s => [normI(s.nm), normI(s.sp)]));
+  const nivelBase = new Map(); for (const c of D.combos) if (c.r && c.l) (nivelBase.get(c.r) || nivelBase.set(c.r, new Set()).get(c.r)).add(c.l);
+  const descCid = id => { const [a, b, r] = id.split('|'); return `${r ? nm(r) : '?'} = ${nm(a)} + ${nm(b)}` };
+  const barrados = []; let novidades = 0, removidos = 0;
+
+  const ant = new Map(antes.combos.map(c => [c.id, c])), ids = new Set(agora.combos.map(c => c.id));
+  for (const c of agora.combos) {
+    const o = ant.get(c.id); if (o && o.m === c.m && o.l === c.l && o.ch === c.ch) continue;
+    novidades++;
+    const desc = `${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}`, el = new Set([...K[c.a].el, ...K[c.b].el]);
+    if (!K[c.r].el.some(e => el.has(e))) barrados.push(`${desc}: nenhum elemento em comum com os pais`);
+    if (c.m && !ehItem(c.m)) barrados.push(`${desc}: material "${c.m}" não está na lista de itens`);
+    if (c.l && !(/^\d{1,2}$/.test(c.l) && +c.l >= 1 && +c.l <= 40)) barrados.push(`${desc}: nível "${c.l}" fora do padrão`);
+    else if (c.l && nivelBase.has(c.r) && !nivelBase.get(c.r).has(c.l)) barrados.push(`${desc}: nível ${c.l}, a base diz ${[...nivelBase.get(c.r)].join('/')}`);
+    if (o && o.ch != null && c.ch != null && Math.abs(o.ch - c.ch) > 25) barrados.push(`${desc}: chance mudaria de ${o.ch}% para ${c.ch}%`);
+  }
+  removidos += antes.combos.filter(c => !ids.has(c.id)).length;
+
+  for (const [id, v] of Object.entries(agora.pc)) {
+    const o = antes.pc[id]; if (o && o.ch === v.ch) continue;
+    novidades++; if (o && Math.abs(o.ch - v.ch) > 25) barrados.push(`chance de ${descCid(id)}: mudaria de ${o.ch}% para ${v.ch}%`);
+  }
+  for (const [k, v] of Object.entries(agora.pt)) {
+    const o = antes.pt[k]; if (o === v) continue;
+    novidades++;
+    if (o) barrados.push(`nome PT de ${nm(k)} trocaria de "${o}" para "${v}"`);
+    else if (!/^\p{L}[\p{L} '-]{1,29}$/u.test(v)) barrados.push(`nome PT de ${nm(k)} — "${v}" tem caracteres fora do padrão`);
+    else if (NOMES_EN.has(normI(v))) barrados.push(`nome PT de ${nm(k)} — "${v}" é nome de slime em inglês`);
+  }
+  for (const [k, v] of Object.entries(agora.num)) {
+    const o = antes.num[k]; if (o === v) continue;
+    novidades++;
+    if (o != null) barrados.push(`número de ${nm(k)} trocaria de #${o} para #${v}`);
+    else if (v > 300) barrados.push(`número #${v} de ${nm(k)} acima de 300`);
+  }
+  for (const n of ['pc', 'pt', 'num']) removidos += Object.keys(antes[n]).filter(k => !(k in agora[n])).length;
+  if (removidos > 3) barrados.push(`${removidos} itens já aprovados sairiam de uma vez`);
+  if (novidades > 30) barrados.push(`${novidades} novidades num dia só (limite 30)`);
+  return { barrados, novidades, removidos };
+}

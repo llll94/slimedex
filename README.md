@@ -66,7 +66,8 @@ Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances
 - um **nome em PT-BR** entra com o nome mais usado;
 - o **número do slime** (para os que não têm na base) entra com o número mais enviado — número que já é de outro slime é descartado;
 - os **votos** viram placar; combinação com muitos 👎 é marcada como *contestada* (e, se for da comunidade, sai da base) — é assim que dados errados são corrigidos;
-- cada atualização passa por um Pull Request revisado antes de valer.
+- cada atualização vira um Pull Request. Se **tudo** o que mudou segue o padrão da base, ele é aprovado sozinho: o resultado divide ao menos um elemento com os pais, o material é um item conhecido, o nível bate com o que a base já sabe daquele slime e nenhuma chance, nome ou número já aprovado muda de forma brusca. Qualquer coisa fora disso espera revisão manual — o motivo aparece no próprio PR;
+- o que for ignorado de propósito (envio ruim, nome errado) fica em [`bloqueios.json`](bloqueios.json).
 
 **Privacidade:** o envio leva só os dados acima e um código aleatório gerado no seu PC (para contar "pessoas diferentes"). Nenhum dado pessoal é coletado; o IP não é guardado (apenas um hash, usado para limitar spam a 10 envios por dia). A estrutura do banco e as regras de acesso estão em [`supabase/schema.sql`](supabase/schema.sql) — o app só consegue **inserir** envios, nunca ler os de outras pessoas.
 
