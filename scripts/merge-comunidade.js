@@ -50,6 +50,8 @@ async function baseDoApp() {
   return { tag: rel.tag_name, D: await r.json() };
 }
 const K = Object.fromEntries(D.slimes.map(s => [s.k, s]));
+// slimes que eram duplicados e viraram um só (D.apelidos: chave antiga -> nova): envios com a chave antiga continuam valendo
+const semApelidos = p => { let s = JSON.stringify(p); for (const [de, para] of Object.entries(D.apelidos || {})) s = s.replace(new RegExp(`\\b${de}\\b`, 'g'), para); return JSON.parse(s) };
 let BQ = {}; try { BQ = JSON.parse(fs.readFileSync(path.join(RAIZ, 'bloqueios.json'), 'utf8')) } catch {}
 const bloq = n => new Set(Array.isArray(BQ[n]) ? BQ[n] : []);
 const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'), BQ_NUM = bloq('num'), BQ_LOC = bloq('loc'); // loc: 'Mapa=SL_x' ou 'Mapa'
@@ -92,7 +94,8 @@ async function lerEnvios() {
   baseIdx = new Map(app.D.combos.filter(c => c.r).map(c => [par(c.a, c.b, c.r), c]));
   baseCids = new Set(app.D.combos.map(cidBase));
   PENDENTES = D.combos.filter(c => c.r && SLIMES.has(c.r) && SLIMES.has(c.a) && SLIMES.has(c.b) && !baseIdx.has(par(c.a, c.b, c.r)));
-  const linhas =(await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object');
+  const linhas = (await lerEnvios()).filter(l => l && l.autor && l.autor !== TESTE && !BQ_AUTOR.has(l.autor) && l.payload && typeof l.payload === 'object')
+    .map(l => ({ ...l, payload: semApelidos(l.payload) }));
   // cada envio é uma "foto" completa dos dados da pessoa: vale o mais recente de cada autor
   const ultimo = new Map(), anterior = new Map(), ordem = new Map();
   linhas.forEach((l, i) => { if (ultimo.has(l.autor)) anterior.set(l.autor, ultimo.get(l.autor)); ultimo.set(l.autor, l.payload); ordem.set(l.autor, i) });
