@@ -14,6 +14,7 @@
 //   - slime visto num mapa (loc): entra se >= MIN_PESSOAS pessoas marcaram; só mapas da lista (D.mapas) e só o que a base ainda não tem
 //   - dia/noite (per): o mais marcado por slime (dia | noite | ambos), só quando difere da base; trocar um já aprovado → revisão
 //   - combinação "teste" da base (veio da planilha, ts) fica confirmada (conf) quando alguém a manda ou dá 👍 nela
+//   - 🗑 apagar (entrada {x:1, id} em combos): vai para 'apagadas' (combinação da base) ou tira da comunidade — sempre com revisão
 //   - bloqueios.json: autores, combinações, nomes e números que o merge ignora (rollback de verdade: o revert do PR
 //     sozinho não basta, porque o merge seguinte recalcularia tudo do Supabase)
 //
@@ -116,10 +117,12 @@ async function lerEnvios() {
   const vistos = new Map();  // mapa -> Map(slime -> Set(autores))
   const periodos = new Map(); // slime -> Map(dia|noite|ambos -> Set(autores))
   const confirmadas = new Set(); // id (do app) das combinações "teste" que alguém mandou ou deu 👍
+  const pedidosApagar = new Map(); // id da combinação (base: a|b|r|m, comunidade: c:...) -> Set(autores)
   for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
 
   for (const [autor, p] of [...ultimo].sort((x, y) => ordem.get(x[0]) - ordem.get(y[0]))) { // do envio mais antigo ao mais recente
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
+      if (c && c.x === 1) { if (typeof c.id === 'string' && c.id.length <= 300) (pedidosApagar.get(c.id) || pedidosApagar.set(c.id, new Set()).get(c.id)).add(autor); continue }
       if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b)) continue;
       const k = par(c.a, c.b, c.r), base = baseIdx.get(k);
       if (TESTE_IDX.has(k)) confirmadas.add(cidBase(TESTE_IDX.get(k)));
@@ -184,14 +187,19 @@ async function lerEnvios() {
   const per = Object.fromEntries([...periodos].map(([k, m]) => [k, [...m].sort((a, b) => b[1].size - a[1].size || (a[0] < b[0] ? -1 : 1))[0]])
     .filter(([k, [v, q]]) => q.size >= MIN_PESSOAS && v !== (K[k] || {}).pe).sort().map(([k, [v]]) => [k, v]));
   const conf = [...confirmadas].sort();
-  const essencial = { combos, pc, pt, votos: vt, num: numOrd, loc, per, conf };
+  // apagar: só ids que existem (base do repositório ou combinação da comunidade); as da comunidade saem da lista
+  const idsBase = new Set(D.combos.map(cidBase)), idsCom = new Set(combos.map(c => c.id));
+  const apag = [...pedidosApagar].filter(([id, q]) => q.size >= MIN_PESSOAS && (idsBase.has(id) || idsCom.has(id))).map(([id]) => id);
+  const apagadas = apag.filter(id => idsBase.has(id)).sort();
+  const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [] } } catch {}
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [], apagadas: a.apagadas || [] } } catch {}
   const mudou = JSON.stringify(antes) !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
   const nm = k => (K[k] || {}).nm || k;
-  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {}, loc: {}, per: {}, conf: [] }, essencial, nm);
+  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {}, loc: {}, per: {}, conf: [], apagadas: [] }, essencial, nm);
+  for (const id of apag) if (id.startsWith('c:') && antes && antes.combos.some(c => c.id === id)) barrados.push(`apagar uma combinação da comunidade (${id.slice(2)}): confira antes de aprovar`);
   const auto = mudou && barrados.length === 0;
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `auto=${auto}\n`);
   const RECENTE = 24 * 3600e3, recentes = linhas.filter(l => l.created_at && Date.now() - new Date(l.created_at) < RECENTE).slice(-10);
@@ -202,6 +210,7 @@ async function lerEnvios() {
       const o = !c.r ? 'sem resultado: ignorada' : ![c.r, c.a, c.b].every(k => SLIMES.has(k)) ? 'slime desconhecido: ignorada'
         : baseIdx.has(par(c.a, c.b, c.r)) ? 'já está na base' + (chance(c.ch) != null ? ' (conta como relato de chance)' : '') : 'nova (comunidade)';
       out.push(`  - ${desc} → ${o}`) }
+    const pa = (Array.isArray(p.combos) ? p.combos : []).filter(c => c && c.x === 1).length; if (pa) out.push(`  - pediu para apagar: ${pa} combinação(ões)`);
     out.push(`  - chances editadas: ${qt('pc')} · nomes: ${qt('pt')} · números: ${qt('num')} · votos: ${qt('votos')} · mapas: ${qt('loc')} · dia/noite: ${qt('per')}`);
     return out.join('\n') });
   const resumo = [
@@ -214,6 +223,7 @@ async function lerEnvios() {
     ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)`), ''] : []),
     ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : []),
+    ...(apag.length ? ['### Apagar (pedido de alguém)', '', ...apag.map(id => id.startsWith('c:') ? `- ${(() => { const c = combos.find(x => x.id === id); return c ? `${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}` : id })()} (comunidade)` : `- ${(() => { const [a, b, r] = id.split('|'); return `${r ? nm(r) : '?'} = ${nm(a)} + ${nm(b)}` })()} (base)`), ''] : []),
     ...(conf.length ? ['### Confirmadas (saem do selo "teste")', '', ...conf.map(id => { const [a, b, r] = id.split('|'); return `- ${nm(r)} = ${nm(a)} + ${nm(b)}` }), ''] : []),
     ...(Object.keys(per).length ? ['### Dia / noite', '', ...Object.entries(per).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(loc).length ? ['### Slimes vistos nos mapas', '', ...Object.entries(loc).map(([mapa, ks]) => `- ${mapa}: ${ks.map(k => k[0] === '-' ? `~~${nm(k.slice(1))}~~ (não nasce aqui)` : nm(k)).join(', ')}`), ''] : []),
@@ -275,6 +285,8 @@ function verifica(antes, agora, nm) {
     for (const k of ks) if (k[0] === '-' && !o.has(k)) barrados.push(`tirar ${nm(k.slice(1))} de "${mapa}" (corrige a base: confira)`) }
   for (const [mapa, ks] of Object.entries(antes.loc)) { const n = new Set(agora.loc[mapa] || []); removidos += ks.filter(k => !n.has(k)).length }
   novidades += agora.conf.filter(id => !antes.conf.includes(id)).length; // confirmar é sempre ok
+  for (const id of agora.apagadas) if (!antes.apagadas.includes(id)) { novidades++; barrados.push(`apagar ${descCid(id)} (confira antes de aprovar)`) }
+
   for (const [k, v] of Object.entries(agora.per)) { const o = antes.per[k]; if (o === v) continue; novidades++; if (o) barrados.push(`dia/noite de ${nm(k)} trocaria de ${o} para ${v}`) }
   for (const n of ['pc', 'pt', 'num', 'per']) removidos += Object.keys(antes[n]).filter(k => !(k in agora[n])).length;
   if (removidos > 3) barrados.push(`${removidos} itens já aprovados sairiam de uma vez`);

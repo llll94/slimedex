@@ -104,7 +104,8 @@ const matN=m=>{const i=IT[norm(m)];return i?(LANG==='en'?i.en:i.pt):m}; // mater
 let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
-let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{}},C=[],made={},used={},LBL={};
+let CA=[]; // combinações da base/comunidade apagadas (por você ou aprovado pela comunidade)
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[]},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resultado (A + B e B + A são combinações diferentes)
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -129,6 +130,7 @@ function monta(){
   if(modo==='editar'){alvo.m=c.m||'';alvo.l=c.l||'';if(!(cid(alvo) in M.pc))alvo.ch=c.ch??null;alvo.editado=true}
   else{if(!alvo.m&&c.m)alvo.m=c.m;if((alvo.l==null||alvo.l==='')&&c.l)alvo.l=c.l;if(!(cid(alvo) in M.pc)&&c.ch!=null)alvo.ch=c.ch} // sua chance vale, salvo % editado na linha
   alvo.meuId=c.id;return false});
+ const apag=new Set([...(M.apaga||[]),...((CM&&CM.apagadas)||[])]);CA=C.filter(c=>!c.meu&&!c.meuId&&apag.has(cid(c)));C=C.filter(c=>c.meu||c.meuId||!apag.has(cid(c))); // 🗑 numa da base/comunidade
  C.forEach(c=>{if(c.meu&&c.r){const o=C.find(x=>x!==c&&x.r&&chaveC(x)===chaveC(c));c.gemeo=o?cid(o):null}}); // igual que não juntou sozinha (⇄)
  C.forEach(c=>{const v=cvt[cid(c)];if(v&&typeof v=='object'){c.v={u:v.u|0,d:v.d|0};c.cz=c.v.d>=3&&c.v.d>=2*c.v.u}}); // placar e "contestada"
  made={};used={};
@@ -202,6 +204,7 @@ const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(
  `${c.ts&&!confirmada(c)?` <span class="meu" style="background:#3a3220;color:#ffd479" title="${esc(t(c.r?'teste_title':'teste_title_sem'))}">${t('teste')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
  `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
+ `${!c.meu&&!c.meuId?` <span class="del" data-apaga="${esc(cid(c))}" title="${esc(t('apagar_title'))}">🗑</span>`:''}`+
  ` <span class="lk sm" data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}">✎</span>${c.meu&&c.gemeo?` <span class="lk sm" data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
  `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}${fv(c)}</div></div>`;
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
@@ -221,6 +224,7 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <h4>${t('where')}</h4>${(()=>{const l=lugares(k);return l.length?l.map(n=>`<span class="lk" data-mapa="${esc(n)}">${esc(nomeMapa(n))}</span>`).join(' · '):`<span class="mu">${t('no_loc')}</span>`})()}
  <h4>${t('drops')}</h4>${(s.dp||[]).length?`<div class="drs">${s.dp.map(d=>`<span class="dr">${ii(itemIco(d))}${esc(itemNome(d))}</span>`).join('')}</div>`:`<span class="mu">${t('no_drops')}</span>`}
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<span class="mu">${t('no_combo')}</span>`}
+ ${(()=>{const a=CA.filter(c=>(M.apaga||[]).includes(cid(c))&&[c.r,c.a,c.b].includes(k));return a.length?`<p class="mu">${t('apagadas')} ${a.map(c=>`${esc(nm(c.r)||'?')} = ${esc(nm(c.a))} + ${esc(nm(c.b))} <span class="lk sm" data-desapaga="${esc(cid(c))}" title="${esc(t('desapagar_title'))}">↺</span>`).join(' · ')}</p>`:''})()}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
  <h4>${t('used',{n:u.length})}</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
  ${elems(s)}`;bd.scrollTop=keep?top:0;
@@ -292,15 +296,15 @@ function importaCsv(texto){const rows=lerCsv(texto);if(rows[0]&&/result|resultad
 function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v},en=k=>K[k]?.nm||k;
  return [['Result','ID','Level','Slime 1','Slime 2','Material','Chance'],...M.combos.map(c=>[en(c.r),K[c.r]?.n??'',c.l,en(c.a),en(c.b),c.m,c.ch!=null?c.ch+'%':''])]
   .map(l=>l.map(q).join(',')).join('\r\n')}
-// ---- enviar para a base colaborativa (revisada antes de entrar na base de todos) ----
+// ---- enviar para a base colaborativa (revisada antes de entrar na base de todos; x:1 em combos = pedido para apagar) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){cur=null;sel=-1;marca({t:'envio'});
- const p={pt:M.pt,pc:M.pc,combos:M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
- const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=p.combos.length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
+ const p={pt:M.pt,pc:M.pc,combos:[...M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
+ const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=M.combos.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
- const vazio=!(n+c+k+v+u+lo+pe),igual=sig===ult;
+ const vazio=!(n+c+k+v+u+lo+pe+ap),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- <p>${t('send_counts',{k,c,v,n,u,lo,pe})}</p>
+ <p>${t('send_counts',{k,c,v,n,u,lo,pe,ap})}</p>
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -366,6 +370,8 @@ bd.onclick=e=>{const t=e.target;
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
  const pe=t.closest('[data-pe]');if(pe){peSel=peSel===pe.dataset.pe?null:pe.dataset.pe;return ficha(pe.dataset.pe,true)}
  const pv=t.closest('[data-pev]');if(pv&&cur){M.per=M.per||{};if(pv.dataset.pev)M.per[cur]=pv.dataset.pev;else delete M.per[cur];peSel=null;return atualiza()}
+ if(t.dataset.apaga){M.apaga=[...new Set([...(M.apaga||[]),t.dataset.apaga])];return atualiza()}
+ if(t.dataset.desapaga){M.apaga=(M.apaga||[]).filter(x=>x!==t.dataset.desapaga);return atualiza()}
  const fxb=t.closest('[data-fx]');if(fxb){const f=(M.fav||[]).find(x=>x.id===fxb.dataset.fx);if(f){f.oculto=!f.oculto;if(!f.oculto)delete f.oculto;salva();syncFav();list()}return}
  const lm=t.closest('[data-lm]');if(lm&&vista&&vista.t=='mapa')return marcaMapa(vista.m,lm.dataset.lm);
  if(t.dataset.mapa)return telaMapa(t.dataset.mapa);
@@ -484,7 +490,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},...semApelidos(d)};monta()});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],...semApelidos(d)};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
