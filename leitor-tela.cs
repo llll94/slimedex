@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Runtime.CompilerServices;
 using Windows.Globalization;
 using Windows.Graphics.Imaging;
 using Windows.Foundation;
@@ -90,7 +91,32 @@ static class LeitorTela {
     }
     return 0;
   }
+  [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] static extern bool BringWindowToTop(IntPtr h);
+  [DllImport("user32.dll")] static extern bool AttachThreadInput(uint de, uint para, bool liga);
+  [DllImport("user32.dll")] static extern void keybd_event(byte vk, byte sc, uint f, UIntPtr e);
+  [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
+  // Ctrl+Tab com o jogo em primeiro plano: o Windows trava a troca de janela ativa (o cursor pisca no Slimedex mas as teclas vão pro jogo).
+  // Junta a entrada desta thread à da janela da frente para poder passar o primeiro plano; se ainda falhar, um toque de Alt libera a trava
+  static int Foco(IntPtr h) {
+    for (int t = 0; t < 2 && GetForegroundWindow() != h; t++) {
+      if (t == 1) { keybd_event(0x12, 0, 0, UIntPtr.Zero); keybd_event(0x12, 0, 2, UIntPtr.Zero); }
+      uint pid, frente = GetWindowThreadProcessId(GetForegroundWindow(), out pid), eu = GetCurrentThreadId();
+      bool junto = frente != 0 && frente != eu && AttachThreadInput(eu, frente, true);
+      BringWindowToTop(h); SetForegroundWindow(h);
+      if (junto) AttachThreadInput(eu, frente, false);
+      Thread.Sleep(30);
+    }
+    return GetForegroundWindow() == h ? 0 : 1;
+  }
+  // Main só despacha: o modo -foco não pode esperar o .NET carregar o OCR (o JIT de Leitor carrega o WinRT)
   static int Main(string[] args) {
+    int ifo = Array.IndexOf(args, "-foco"); long hw; // leitor-tela.exe -foco <hwnd>
+    if (ifo >= 0) return ifo + 1 < args.Length && long.TryParse(args[ifo + 1], out hw) ? Foco(new IntPtr(hw)) : 2;
+    return Leitor(args);
+  }
+  [MethodImpl(MethodImplOptions.NoInlining)]
+  static int Leitor(string[] args) {
     int pai = 0; for (int i = 0; i + 1 < args.Length; i++) if (args[i] == "-pai") int.TryParse(args[i + 1], out pai);
     int ia = Array.IndexOf(args, "-arquivo"); // teste: leitor-tela.exe -arquivo print1.png print2.png ...
     if (ia >= 0) return Teste(args.Skip(ia + 1).ToArray());

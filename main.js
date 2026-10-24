@@ -66,11 +66,16 @@ const pinDe=s=>[...pins].find(([,p])=>!p.w.isDestroyed()&&p.w.webContents===s);
 const MAPA_POS=()=>path.join(app.getPath('userData'),'mapa-pos.json');
 let leitor=null,mapaWin=null,mapaVisivel=false;
 const ehMapa=s=>mapaWin&&!mapaWin.isDestroyed()&&mapaWin.webContents===s;
+// leitor nativo (leitor-tela.exe, compilado no build; fica fora do pacote: app.asar.unpacked)
+const LEITOR_EXE=()=>path.join(__dirname,'leitor-tela.exe').replace('app.asar'+path.sep,'app.asar.unpacked'+path.sep);
+// Windows: com o jogo na frente, win.focus() não passa o teclado (cursor pisca, teclas vão pro jogo); o leitor força o primeiro plano
+function trazFrente(){if(process.platform!=='win32')return;const exe=LEITOR_EXE();if(!fs.existsSync(exe))return;const h=win.getNativeWindowHandle();
+  require('child_process').spawn(exe,['-foco',String(h.length>=8?h.readBigUInt64LE(0):h.readUInt32LE(0))],{windowsHide:true}).on('error',()=>{})}
 function ligaLeitor(on){
   if(!on){const p=leitor;leitor=null;if(p)p.kill();mapaVisivel=false;if(mapaWin&&!mapaWin.isDestroyed())mapaWin.hide();return}
   if(leitor||process.platform!=='win32')return;
-  // leitor nativo (leitor-tela.exe, compilado no build; fica fora do pacote: app.asar.unpacked). Sem ele, usa o PowerShell
-  const exe=path.join(__dirname,'leitor-tela.exe').replace('app.asar'+path.sep,'app.asar.unpacked'+path.sep);let p;
+  // sem o leitor nativo, usa o PowerShell
+  const exe=LEITOR_EXE();let p;
   if(fs.existsSync(exe))p=require('child_process').spawn(exe,['-pai',String(process.pid)],{windowsHide:true});
   else{ // roda de uma cópia na pasta de dados (o PowerShell não lê de dentro do pacote do app); BOM para ele ler os acentos
     const arq=path.join(app.getPath('userData'),'leitor-tela.ps1');
@@ -147,9 +152,9 @@ app.whenReady().then(()=>{
     x.setOpacity(0);x.showInactive();setTimeout(()=>{if(!x.isDestroyed())x.setOpacity(1)},16)}); // um quadro invisível: não aparece resto do desenho anterior
   ipcMain.on('pin-fechar',e=>{if(ehMapa(e.sender)){mapaVisivel=false;mapaWin.hide();win.webContents.send('mapa-fechado');return}const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-removido',p[0])});
   ipcMain.on('pin-ocultar',e=>{const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-oculto',p[0])}); // × : some, mas continua fixado
-  ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender)&&!ehMapa(e.sender)||typeof k!='string'||k.length>200)return;win.show();if(MAC)app.focus({steal:true});win.focus();win.webContents.send('abrir-ficha',k)});
+  ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender)&&!ehMapa(e.sender)||typeof k!='string'||k.length>200)return;win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente();win.webContents.send('abrir-ficha',k)});
   // atalho global: abre o painel já com foco na busca; se já estiver aberto e em foco, fecha
-  if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus()}win.webContents.send('toggle',f)}))
+  if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente()}win.webContents.send('toggle',f)}))
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);
 });
 app.on('will-quit',()=>{globalShortcut.unregisterAll();ligaLeitor(false)});
