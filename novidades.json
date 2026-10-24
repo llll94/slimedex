@@ -2,6 +2,25 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "1.6.3",
+      "pt": [
+        "Mais leve e mais rápido: o leitor do Tab gasta bem menos memória e processador, e a lista e as imagens carregam mais rápido",
+        "Slimes do mapa (Tab): a caixa abre na horizontal já no primeiro Tab, não pisca, e fora dela o clique vai para o jogo",
+        "Com o jogo na frente, a caixa do Tab agora arrasta, fecha no × e abre o slime clicado",
+        "Ctrl+Tab com o jogo aberto: já dá para digitar na busca, sem clicar nela",
+        "Visual mais limpo: editar/apagar aparecem ao passar o mouse, linhas da lista do mesmo tamanho e \"testadas sem resultado\" recolhidas",
+        "Reiniciar no menu do ícone da bandeja (botão direito)"
+      ],
+      "en": [
+        "Lighter and faster: the Tab reader uses much less memory and CPU, and the list and images load faster",
+        "Map slimes (Tab): the box opens horizontal on the very first Tab, doesn't flicker, and clicks outside it go to the game",
+        "With the game in front, the Tab box can now be dragged, closed on × and opens the slime you click",
+        "Ctrl+Tab with the game open: you can type in the search right away, no click needed",
+        "Cleaner look: edit/delete show on hover, list rows all the same size and \"tested without result\" collapsed",
+        "Restart in the tray icon menu (right click)"
+      ]
+    },
+    {
       "v": "1.6.2",
       "pt": [
         "🗑 Apague qualquer combinação errada, inclusive da base: some do seu app na hora (dá para desfazer na ficha) e vai para revisão da comunidade quando você enviar suas descobertas",
