@@ -87,18 +87,16 @@ function criaMapa(){
     mapaWin=new BrowserWindow({width:W,height:H,x:pos.x,y:pos.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,
       hasShadow:false,focusable:false,show:false,useContentSize:true,webPreferences:{preload:path.join(__dirname,'preload.js'),backgroundThrottling:false}}); // escondida entre um Tab e outro: não pode pausar
     mapaWin.setAlwaysOnTop(true,'screen-saver');if(MAC)mapaWin.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
-    // janela fixa e transparente: fora da caixa o clique passa para o jogo. Enquanto visível, confere o cursor (os eventos de entrar/sair do Electron oscilam)
-    let vigia=null,dentro=null;const solta=v=>{if(v!==dentro){dentro=v;mapaWin.setIgnoreMouseEvents(!v)}};solta(false);
-    mapaWin.on('show',()=>{clearInterval(vigia);vigia=setInterval(()=>{if(!mapaWin||mapaWin.isDestroyed())return clearInterval(vigia);
-      const c=screen.getCursorScreenPoint(),b=mapaWin.getContentBounds(),[cw,ch]=mapaWin.caixa||[0,0];solta(c.x>=b.x&&c.y>=b.y&&c.x<b.x+cw&&c.y<b.y+ch)},40)});
-    mapaWin.on('hide',()=>{clearInterval(vigia);solta(false)});
     const w=mapaWin;w.loadFile('mapa.html');w.webContents.on('did-finish-load',()=>{if(w.fotos)w.webContents.send('pre-fotos',w.fotos);if(w.dados)w.webContents.send('pin-dados',w.dados)})}
 }
-// a janela não muda de tamanho entre um mapa e outro (redimensionar janela transparente visível piscava): só a caixa de dentro muda
+// Windows: a janela não muda de tamanho entre um mapa e outro (redimensionar janela transparente visível piscava), só a caixa de dentro;
+// o recorte (setShape) deixa só a caixa pegar o mouse, o resto passa para o jogo. Mac não tem recorte: larga antes de medir e encolhe para a caixa
 function mostraMapa(d){criaMapa();
-  mapaWin.dados=d;if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
+  mapaWin.dados=d;if(MAC&&!mapaWin.isVisible())mapaWin.setContentSize(440,360);if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
 
-function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
+function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Restart':'Reiniciar',click:reinicia},{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
+// No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE)
+function reinicia(){salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)}
 app.whenReady().then(()=>{
   if(MAC&&app.dock)app.dock.hide(); // Mac: overlay fica fora do Dock (só ícone na barra de menu)
   const wa=screen.getPrimaryDisplay().workArea,p=carrega()||{x:wa.x+wa.width-ICON[0]-48,y:wa.y+506}; // padrão: 48px da borda direita, 506px do topo
@@ -115,7 +113,6 @@ app.whenReady().then(()=>{
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
   ipcMain.on('abrir-pasta',()=>shell.openPath(app.getPath('userData')));
   // reiniciar (base nova da comunidade): salva a posição, fecha e abre de novo.
-  // No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE).
   // nova versão no GitHub: verifica; no .exe portátil baixa, confere o SHA-256 e reinicia na nova; no Mac/dev abre a página
   const RELEASES=process.env.SLIMEDEX_RELEASE_URL||'https://api.github.com/repos/llll94/slimedex/releases/latest';
   ipcMain.handle('versao-nova',async()=>{try{return await atz.verificar(RELEASES,app.getVersion(),process.platform)}catch{return null}});
@@ -130,7 +127,7 @@ app.whenReady().then(()=>{
   // o que mudou em cada versão, para quem joga (novidades.json no repositório)
   const NOVIDADES=process.env.SLIMEDEX_NOVIDADES_URL||'https://raw.githubusercontent.com/llll94/slimedex/main/novidades.json'; // variável só para teste local
   ipcMain.handle('novidades',async()=>{try{const r=await fetch(NOVIDADES,{signal:AbortSignal.timeout(6000)});if(r.ok)return await r.json()}catch{}return null});
-  ipcMain.on('reiniciar',()=>{salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)});
+  ipcMain.on('reiniciar',reinicia);
   ipcMain.on('size',(_,o)=>size(o));
   // arrastar (ícone ou combinação fixada): guarda a distância do cursor ao canto da janela e acompanha o cursor
   const arrasto=new Map(),jan=e=>BrowserWindow.fromWebContents(e.sender);
@@ -143,7 +140,7 @@ app.whenReady().then(()=>{
   ipcMain.on('fav-sync',(_,lista)=>{if(!Array.isArray(lista))return;lista=lista.filter(d=>d&&typeof d.id=='string').slice(0,MAX_PINS);
     const ids=new Set(lista.map(d=>d.id));for(const [id,p] of [...pins])if(!ids.has(id)){pins.delete(id);p.w.close()}lista.forEach(abrePin)});
   ipcMain.on('pin-tamanho',(e,w,h)=>{const x=jan(e),m=ehMapa(e.sender);if(!x||!(pinDe(e.sender)||m))return;
-    const [cw,ch]=x.getContentSize();let nw=Math.ceil(w),nh=Math.ceil(h);if(m){x.caixa=[nw,nh];nw=Math.max(cw,nw);nh=Math.max(ch,nh)} // a do mapa só cresce (caixa maior que 440×360, raro)
+    const [cw,ch]=x.getContentSize();let nw=Math.ceil(w),nh=Math.ceil(h);if(m&&!MAC){const f=nw+'x'+nh;if(x.forma!==f){x.forma=f;x.setShape([{x:0,y:0,width:nw,height:nh}])}nw=Math.max(cw,nw);nh=Math.max(ch,nh)} // a do mapa só cresce (caixa maior que 440×360, raro)
     if(cw!==nw||ch!==nh)x.setContentSize(nw,nh); // mesmo tamanho: não redesenha (piscava)
     if(x.isVisible()||(m&&!mapaVisivel))return; // a do mapa só aparece se o painel ainda quer (Tab pode ter fechado antes)
     if(!m)return x.showInactive();
