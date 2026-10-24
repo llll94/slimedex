@@ -87,11 +87,16 @@ function criaMapa(){
     mapaWin=new BrowserWindow({width:W,height:H,x:pos.x,y:pos.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,
       hasShadow:false,focusable:false,show:false,useContentSize:true,webPreferences:{preload:path.join(__dirname,'preload.js'),backgroundThrottling:false}}); // escondida entre um Tab e outro: não pode pausar
     mapaWin.setAlwaysOnTop(true,'screen-saver');if(MAC)mapaWin.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});
+    // janela fixa e transparente: fora da caixa o clique passa para o jogo. Enquanto visível, confere o cursor (os eventos de entrar/sair do Electron oscilam)
+    let vigia=null,dentro=null;const solta=v=>{if(v!==dentro){dentro=v;mapaWin.setIgnoreMouseEvents(!v)}};solta(false);
+    mapaWin.on('show',()=>{clearInterval(vigia);vigia=setInterval(()=>{if(!mapaWin||mapaWin.isDestroyed())return clearInterval(vigia);
+      const c=screen.getCursorScreenPoint(),b=mapaWin.getContentBounds(),[cw,ch]=mapaWin.caixa||[0,0];solta(c.x>=b.x&&c.y>=b.y&&c.x<b.x+cw&&c.y<b.y+ch)},40)});
+    mapaWin.on('hide',()=>{clearInterval(vigia);solta(false)});
     const w=mapaWin;w.loadFile('mapa.html');w.webContents.on('did-finish-load',()=>{if(w.fotos)w.webContents.send('pre-fotos',w.fotos);if(w.dados)w.webContents.send('pin-dados',w.dados)})}
 }
-// larga antes de medir: o conteúdo se ajusta à janela; depois a janela encolhe para o tamanho dele
+// a janela não muda de tamanho entre um mapa e outro (redimensionar janela transparente visível piscava): só a caixa de dentro muda
 function mostraMapa(d){criaMapa();
-  mapaWin.dados=d;if(!mapaWin.isVisible())mapaWin.setContentSize(440,360);if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
+  mapaWin.dados=d;if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
 
 function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 app.whenReady().then(()=>{
@@ -138,7 +143,8 @@ app.whenReady().then(()=>{
   ipcMain.on('fav-sync',(_,lista)=>{if(!Array.isArray(lista))return;lista=lista.filter(d=>d&&typeof d.id=='string').slice(0,MAX_PINS);
     const ids=new Set(lista.map(d=>d.id));for(const [id,p] of [...pins])if(!ids.has(id)){pins.delete(id);p.w.close()}lista.forEach(abrePin)});
   ipcMain.on('pin-tamanho',(e,w,h)=>{const x=jan(e),m=ehMapa(e.sender);if(!x||!(pinDe(e.sender)||m))return;
-    const [cw,ch]=x.getContentSize(),nw=Math.ceil(w),nh=Math.ceil(h);if(cw!==nw||ch!==nh)x.setContentSize(nw,nh); // mesmo tamanho: não redesenha (piscava)
+    const [cw,ch]=x.getContentSize();let nw=Math.ceil(w),nh=Math.ceil(h);if(m){x.caixa=[nw,nh];nw=Math.max(cw,nw);nh=Math.max(ch,nh)} // a do mapa só cresce (caixa maior que 440×360, raro)
+    if(cw!==nw||ch!==nh)x.setContentSize(nw,nh); // mesmo tamanho: não redesenha (piscava)
     if(x.isVisible()||(m&&!mapaVisivel))return; // a do mapa só aparece se o painel ainda quer (Tab pode ter fechado antes)
     if(!m)return x.showInactive();
     x.setOpacity(0);x.showInactive();setTimeout(()=>{if(!x.isDestroyed())x.setOpacity(1)},16)}); // um quadro invisível: não aparece resto do desenho anterior

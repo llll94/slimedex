@@ -36,5 +36,4 @@ let drag=null;x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};
 p.onpointerdown=e=>{if(e.button||e.target===x||e.target.id==='add')return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false,k:(e.target.closest('.sl')||{}).dataset?.k};ov.dragStart()};
 p.onpointermove=e=>{if(!drag)return;if(!(e.buttons&1)){drag=null;ov.dragEnd();return}
  if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
-p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&d.k)ov.pin.abrir(d.k)};
-</script></body></html>
+p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&d.k)ov.pin.abrir(d.k)};</script></body></html>
