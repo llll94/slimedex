@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-23T15:09:11.804Z",
+ "gerado": "2026-10-24T00:45:41.577Z",
  "pessoas": 4,
  "combos": [
   {
@@ -136,6 +136,10 @@
    "ch": 24,
    "n": 1
   },
+  "SL_Cattle_PowerLight|SL_Beholder_DarkMagic|SL_BlackCat_DarkMagic|Dandelion's Orb": {
+   "ch": 6,
+   "n": 1
+  },
   "SL_Dandelion_GrassWind|SL_Honet_WindElectric|SL_ElecChicken_WindElectric|Fried's Feather\nFluffy's Feather": {
    "ch": 92,
    "n": 1
@@ -198,9 +202,19 @@
   "Caminho dos Fundos de Noecheon 3": [
    "SL_Honet_WindElectric"
   ],
+  "Caverna 3": [
+   "SL_Bat_WindDark",
+   "SL_Bat_WindPoison"
+  ],
   "Entrada Norte de Noecheon": [
    "SL_ElecChicken_WindElectric",
    "SL_Honet_WindElectric"
+  ],
+  "Entrada da Floresta das Sombras": [
+   "SL_Tricky_Wind"
+  ],
+  "Margem das Ondas Brancas": [
+   "SL_Bass_Water"
   ],
   "Monte Noecheon 3": [
    "-SL_Honet_Wind"
