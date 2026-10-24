@@ -178,11 +178,11 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
  const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
   :`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
- if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
+ if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(s=>row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto)
  else{const w=norm(q).split(/\s+/),nq=norm(q);
   // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
   const nota=s=>{const ns=[dn(s),s.nm,...s.al].filter(Boolean).map(norm);return ns.some(n=>n.startsWith(nq))?0:ns.some(n=>n.split(' ').some(p=>p.startsWith(nq)))?1:ns.some(n=>n.includes(nq))?2:3};
-  bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2])).join('')||`<p class="mu">${t('nothing')}</p>`}
+  bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2],true)).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
 // votos 👍/👎: um por combinação (clicar de novo desfaz); c.v={u,d} e c.cz (contestada) vêm da base mesclada
