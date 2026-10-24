@@ -69,10 +69,14 @@ const ehMapa=s=>mapaWin&&!mapaWin.isDestroyed()&&mapaWin.webContents===s;
 function ligaLeitor(on){
   if(!on){const p=leitor;leitor=null;if(p)p.kill();mapaVisivel=false;if(mapaWin&&!mapaWin.isDestroyed())mapaWin.hide();return}
   if(leitor||process.platform!=='win32')return;
-  // roda de uma cópia na pasta de dados (o PowerShell não lê de dentro do pacote do app); BOM para ele ler os acentos
-  const arq=path.join(app.getPath('userData'),'leitor-tela.ps1');
-  try{fs.writeFileSync(arq,'\ufeff'+fs.readFileSync(path.join(__dirname,'leitor-tela.ps1'),'utf8').replace(/^\ufeff/,''))}catch(e){win.webContents.send('mapa-evento',{ev:'erro',msg:e.message});return}
-  const p=require('child_process').spawn('powershell.exe',['-NoProfile','-ExecutionPolicy','Bypass','-File',arq,'-pai',String(process.pid)],{windowsHide:true});leitor=p;
+  // leitor nativo (leitor-tela.exe, compilado no build; fica fora do pacote: app.asar.unpacked). Sem ele, usa o PowerShell
+  const exe=path.join(__dirname,'leitor-tela.exe').replace('app.asar'+path.sep,'app.asar.unpacked'+path.sep);let p;
+  if(fs.existsSync(exe))p=require('child_process').spawn(exe,['-pai',String(process.pid)],{windowsHide:true});
+  else{ // roda de uma cópia na pasta de dados (o PowerShell não lê de dentro do pacote do app); BOM para ele ler os acentos
+    const arq=path.join(app.getPath('userData'),'leitor-tela.ps1');
+    try{fs.writeFileSync(arq,'\ufeff'+fs.readFileSync(path.join(__dirname,'leitor-tela.ps1'),'utf8').replace(/^\ufeff/,''))}catch(e){win.webContents.send('mapa-evento',{ev:'erro',msg:e.message});return}
+    p=require('child_process').spawn('powershell.exe',['-NoProfile','-ExecutionPolicy','Bypass','-File',arq,'-pai',String(process.pid)],{windowsHide:true})}
+  leitor=p;
   require('readline').createInterface({input:p.stdout}).on('line',l=>{let o;try{o=JSON.parse(l)}catch{return}if(leitor===p&&!win.isDestroyed())win.webContents.send('mapa-evento',o)});
   p.on('exit',c=>{if(leitor!==p)return;leitor=null;win.webContents.send('mapa-evento',{ev:'erro',msg:'o leitor parou (código '+c+')'})});
   p.on('error',e=>{if(leitor===p){leitor=null;win.webContents.send('mapa-evento',{ev:'erro',msg:e.message})}})}

@@ -1,13 +1,14 @@
 {
   "name": "slime-overlay",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Slimedex — overlay de consulta para World of Slime: busca rápida por Ctrl+Tab, combinações, chances e elementos de cada slime.",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win portable",
-    "dist:mac": "electron-builder --mac"
+    "dist:mac": "electron-builder --mac",
+    "predist": "node scripts/compila-leitor.js"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -31,7 +32,8 @@
       "icon.png",
       "icon.svg",
       "mapa.html",
-      "leitor-tela.ps1"
+      "leitor-tela.ps1",
+      "leitor-tela.exe"
     ],
     "win": {
       "target": "portable",
@@ -57,6 +59,9 @@
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
       "artifactName": "Slimedex-${version}-mac-${arch}.${ext}"
-    }
+    },
+    "asarUnpack": [
+      "leitor-tela.exe"
+    ]
   }
 }

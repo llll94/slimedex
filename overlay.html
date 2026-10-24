@@ -15,7 +15,7 @@ button{background:none;border:0;color:#9aa3ad;font-size:16px;cursor:pointer}butt
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#3a414a;border:2px solid transparent;border-radius:8px;background-clip:padding-box}
 ::-webkit-scrollbar-thumb:hover{background-color:#56606c}.mu{color:#9aa3ad;font-size:11px}
-.row{display:flex;align-items:center;gap:8px;padding:4px 2px;border-radius:8px;cursor:pointer}.row:hover{background:#262c33}
+.row{display:flex;align-items:center;gap:8px;padding:4px 2px;border-radius:8px;cursor:pointer;content-visibility:auto;contain-intrinsic-size:auto 62px} /* linhas fora da tela não são desenhadas */.row:hover{background:#262c33}
 .row.on{background:#2b3440;box-shadow:inset 0 0 0 1px #6aa8ff}
 .row img,.row i{width:54px;height:54px;object-fit:contain;flex:none}
 .fh{display:flex;gap:10px;align-items:center}.fh img{width:80px;height:80px;object-fit:contain}
@@ -92,7 +92,7 @@ S.forEach(s=>s.n0=s.n); // número da base (o número exibido pode vir do usuár
 let ALL=[];const ordena=()=>{ALL=[...S].sort((a,b)=>(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm))};ordena(); // numerados primeiro, depois por nome
 const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const im=p=>p?`<img alt="" src="imagens${p}" onerror="this.onerror=null;this.src='${BASE}${p}'">`:'<i class="mu">?</i>';
+const im=p=>p?`<img alt="" src="${BASE}${p}">`:'<i class="mu">?</i>'; // direto da wiki: vem do cache do app (a wiki manda guardar por 1 ano)
 // ---- idioma: nomes, elementos, locais e materiais no idioma escolhido ----
 const locN=l=>LANG==='en'?(D.locEn&&D.locEn[l])||l:l;
 const IT={},IK={};(D.itens||[]).forEach(i=>{IK[i.k]=i;[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>IT[norm(v)]=i)});
@@ -183,11 +183,11 @@ const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
 const fvS=k=>{const on=(M.fav||[]).some(f=>f.id==='s:'+k);return`<span class="fv${on?' on':''}" data-fav="s:${esc(k)}" title="${esc(t(on?'fav_off':'fav_slime_title'))}">${on?'★':'☆'}</span>`};
 const favSlime=k=>{const s=K[k];return{id:'s:'+k,tipo:'s',r:k,lang:LANG,
  tx:{r:(s.n!=null?'#'+s.n+' ':'')+dn(s),el:s.el.map(elN).join(' / '),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},
- im:{r:s.im?['imagens'+s.im,BASE+s.im]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
+ im:{r:s.im?[BASE+s.im]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
 const fv=c=>{if(!c.r)return'';const on=ehFav(c);return`<span class="fv${on?' on':''}" data-fav="${esc(cid(c))}" title="${esc(t(on?'fav_off':'fav_title'))}">${on?'★':'☆'}</span>`};
 const favDados=c=>({id:cid(c),r:c.r,l:c.l||'',m:c.m?matN(c.m):'',ch:c.ch??null,lv:t('lv'),lang:LANG,
  tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},mi:c.m?matIco(c.m):null,
- im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?['imagens'+p,BASE+p]:null]}))});
+ im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?[BASE+p]:null]}))});
 function syncFav(){const porId=new Map(C.map(c=>[cid(c),c]));
  M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);
   const n=f.id.startsWith('s:')?(K[f.id.slice(2)]?favSlime(f.id.slice(2)):f):c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')}};
