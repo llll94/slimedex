@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-24T00:45:41.577Z",
+ "gerado": "2026-10-24T18:27:29.738Z",
  "pessoas": 4,
  "combos": [
   {
@@ -60,6 +60,16 @@
    "m": "",
    "l": "31",
    "ch": 8.8,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Cauldron_MagicSteel+SL_LightningBug_GroundElectric>SL_Ladyf_Electric",
+   "r": "SL_Ladyf_Electric",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_LightningBug_GroundElectric",
+   "m": "Asa de Inseto de Ladyf (Elétrico) (Ladyf's Insect Wing (Elec",
+   "l": "31",
+   "ch": 4.7,
    "n": 1
   },
   {
@@ -152,6 +162,10 @@
    "ch": 10,
    "n": 2
   },
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Shade_DarkWater|Slick's Vent": {
+   "ch": 49.2,
+   "n": 1
+  },
   "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide": {
    "ch": 29.6,
    "n": 1
@@ -162,6 +176,10 @@
   },
   "SL_Lizard_Ground|SL_Lizard_Poison|SL_Rat_PoisonGround|Tweety's Hide": {
    "ch": 35.6,
+   "n": 1
+  },
+  "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
+   "ch": 40,
    "n": 1
   }
  },
@@ -187,7 +205,15 @@
   },
   "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Eel_WaterPower|Duto de Escape": {
    "u": 0,
-   "d": 1
+   "d": 2
+  },
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Shade_DarkWater|Slick's Vent": {
+   "u": 1,
+   "d": 0
+  },
+  "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
+   "u": 1,
+   "d": 0
   }
  },
  "num": {
@@ -206,6 +232,10 @@
    "SL_Bat_WindDark",
    "SL_Bat_WindPoison"
   ],
+  "Caxjer na 9": [
+   "SL_Bat_WindDark",
+   "SL_SlimeSM_Water"
+  ],
   "Entrada Norte de Noecheon": [
    "SL_ElecChicken_WindElectric",
    "SL_Honet_WindElectric"
@@ -213,14 +243,28 @@
   "Entrada da Floresta das Sombras": [
    "SL_Tricky_Wind"
   ],
+  "Entrada da Praia dos": [
+   "SL_Slime_Water"
+  ],
   "Margem das Ondas Brancas": [
    "SL_Bass_Water"
+  ],
+  "Monte Noecheon 2": [
+   "SL_Lizard_Electric",
+   "SL_Slime_Grass"
   ],
   "Monte Noecheon 3": [
    "-SL_Honet_Wind"
   ],
   "Monte Noecheon 7": [
    "SL_Honet_WindElectric"
+  ],
+  "Tr il ha dos Fundos de": [
+   "SL_Honet_WindElectric",
+   "SL_SlimeSM_Grass"
+  ],
+  "Trilha do Monte Noecheon 1": [
+   "SL_Dandelion_GrassWind"
   ],
   "Trilha dos Fundos de Noecheon 2": [
    "SL_Bushtit_WindLight",
