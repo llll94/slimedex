@@ -108,6 +108,7 @@ app.whenReady().then(()=>{
   ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
   ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
+  ipcMain.on('abrir-pasta',()=>shell.openPath(app.getPath('userData')));
   // reiniciar (base nova da comunidade): salva a posição, fecha e abre de novo.
   // No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE).
   // nova versão no GitHub: verifica; no .exe portátil baixa, confere o SHA-256 e reinicia na nova; no Mac/dev abre a página

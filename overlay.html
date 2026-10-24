@@ -48,6 +48,15 @@ input.mini{flex:none;width:58px;margin-left:auto;padding:1px 6px;font-size:12px}
 /* chave liga/desliga dos fixados: bolinha à direita = na tela */
 .sw{margin-left:auto;flex:none;width:30px;height:16px;border-radius:9px;background:#3a414a;position:relative;cursor:pointer;transition:background .15s}
 .sw i{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#9aa3ad;transition:left .15s,background .15s}.sw.on{background:#2f6f4f}.sw.on i{left:16px;background:#7fe0a8}
+/* ações da combinação (🗑 ✎ ⇄): só aparecem ao passar o mouse na linha, para não poluir */
+.ac{display:inline-flex;align-items:center;gap:2px;margin-left:4px;opacity:0;transition:opacity .12s}.rc:hover .ac{opacity:1}
+.ac>span{display:inline-flex;align-items:center;justify-content:center;width:20px;height:18px;border-radius:5px;cursor:pointer;color:#9aa3ad}.ac>span:hover{background:#262c33;color:#fff}
+.ac>span.del:hover{color:#ff7b7b}.ac svg{width:14px;height:14px;fill:currentColor;pointer-events:none}
+/* contagens em etiquetas (envio e meus dados) */
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}.chip{padding:1px 8px;border-radius:9px;background:#1f252c;font-size:12px}
+/* linhas compactas (Fixados e Recentes) */
+.row.mini{padding:2px;contain-intrinsic-size:auto 42px}.row.mini>img,.row.mini>i{width:36px;height:36px}.row.mini .mu{font-size:11px}
+.tgl{display:flex;align-items:center;gap:8px;margin:4px 0}.tgl .sw{margin-left:0}
 /* ☆ fixar na tela */
 .fv{cursor:pointer;color:#5c6670;font-size:15px;line-height:14px;margin-left:4px}.fv:hover,.fv.on{color:#ffd479}.fv.cheio{color:#ff7b7b}
 /* formulário de nova combinação */
@@ -152,7 +161,7 @@ function chave(v){v=(v||'').trim();if(LBL[v])return LBL[v];const n=norm(v);if(!n
 const REC='recentes';let rec=[];try{rec=(JSON.parse(localStorage.getItem(REC))||[]).filter(k=>K[k])}catch{}
 function lembra(k){rec=[k,...rec.filter(x=>x!==k)].slice(0,3);try{localStorage.setItem(REC,JSON.stringify(rec))}catch{}}
 let sel=-1,cur=null; // linha destacada pelo teclado; ficha aberta
-function row(s){const a=alt(s);return`<div class="row" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${a?esc(a)+' · ':''}${esc(s.el.map(elN).join(' / '))}</div></div></div>`}
+function row(s,mini){const a=alt(s);return`<div class="row${mini?' mini':''}" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${a?esc(a)+' · ':''}${esc(s.el.map(elN).join(' / '))}</div></div></div>`}
 const voltarLk=()=>`<span class="lk" id="bk" title="${esc(t('back_title'))}">${t('back')}</span>`;
 // ---- histórico de navegação: cada tela registra onde está; voltar() refaz a anterior ----
 let vista=null,hist=[],voltando=false;
@@ -167,10 +176,13 @@ function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
- const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
-  :`<div class="row" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
- if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k])).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
- else{const w=norm(q).split(/\s+/);bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map(row).join('')||`<p class="mu">${t('nothing')}</p>`}
+ const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
+  :`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
+ if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(row).join('');
+ else{const w=norm(q).split(/\s+/),nq=norm(q);
+  // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
+  const nota=s=>{const ns=[dn(s),s.nm,...s.al].filter(Boolean).map(norm);return ns.some(n=>n.startsWith(nq))?0:ns.some(n=>n.split(' ').some(p=>p.startsWith(nq)))?1:ns.some(n=>n.includes(nq))?2:3};
+  bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2])).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
 // votos 👍/👎: um por combinação (clicar de novo desfaz); c.v={u,d} e c.cz (contestada) vêm da base mesclada
@@ -201,14 +213,15 @@ function favorita(id,el){const i=M.fav.findIndex(f=>f.id===id);
 // selo "teste": veio da planilha e ninguém confirmou (👍 ou envio); o seu 👍 já tira no seu app
 const confirmada=c=>!!c.r&&((M.votos||{})[cid(c)]===1||(CM&&Array.isArray(CM.conf)&&CM.conf.includes(cid(c)))); // sem resultado não tem o que confirmar
 // combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
-const rc=(c,res)=>`<div class="rc"><div class="l1">${res?`${im(K[c.r]?.im)}${lk(c.r)} =`:''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
+const rc=(c,res)=>`<div class="rc"><div class="l1">${res?(c.r?`${im(K[c.r].im)}${lk(c.r)} =`:`${im(null)} =`):''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
  [c.m?ii(matIco(c.m))+esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
  `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
  `${c.ts&&!confirmada(c)?` <span class="meu" style="background:#3a3220;color:#ffd479" title="${esc(t(c.r?'teste_title':'teste_title_sem'))}">${t('teste')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
- `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span> <span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}">🗑</span>`:''}`+
- `${!c.meu&&!c.meuId?` <span class="del" data-apaga="${esc(cid(c))}" title="${esc(t('apagar_title'))}">🗑</span>`:''}`+
- ` <span class="lk sm" data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}">✎</span>${c.meu&&c.gemeo?` <span class="lk sm" data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
+ `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span>`:''}`+
+ `<span class="ac"><span data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span>${c.meu&&c.gemeo?`<span data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
+ `${c.meu||c.meuId?`<span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></span>`
+  :`<span class="del" data-apaga="${esc(cid(c))}" title="${esc(t('apagar_title'))}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></span>`}</span>`+
  `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}${fv(c)}</div></div>`;
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
 function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys(T);
@@ -226,10 +239,12 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>${peSel===k?peEscolha(k):''}
  <h4>${t('where')}</h4>${(()=>{const l=lugares(k);return l.length?l.map(n=>`<span class="lk" data-mapa="${esc(n)}">${esc(nomeMapa(n))}</span>`).join(' · '):`<span class="mu">${t('no_loc')}</span>`})()}
  <h4>${t('drops')}</h4>${(s.dp||[]).length?`<div class="drs">${s.dp.map(d=>`<span class="dr">${ii(itemIco(d))}${esc(itemNome(d))}</span>`).join('')}</div>`:`<span class="mu">${t('no_drops')}</span>`}
- <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<span class="mu">${t('no_combo')}</span>`}
+ <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<p class="mu" style="margin:4px 0">${t('no_combo')}</p>`}
  ${(()=>{const a=CA.filter(c=>(M.apaga||[]).includes(cid(c))&&[c.r,c.a,c.b].includes(k));return a.length?`<p class="mu">${t('apagadas')} ${a.map(c=>`${esc(nm(c.r)||'?')} = ${esc(nm(c.a))} + ${esc(nm(c.b))} <span class="lk sm" data-desapaga="${esc(cid(c))}" title="${esc(t('desapagar_title'))}">↺</span>`).join(' · ')}</p>`:''})()}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
- <h4>${t('used',{n:u.length})}</h4>${u.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}
+ ${(()=>{const ok=u.filter(c=>c.r),sem=u.filter(c=>!c.r); // as "?" (só testadas) ficam num bloco fechado
+  return`<h4>${t('used',{n:ok.length})}</h4>${ok.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}`+
+  (sem.length?`<details class="sec"><summary>${t('testadas',{n:sem.length})}</summary>${sem.map(c=>rc(c,1)).join('')}</details>`:'')})()}
  ${elems(s)}`;bd.scrollTop=keep?top:0;
  if(window.secel)secel.ontoggle=()=>{try{localStorage.setItem('elem-aberto',secel.open?'1':'0')}catch{}}}
 // ⇄ juntar: prende a sua combinação à igual (completa o que falta nela); se a igual também for sua, junta as duas
@@ -257,7 +272,7 @@ function editaPT(){const s=K[cur];ptw.innerHTML=`<input id="pti" placeholder="${
  pti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;ficha(cur,true)}};pti.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
 // tela "Nova combinação": aberta pelo ＋ do topo ou pelo botão da ficha (já vem com o resultado preenchido)
 // ed = {c: combinação sendo editada, id: sua cópia (se houver), alvo: id da original da base/comunidade}
-function formCombo(r,ed){const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;marca({t:'form',r:r||null});
+function formCombo(r,ed){semBusca();const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;marca({t:'form',r:r||null});
  bd.innerHTML=`${voltarLk()}<h4>${t(e?'form_h_edit':'form_h')}</h4><div class="form">
  <label>${t('result')}</label><input id="fr" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${s?esc(rot(s)):''}">
  <label>${t('slime1')}</label><input id="fa" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${e&&K[e.a]?esc(rot(K[e.a])):''}">
@@ -301,13 +316,13 @@ function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"
   .map(l=>l.map(q).join(',')).join('\r\n')}
 // ---- enviar para a base colaborativa (revisada antes de entrar na base de todos; x:1 em combos = pedido para apagar) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
-function envio(){cur=null;sel=-1;marca({t:'envio'});
+function envio(){semBusca();cur=null;sel=-1;marca({t:'envio'});
  const p={pt:M.pt,pc:M.pc,combos:[...M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
  const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=M.combos.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
  const vazio=!(n+c+k+v+u+lo+pe+ap),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- <p>${t('send_counts',{k,c,v,n,u,lo,pe,ap})}</p>
+ ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga']])}
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -315,19 +330,22 @@ function envio(){cur=null;sel=-1;marca({t:'envio'});
  envok.onclick=async()=>{if(vazio||igual)return;envok.disabled=true;envok.textContent=t('sending');const r=await ov.meus.enviar(p);
   if(r.ok){try{localStorage.setItem('ultimo-envio',sig)}catch{}envmsg.className='ok';envmsg.textContent=t('sent_ok');envok.textContent=t('sent')}
   else{envmsg.className='err';envmsg.textContent=t('send_fail',{e:erroT(r.erro)});envok.disabled=false;envok.textContent=t('retry')}}}
+// contagens em etiquetas, só o que não é zero: [[n, 'singular|plural'], ...]
+const chips=l=>{const c=l.filter(([n])=>n>0).map(([n,k])=>{const [s,p]=t(k).split('|');return`<span class="chip">${n} ${n===1?s:p}</span>`});return c.length?`<div class="chips">${c.join('')}</div>`:''};
 // ---- meus dados: resumo, exportar, importar ----
-function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
+function semBusca(){qi.value='';limpaX()} // a busca não tem a ver com esta tela
+function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
- <p>${t('my_counts',{n,p,c,v,u})}</p>
- <p class="mu">${esc(t('my_where',{p:PASTA?PASTA+(ov.plataforma==='win32'?'\\':'/')+'meus-dados.json':''}))}</p>
+ ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado']])||`<p class="mu">${t('my_vazio')}</p>`}
+ <p class="mu">${t('my_where_curto')} <span class="lk" id="pasta">${t('abrir_pasta')}</span></p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
- ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="lg"><button class="btn${mapaOn?' on':''}" id="mapat">${t(mapaOn?'mapa_on':'mapa_off')}</button></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
+ ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="tgl"><span class="sw${mapaOn?' on':''}" id="mapat" title="${esc(t(mapaOn?'mapa_on':'mapa_off'))}"><i></i></span><span>${t(mapaOn?'ligado':'desligado')}</span></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
- nv2.onclick=()=>formCombo(null);env.onclick=envio;
+ nv2.onclick=()=>formCombo(null);env.onclick=envio;pasta.onclick=()=>ov.abrirPasta();
  const mt=document.getElementById('mapat');if(mt)mt.onclick=()=>{mapaOn=!mapaOn;try{localStorage.setItem('mapa-tab',mapaOn?'1':'0')}catch{}
   mapaStatus=mapaOn?t('mapa_iniciando'):'';mapaAberto=false;ov.mapa.ligar(mapaOn);meus()};
  exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
@@ -342,7 +360,7 @@ function meus(msg){cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).l
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
 // ---- ajuda: atalhos, como voltar, recursos e idioma ----
 let VERSAO='',PASTA='';
-function info(){cur=null;sel=-1;marca({t:'info'});
+function info(){semBusca();cur=null;sel=-1;marca({t:'info'});
  bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
  <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
 // textos fixos do topo (mudam com o idioma)
@@ -453,7 +471,7 @@ function lugares(k){const l=new Set(K[k].lc);(D.mapas||[]).forEach(m=>{if(m.sl.i
 function resultadosMapa(n,q){const s=slimesDoMapa(n),w=norm(q||'').split(/\s+/).filter(Boolean);
  return ALL.filter(x=>w.every(p=>x.h.includes(p))).slice(0,40).map(x=>{const on=s.todos.includes(x.k);
   return`<div class="row" data-lm="${esc(x.k)}">${im(x.im)}<div><b>${esc(rot(x))}</b></div>${on?`<span class="ok">✓</span>`:''}</div>`}).join('')||`<p class="mu">${t('nothing')}</p>`}
-function telaMapa(n){cur=null;sel=-1;marca({t:'mapa',m:n});const s=slimesDoMapa(n),q=(document.getElementById('mq')||{}).value||'';
+function telaMapa(n){semBusca();cur=null;sel=-1;marca({t:'mapa',m:n});const s=slimesDoMapa(n),q=(document.getElementById('mq')||{}).value||'';
  const novo=!mapaPorPt(n);
  bd.innerHTML=`${voltarLk()}<h4>${t('mapa_tela_h',{m:esc(nomeMapa(n))})}</h4>
  ${novo?`<p class="mu">${t('mapa_novo_tip')}</p><div class="lg" style="display:flex;gap:6px;margin-bottom:6px"><input id="mn" value="${esc(n)}" style="flex:1"><button class="btn" id="mnok">${t('mapa_renomear')}</button></div>`:''}
