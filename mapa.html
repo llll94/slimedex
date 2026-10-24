@@ -29,11 +29,15 @@ ov.pin.onDados(d=>{if(!d)return;p.classList.toggle('lendo',!!d.lendo);const tt=d
   const leg=document.getElementById('leg'),tem=(d.slimes||[]).some(s=>['dia','noite','ambos'].includes(s.pe));leg.hidden=!tem;
   if(tem){const it=(cor,txt)=>{const s=el('span');const b=el('i');b.style.background=cor;s.append(b,txt);return s};leg.replaceChildren(it('#f1ece0',d.tx.dia),it('#b9a6ff',d.tx.noite))}
   g.hidden=!(d.slimes||[]).length;const m=document.getElementById('m');m.textContent=d.msg||'';m.hidden=!d.msg;
-  const add=document.getElementById('add');add.hidden=!d.add;if(d.add){add.textContent=d.add.txt;add.onclick=ev=>{ev.stopPropagation();ov.pin.abrir(d.add.id)}}
+  const add=document.getElementById('add');add.hidden=!d.add;addId=d.add&&d.add.id;if(d.add)add.textContent=d.add.txt;
   x.title=d.tx&&d.tx.fechar||'';p.title=d.tx&&d.tx.dica||'';mede();requestAnimationFrame(mede)});
-// arrastar move; clique num slime abre a ficha no painel; × esconde
-let drag=null;x.onclick=e=>{e.stopPropagation();ov.pin.fechar()};
-p.onpointerdown=e=>{if(e.button||e.target===x||e.target.id==='add')return;p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false,k:(e.target.closest('.sl')||{}).dataset?.k};ov.dragStart()};
-p.onpointermove=e=>{if(!drag)return;if(!(e.buttons&1)){drag=null;ov.dragEnd();return}
+// arrastar move; clique num slime abre a ficha no painel; × esconde; botão abre a edição do mapa.
+// Com o jogo em primeiro plano o Windows engole o "apertar" (janela que não ativa): o arrasto começa no primeiro movimento com o botão
+// apertado e as ações saem no "soltar" (o evento click também não chega)
+let drag=null,addId=null;
+const comeca=e=>{p.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false,alvo:e.target};ov.dragStart()};
+p.onpointerdown=e=>{if(!e.button)comeca(e)};
+p.onpointermove=e=>{if(!drag){if(e.buttons&1)comeca(e);return}if(!(e.buttons&1)){drag=null;ov.dragEnd();return}
  if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
-p.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved&&d.k)ov.pin.abrir(d.k)};</script></body></html>
+p.onpointerup=e=>{if(e.button)return;const d=drag||{moved:false,alvo:e.target};drag=null;ov.dragEnd();if(d.moved)return;
+ const a=d.alvo;if(a===x)return ov.pin.fechar();if(a.closest('#add')){if(addId)ov.pin.abrir(addId);return}const s=a.closest('.sl');if(s&&s.dataset.k)ov.pin.abrir(s.dataset.k)};</script></body></html>
