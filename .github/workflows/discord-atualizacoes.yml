@@ -1,0 +1,37 @@
+name: Discord #atualizações
+
+on:
+  release:
+    types: [published]     # versão publicada: posta as novidades em PT
+  workflow_dispatch:       # manual: Actions → Discord #atualizações → Run workflow
+    inputs:
+      tipo:
+        description: 'teste | versao | aviso'
+        required: true
+        default: 'teste'
+      valor:
+        description: 'versao: a tag (ex.: v2.1.0) · aviso: o texto'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main          # novidades.json mais recente
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Postar
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_ATUALIZACOES }}
+          TIPO: ${{ github.event_name == 'release' && 'versao' || inputs.tipo }}
+          VALOR: ${{ github.event.release.tag_name || inputs.valor }}
+        run: node scripts/discord-atualizacao.js "$TIPO" "$VALOR"
