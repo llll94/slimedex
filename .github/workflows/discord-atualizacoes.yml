@@ -9,11 +9,11 @@ on:
   workflow_dispatch:       # manual: Actions → Discord #atualizações → Run workflow
     inputs:
       tipo:
-        description: 'teste | versao | aviso | download'
+        description: 'teste | versao | aviso | download | apagar'
         required: true
         default: 'teste'
       valor:
-        description: 'versao/download: a tag (ex.: v2.1.0; download vazio = última) · aviso: o texto'
+        description: 'versao/download: a tag (ex.: v2.1.0; download vazio = última) · aviso: o texto · apagar: id (ou download:id)'
         required: false
         default: ''
 
@@ -41,6 +41,8 @@ jobs:
           HOOK_ATUALIZACOES: ${{ secrets.DISCORD_WEBHOOK_ATUALIZACOES }}
           HOOK_DOWNLOAD: ${{ secrets.DISCORD_WEBHOOK_DOWNLOAD }}
         run: |
-          if [ "$TIPO" = "download" ]; then export DISCORD_WEBHOOK="$HOOK_DOWNLOAD"; else export DISCORD_WEBHOOK="$HOOK_ATUALIZACOES"; fi
+          # canal: #download para tipo download e para apagar com valor "download:<id>"; o resto vai para #atualizações
+          case "$TIPO:$VALOR" in download:*|apagar:download:*) export DISCORD_WEBHOOK="$HOOK_DOWNLOAD";; *) export DISCORD_WEBHOOK="$HOOK_ATUALIZACOES";; esac
+          VALOR="${VALOR#download:}"
           if [ -z "$DISCORD_WEBHOOK" ]; then echo "secret do canal não configurado"; exit 1; fi
           node scripts/discord-atualizacao.js "$TIPO" "$VALOR"
