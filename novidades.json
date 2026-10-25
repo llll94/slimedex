@@ -1,8 +1,9 @@
 {
-  "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
+  "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
       "v": "2.1.0",
+      "prints": ["sk-ficha", "sk-form", "sk-lista", "sk-detalhe"],
       "pt": [
         "Skills: anote quais skills cada slime pega e em que nível (ex.: Mud Bass pega a Barreira Aquática no nível 26)",
         "As 160 skills do jogo, com ícone, elemento, tipo, MP e recarga: botão de raio no topo",
