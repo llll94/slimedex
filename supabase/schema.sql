@@ -37,8 +37,44 @@ declare
   n  int;
 begin
   -- formato igual ao meus-dados.json do app: { pt: {...}, pc: {...}, combos: [...], votos: { id_combinação: 1 | -1 } }
-  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num', 'loc', 'per')) then
+  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num', 'loc', 'per', 'sk', 'skn', 'skc')) then
     raise exception 'formato inválido';
+  end if;
+  -- sk: [{ s: slime, k: skill, l: nível (1 a 99) ou null }] (2.1.0: skills anotadas, até 2000)
+  if new.payload ? 'sk' then
+    if jsonb_typeof(new.payload -> 'sk') <> 'array' or jsonb_array_length(new.payload -> 'sk') > 2000
+       or exists (select 1 from jsonb_array_elements(new.payload -> 'sk') e
+                  where jsonb_typeof(e) <> 'object'
+                     or exists (select 1 from jsonb_object_keys(e) k where k not in ('s', 'k', 'l'))
+                     or jsonb_typeof(e -> 's') is distinct from 'string' or length(e ->> 's') > 60
+                     or jsonb_typeof(e -> 'k') is distinct from 'string' or length(e ->> 'k') > 60
+                     or case coalesce(jsonb_typeof(e -> 'l'), 'null')
+                          when 'null' then false
+                          when 'number' then (e ->> 'l')::numeric not between 1 and 99 or (e ->> 'l')::numeric % 1 <> 0
+                          else true end) then
+      raise exception 'sk inválido';
+    end if;
+  end if;
+  -- skn: { skill: nome no jogo em PT } (até 500, nome de 2 a 40)
+  if new.payload ? 'skn' then
+    if jsonb_typeof(new.payload -> 'skn') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'skn')) > 500
+       or exists (select 1 from jsonb_each(new.payload -> 'skn') v
+                  where length(v.key) > 60 or jsonb_typeof(v.value) <> 'string' or length(v.value #>> '{}') not between 2 and 40) then
+      raise exception 'skn inválido';
+    end if;
+  end if;
+  -- skc: [{ k: 'u:...', nm: nome, el: elemento }] (skills cadastradas que não estão na lista, até 50)
+  if new.payload ? 'skc' then
+    if jsonb_typeof(new.payload -> 'skc') <> 'array' or jsonb_array_length(new.payload -> 'skc') > 50
+       or exists (select 1 from jsonb_array_elements(new.payload -> 'skc') e
+                  where jsonb_typeof(e) <> 'object'
+                     or exists (select 1 from jsonb_object_keys(e) k where k not in ('k', 'nm', 'el'))
+                     or jsonb_typeof(e -> 'k') is distinct from 'string' or length(e ->> 'k') > 60 or left(e ->> 'k', 2) <> 'u:'
+                     or jsonb_typeof(e -> 'nm') is distinct from 'string' or length(e ->> 'nm') not between 2 and 40
+                     or coalesce(e ->> 'el', '') not in ('Água', 'Gelo', 'Sombrio', 'Metal', 'Fogo', 'Poder', 'Elétrico', 'Luz', 'Grama', 'Terra', 'Vento', 'Magia', 'Veneno')) then
+      raise exception 'skc inválido';
+    end if;
   end if;
   -- num: { slime: número do slime } (inteiro de 1 a 9999)
   if new.payload ? 'num' then

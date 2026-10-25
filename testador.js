@@ -1,9 +1,10 @@
 // Testador de combinações: estima o resultado de slime A + slime B (+ material) a partir das combinações conhecidas.
 // Sem DOM nem Electron: o overlay usa window.Testador, os testes rodam no Node (require).
 // Regras tiradas da base: o resultado quase sempre tem elemento em comum com os pais (99%) e quase sempre só elementos
-// dos pais (87%); às vezes repete a espécie (21%); quase nunca é um dos pais nem sobe de tier; resultado já conhecido é mais provável.
+// dos pais (87%); às vezes repete a espécie (21%); quase nunca sobe de tier; resultado já conhecido é mais provável.
+// O resultado nunca é um dos próprios slimes da combinação.
 (function (g) {
-  const P = { el: 1, todos: 1, especie: 1, pai: 2, freq: 1, tier: 1, mat: 2, T: 0.55 }; // pesos e temperatura do softmax: T calibrado para a chance média do 1º ficar perto da taxa real de acerto (scripts/testa-testador.js)
+  const P = { el: 1, todos: 1, especie: 1, freq: 1, tier: 1, mat: 2, T: 0.55 }; // pesos e temperatura do softmax: T calibrado para a chance média do 1º ficar perto da taxa real de acerto (scripts/testa-testador.js)
 
   // a, b: slimes ({k, el, sp, st}); slimes: todos; combos: conhecidas com resultado ({r, m}); m: material digitado (opcional)
   // matK: material -> chave comparável (o mesmo material aparece em PT, EN ou "PT (EN)")
@@ -20,11 +21,10 @@
     const l = [];
     for (const r of slimes) {
       const com = r.el.filter(e => pais.has(e)).length;
-      if (!com) continue; // nenhum elemento em comum: fora
+      if (!com || r.k === a.k || r.k === b.k) continue; // nenhum elemento em comum, ou é um dos pais: fora
       let s = P.el * com;
       if (r.el.every(e => pais.has(e))) s += P.todos;
       if (r.sp === a.sp || r.sp === b.sp) s += P.especie;
-      if (r.k === a.k || r.k === b.k) s -= P.pai;
       s += P.freq * Math.log1p(freq[r.k] || 0);
       if ((r.st || 0) > stMax) s -= P.tier;
       if (mat && mat.has(r.k)) s += P.mat;

@@ -7,8 +7,9 @@ const RAIZ = path.join(__dirname, '..'), SAIDA = path.join(RAIZ, 'guia'), PORTA 
 const G = require('../guia.js');
 const espera = ms => new Promise(r => setTimeout(r, ms));
 
-// dados de exemplo: um teste com resultado (compartilhado) e um sem resultado (só no PC)
-const EXEMPLO = { pt: {}, pc: {}, votos: {}, num: {}, fav: [], loc: {}, per: {}, apaga: [], combos: [
+// dados de exemplo: um teste com resultado (compartilhado), um sem resultado (só no PC) e uma skill anotada (Mud Bass: Aqua Barrier nv 26)
+const EXEMPLO = { pt: {}, pc: {}, votos: {}, num: {}, fav: [], loc: {}, per: {}, apaga: [],
+  sk: { SL_Bass_WaterGround: { Aqua_Barrier: { l: 26, cp: true, ts: 1 } } }, skn: { Aqua_Barrier: 'Barreira Aquática' }, skc: [], combos: [
   { id: 't1', r: 'SL_Starfish_WaterFire', a: 'SL_Slime_Water', b: 'SL_Slime_Fire', m: '', l: '13', ch: 30, nt: [], tst: 1, cp: true },
   { id: 't2', r: null, a: 'SL_Kobold_Steel', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, cp: false }] };
 const MAPA = 'Clareira Esquecida';
@@ -19,16 +20,20 @@ const TELAS = {
   lista: "qi.value='';list()",
   busca: "qi.value='fogo';list();mark(1)",
   ficha: `ficha('${VESPETE}');document.head.insertAdjacentHTML('beforeend','<style id=prt>.ac{opacity:1!important}</style>')`, // ✎/lixeira só aparecem no hover
-  usado: `document.getElementById('prt')?.remove();ficha('SL_Rat_PoisonDark');const h=[...bd.querySelectorAll('h4')].find(x=>/usado|used/i.test(x.textContent));bd.querySelector('#bd details.sec:not(#secel)')?.setAttribute('open','');bd.scrollTop=h.offsetTop-bd.offsetTop-6`,
+  usado: `document.getElementById('prt')?.remove();ficha('SL_Rat_PoisonDark');const h=[...bd.querySelectorAll('h4')].find(x=>/usado|used/i.test(x.textContent));bd.querySelector('#bd details.sec:not(#secel):not(#secsk)')?.setAttribute('open','');bd.scrollTop=h.offsetTop-bd.offsetTop-6`,
   form: `formCombo('${VESPETE}')`,
   testador: "TST={a:rot(K.SL_Kobold_Steel),b:rot(K.SL_HermitCrab_WaterPower),m:'',r:rot(K.SL_Mercury_SteelPower),l:'19',ch:'',cp:false,ed:null,msg:'',mais:false};testador()",
   'mapa-tela': `telaMapa('${MAPA}')`,
+  'sk-ficha': "ficha('SL_Bass_WaterGround');secsk.open=true",
+  'sk-form': "skillForm({s:'SL_Bass_WaterGround'});SKF.q='barreira';SKF.k='Aqua_Barrier';SKF.lv='26';skillForm()",
+  'sk-lista': "SKT={q:'',el:'Água'};skillsTela();stq.blur()",
+  'sk-detalhe': "skillDet('Aqua_Barrier')",
   meus: 'meus()',
   envio: 'envio()'
 };
 
 // telas compridas: o print fica mais alto que o painel (a página é desenhada nesse tamanho só para a foto); 'auto' = cabe tudo
-const ALTO = { usado: 620, meus: 'auto' };
+const ALTO = { usado: 620, meus: 'auto', 'sk-form': 640, 'sk-lista': 640 };
 
 async function cdp(alvo) {
   const ws = new WebSocket(alvo.webSocketDebuggerUrl); let id = 0; const esp = new Map();

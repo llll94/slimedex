@@ -2,6 +2,33 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "2.1.0",
+      "pt": [
+        "Skills: anote quais skills cada slime pega e em que nível (ex.: Mud Bass pega a Barreira Aquática no nível 26)",
+        "As 160 skills do jogo, com ícone, elemento, tipo, MP e recarga: botão de raio no topo",
+        "Filtro por elemento e busca em português ou inglês (\"barreira\" acha Aqua Barrier)",
+        "Não achou a skill? Cadastre uma nova; se o nome parecer com uma que já existe, o app pergunta se é ela",
+        "Corrija o nome da skill como aparece no jogo em português",
+        "Compartilhar funciona igual às combinações: desligado, fica só no seu computador. O nível da comunidade é o que mais gente mandou",
+        "Cartilha com duas páginas novas sobre skills",
+        "Na ficha, Elementos e Skills ficam logo depois dos drops, recolhidos; se você abrir, continuam abertos",
+        "Dwarf e Wicked eram o mesmo slime: agora são um só (#34 Wicked); a busca acha pelos dois nomes",
+        "Combinação não pode dar um dos próprios slimes (ex.: Mighty + X = Mighty): o app bloqueia e a que existia na base saiu"
+      ],
+      "en": [
+        "Skills: note which skills each slime learns and at what level (e.g. Mud Bass learns Aqua Barrier at level 26)",
+        "All 160 skills in the game, with icon, element, type, MP and cooldown: lightning button at the top",
+        "Element filter and search in Portuguese or English (\"barrier\" finds Aqua Barrier)",
+        "Skill not found? Add a new one; if the name looks like an existing one, the app asks if that's it",
+        "Fix the skill name as it shows in the Portuguese version of the game",
+        "Share works like combinations: when off, it stays on your computer only. The community level is the one most people sent",
+        "Two new guide pages about skills",
+        "On the card, Elements and Skills come right after the drops, collapsed; if you open them, they stay open",
+        "Dwarf and Wicked were the same slime: now they are one (#34 Wicked); search finds both names",
+        "A combination can't result in one of its own slimes (e.g. Mighty + X = Mighty): the app blocks it and the one in the database was removed"
+      ]
+    },
+    {
       "v": "2.0.0",
       "pt": [
         "Testador de combinações (botão ⚗ no topo): escolha dois slimes e veja à direita o que pode sair, do mais provável para o menos provável",

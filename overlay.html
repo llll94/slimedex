@@ -99,13 +99,25 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 .tp .es{flex:none;width:40px;text-align:right;font-size:11px;font-style:italic;color:#8fb8ff}
 .tm{display:flex;align-items:center;gap:6px;padding:4px 2px;border-top:1px solid #2d333a;cursor:pointer}.tm:hover{background:#1f252c}.tm .nm{flex:1;min-width:0}.tm.on{background:#2b3440}
 .tm img,.tm>i{width:28px;height:28px;object-fit:contain;flex:none}.tm .sw{margin-left:0}.tm .del svg{width:14px;height:14px;fill:currentColor;pointer-events:none}
+/* skills: linha com ícone, nome, pílula do elemento e nível */
+#skb{display:flex;align-items:center;padding:0 2px}#skb svg{width:17px;height:17px;fill:currentColor}
+.sk{display:flex;align-items:center;gap:7px;padding:3px 4px;border-radius:8px;cursor:pointer}.sk:hover{background:#232930}.sk.on{background:#2b3440;box-shadow:inset 0 0 0 1px #6aa8ff}
+.sk>img,.sk>i{width:30px;height:30px;object-fit:contain;flex:none}.sk .nm{flex:1;min-width:0}.sk:hover .ac{opacity:1}.sk .mu{display:flex;flex-wrap:wrap;align-items:center;gap:3px}
+.si0{display:inline-flex;align-items:center;justify-content:center;border:2px solid;border-radius:50%;font-style:normal;font-weight:700;font-size:13px;box-sizing:border-box}
+.sib{width:56px;height:56px;object-fit:contain;flex:none}i.sib{font-size:22px}
+.ep{font-size:10px;line-height:15px;padding:0 6px;border-radius:8px;border:1px solid;background:#14171a;white-space:nowrap}
+.lv{flex:none;font-size:11px;padding:1px 7px;border-radius:8px;background:#1f252c;color:#e8eaed;white-space:nowrap}
+.chips .chip[data-skel]{cursor:pointer}.chip.on{background:#3a6fd8;color:#fff}
+.form select{background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:4px 6px;font:inherit}
+.skesc{display:flex;align-items:center;gap:6px;min-height:30px}.skesc img,.skesc>i{width:26px;height:26px;object-fit:contain}
 </style></head><body>
 <div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="i18n.js"></script>
 <script src="testador.js"></script>
+<script src="skills.js"></script>
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app';S.forEach(s=>K[s.k]=s);
 S.forEach(s=>s.n0=s.n); // número da base (o número exibido pode vir do usuário ou da comunidade)
@@ -128,7 +140,7 @@ let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let CA=[]; // combinações da base/comunidade apagadas (por você ou aprovado pela comunidade)
-let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[]},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[]},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resultado (A + B e B + A são combinações diferentes)
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -158,6 +170,7 @@ function monta(){
  const apag=new Set([...(M.apaga||[]),...((CM&&CM.apagadas)||[])]);CA=C.filter(c=>!c.meu&&!c.meuId&&apag.has(cid(c)));C=C.filter(c=>c.meu||c.meuId||!apag.has(cid(c))); // 🗑 numa da base/comunidade
  C.forEach(c=>{if(c.meu&&c.r){const o=C.find(x=>x!==c&&x.r&&chaveC(x)===chaveC(c));c.gemeo=o?cid(o):null}}); // igual que não juntou sozinha (⇄)
  const comR=new Set(C.filter(c=>c.r).map(c=>c.a+'+'+c.b));C=C.filter(c=>c.r||c.meu||!comR.has(c.a+'+'+c.b)); // testada (sem resultado) cujo mesmo par já tem resultado sai
+ C=C.filter(c=>!c.r||(c.r!==c.a&&c.r!==c.b)); // o resultado nunca é um dos próprios slimes
  C.forEach(c=>{const v=cvt[cid(c)];if(v&&typeof v=='object'){c.v={u:v.u|0,d:v.d|0};c.cz=c.v.d>=3&&c.v.d>=2*c.v.u}}); // placar e "contestada"
  made={};used={};
  C.forEach(c=>{if(c.r)(made[c.r]=made[c.r]||[]).push(c);new Set([c.a,c.b]).forEach(k=>(used[k]=used[k]||[]).push(c))});
@@ -165,7 +178,7 @@ function monta(){
  ordena();LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
  // sugestões do campo Material: "Couro (Hide)" em PT, "Hide (Couro)" em EN — acha digitando nas duas línguas
  materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('');
- syncFav()}
+ montaSk();syncFav()}
 const rot=s=>`${s.n!=null?'#'+s.n+' ':''}${dn(s)}${s.el.length?' ('+s.el.map(elN).join('/')+')':''}`; // rótulo único da lista de sugestões
 function salva(){return ov.meus.salvar(M)}
 // nome digitado -> chave do slime: rótulo da lista, senão nome único (nome principal/PT antes de apelido)
@@ -184,9 +197,9 @@ function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  vista=v;ov.largo(v.t=='testador')} // só o testador usa o painel largo
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
-function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador()}finally{voltando=false}}
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k)}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
@@ -253,14 +266,16 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>${peSel===k?peEscolha(k):''}
  <h4>${t('where')}</h4>${(()=>{const l=lugares(k);return l.length?l.map(n=>`<span class="lk" data-mapa="${esc(n)}">${esc(nomeMapa(n))}</span>`).join(' · '):`<span class="mu">${t('no_loc')}</span>`})()}
  <h4>${t('drops')}</h4>${(s.dp||[]).length?`<div class="drs">${s.dp.map(d=>`<span class="dr">${ii(itemIco(d))}${esc(itemNome(d))}</span>`).join('')}</div>`:`<span class="mu">${t('no_drops')}</span>`}
+ ${elems(s)}
+ ${secSk(k)}
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<p class="mu" style="margin:4px 0">${t('no_combo')}</p>`}
  ${(()=>{const a=CA.filter(c=>(M.apaga||[]).includes(cid(c))&&[c.r,c.a,c.b].includes(k));return a.length?`<p class="mu">${t('apagadas')} ${a.map(c=>`${esc(nm(c.r)||'?')} = ${esc(nm(c.a))} + ${esc(nm(c.b))} <span class="lk sm" data-desapaga="${esc(cid(c))}" title="${esc(t('desapagar_title'))}">↺</span>`).join(' · ')}</p>`:''})()}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button> <button class="btn" id="tstc" style="margin:6px 0">${t('tst_btn')}</button>
  ${(()=>{const ok=u.filter(c=>c.r),sem=u.filter(c=>!c.r); // as "?" (só testadas) ficam num bloco fechado
   return`<h4>${t('used',{n:ok.length})}</h4>${ok.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}`+
   (sem.length?`<details class="sec"><summary>${t('testadas',{n:sem.length})}</summary>${sem.map(c=>rc(c,1)).join('')}</details>`:'')})()}
- ${elems(s)}`;bd.scrollTop=keep?top:0;
- if(window.secel)secel.ontoggle=()=>{try{localStorage.setItem('elem-aberto',secel.open?'1':'0')}catch{}}}
+ `;bd.scrollTop=keep?top:0;
+ for(const [el,ch] of [[window.secel,'elem-aberto'],[window.secsk,'skills-aberto']])if(el)el.ontoggle=()=>{try{localStorage.setItem(ch,el.open?'1':'0')}catch{}}} // aberto/fechado fica lembrado
 // ⇄ juntar: prende a sua combinação à igual (completa o que falta nela); se a igual também for sua, junta as duas
 function juntar(id){const c=C.find(x=>x.meu&&x.id===id);if(!c||!c.gemeo)return;const o=C.find(x=>cid(x)===c.gemeo);const sua=M.combos.find(x=>x.id===id);if(!o||!sua)return;
  if(o.meu||o.meuId){const out=M.combos.find(x=>x.id===(o.meu?o.id:o.meuId)); // a igual já é sua (ou já tem uma cópia sua): junta nela
@@ -298,6 +313,7 @@ function formCombo(r,ed){semBusca();const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;m
  (e?fmat:s?fa:fr).focus();const sai=voltar;fc.onclick=sai;
  fs.onclick=async()=>{const rr=chave(fr.value),a=chave(fa.value),b=chave(fb.value);
   if(!rr||!a||!b){fe.textContent=t('form_err');return}
+  if(rr===a||rr===b){fe.textContent=t('form_err_self');return}
   const p=fpc.value.trim(),novo={r:rr,a,b,m:fmat.value.trim(),l:fl.value.trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[]};
   const sua=ed&&ed.id&&M.combos.find(x=>x.id===ed.id);
   if(e&&e.meu&&sua)Object.assign(sua,novo); // editando uma combinação sua
@@ -340,6 +356,7 @@ function testador(o){o=o||{};
  tslimpa.onclick=()=>{TST={a:'',b:'',m:'',r:'',l:'',ch:'',cp:false,ed:null,msg:'',mais:false};testador();ts1.focus()};
  tssalva.onclick=async()=>{const a=chave(TST.a),b=chave(TST.b);if(!a||!b){tse.textContent=t('tst_err');return}
   const r=String(TST.r).trim()?chave(TST.r):null;if(String(TST.r).trim()&&!r){tse.textContent=t('tst_err_res');return}
+  if(r&&(r===a||r===b)){tse.textContent=t('form_err_self');return}
   const p=String(TST.ch).trim(),novo={r,a,b,m:String(TST.m).trim(),l:String(TST.l).trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[],tst:1,cp:!!TST.cp};
   const ig=M.combos.find(x=>x.id===TST.ed)||M.combos.find(x=>x.tst&&x.a===a&&x.b===b&&(x.r||null)===r); // o mesmo teste de novo: atualiza
   if(ig)Object.assign(ig,novo);else M.combos.push({id:'t'+Date.now(),...novo});
@@ -357,6 +374,116 @@ function possib(){const el=document.getElementById('tsres');if(!el)return;const 
   (inv.length?`<p class="mu">${t('tst_inversa',{a:esc(nm(a)),b:esc(nm(b))})} ${inv.map(lk).join(' · ')}</p>`:'')+
   `<h4>${t(conh.length?'tst_estim_outras':'tst_estim')}</h4><p class="mu">${t('tst_estim_tip')}</p>`+
   (est.length?est.slice(0,n).map(x=>linhaP(x.k,rs,null,x.p)).join('')+(est.length>n&&!TST.mais?`<span class="lk sm" id="tsmais">${t('tst_mais')}</span>`:''):`<p class="mu">${t('tst_nada')}</p>`)}
+// ---- skills: lista da wiki (D.skills) + cadastradas (comunidade e M.skc); anotação = slime → skill → nível (M.sk, com cp = compartilhar) ----
+const EL_COR={'Água':'#3fa4ec','Grama':'#4cc14a','Fogo':'#ef4a4a','Sombrio':'#8a7dff','Magia':'#e5559b','Gelo':'#7fd8f0','Terra':'#c08a4a','Vento':'#8fd9b6','Veneno':'#b06ee0','Luz':'#f2d35b','Metal':'#a7b1bc','Elétrico':'#f7c531','Poder':'#f08a3c'};
+const ELS=Object.keys(EL_COR),LAPIS='<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+let SK=[],SKK={},SKS={},SKU={}; // todas, por id, por slime {skill: linha}, por skill [linhas]
+const ptSk=()=>({...((CM&&CM.skn)||{}),...(M.skn||{})}); // nome no jogo (PT): o seu vale mais que o da comunidade
+const skNm=s=>LANG==='pt'?(ptSk()[s.k]||s.nm||s.en):(s.en||s.nm); // sem nome PT ainda: mostra o inglês da wiki
+const skAlt=s=>{const a=LANG==='pt'?s.en:ptSk()[s.k];return a&&a!==skNm(s)?a:''};
+const skIco=(s,cl='')=>s.ic?`<img${cl?` class="${cl}"`:''} alt="" src="${BASE}${esc(s.ic)}" onerror="this.style.visibility='hidden'">`
+ :`<i class="si0${cl?' '+cl:''}" style="border-color:${EL_COR[s.el]||'#3a414a'};color:${EL_COR[s.el]||'#9aa3ad'}">${esc((s.nm||s.en||'?')[0].toUpperCase())}</i>`; // cadastrada: bolinha da cor do elemento
+const ep=e=>e?`<span class="ep" style="border-color:${EL_COR[e]||'#3a414a'};color:${EL_COR[e]||'#9aa3ad'}">${esc(elN(e))}</span>`:'';
+const kiN=k=>k?t('k_'+k):'';
+function montaSk(){const cad=new Map();
+ [...((CM&&Array.isArray(CM.skc))?CM.skc:[]),...(Array.isArray(M.skc)?M.skc:[])].forEach(c=>{if(c&&typeof c.k=='string'&&c.k.startsWith('u:')&&c.nm&&EL_COR[c.el])cad.set(c.k,{k:c.k,nm:String(c.nm),en:'',el:c.el,ki:'',ic:null,cad:true})});
+ SK=[...D.skills,...cad.values()];SKK={};SK.forEach(s=>SKK[s.k]=s);SKS={};SKU={};
+ const pega=(sl,k)=>{if(!K[sl]||!SKK[k])return null;const l=(SKS[sl]=SKS[sl]||{});return l[k]=l[k]||{s:sl,k}};
+ S.forEach(s=>(s.sk||[]).forEach(k=>{const x=pega(s.k,k);if(x)x.base=true})); // a wiki lista a skill (sem nível)
+ const cs=(CM&&CM.sk&&typeof CM.sk=='object')?CM.sk:{};
+ for(const sl in cs)for(const k in cs[sl]){const v=cs[sl][k],x=pega(sl,k);if(x&&v&&typeof v=='object'){x.com=true;x.cl=Number.isInteger(v.l)?v.l:null;x.n=v.n|0}}
+ const ms=M.sk||{};
+ for(const sl in ms)for(const k in ms[sl]){const v=ms[sl][k],x=pega(sl,k);if(x&&v&&typeof v=='object'){x.meu=true;x.ml=Number.isInteger(v.l)?v.l:null;x.cp=v.cp===true}}
+ for(const sl in SKS)for(const k in SKS[sl]){const x=SKS[sl][k];x.l=(x.meu?x.ml:null)??x.cl??null;(SKU[k]=SKU[k]||[]).push(x)}}
+const ordemSk=(a,b)=>(a.l??1e9)-(b.l??1e9)||skNm(SKK[a.k]).localeCompare(skNm(SKK[b.k])); // por nível, sem nível no fim
+const ordemSl=(a,b)=>(a.l??1e9)-(b.l??1e9)||nm(a.s).localeCompare(nm(b.s));
+const selosSk=x=>(x.base?`<span class="meu" style="background:#24302a;color:#9fd8b0" title="${esc(t('sk_base_title'))}">${t('sk_base')}</span>`:'')+
+ (x.com?`<span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('sk_com_title',{n:x.n}))}">${t('community')}</span>`:'')+(x.meu?`<span class="meu">${t('mine')}</span>`:'');
+// linha de uma anotação: na ficha mostra a skill; no detalhe da skill mostra o slime
+function linhaSk(x,naFicha){const s=SKK[x.k],sl=K[x.s],id=esc(x.s+'|'+x.k);
+ const outro=x.meu&&x.com&&x.cl!=null&&x.cl!==x.ml?`<span>· ${t('sk_com_lv',{l:x.cl})}</span>`:''; // a comunidade anotou outro nível
+ const ac=x.meu?`<span class="ac"><span data-sked="${id}" title="${esc(t('edit_title'))}">${LAPIS}</span><span class="del" data-skdel="${id}" title="${esc(t('del_title'))}">${LIXO}</span></span>`:'';
+ const lv=x.l!=null?`<span class="lv">${t('lv')} ${x.l}</span>`:'';
+ return naFicha?`<div class="sk" data-skv="${esc(x.k)}">${skIco(s)}<div class="nm"><b>${esc(skNm(s))}</b><div class="mu">${ep(s.el)}<span>${esc(kiN(s.ki))}</span>${selosSk(x)}${outro}</div></div>${ac}${lv}</div>`
+  :`<div class="sk" data-k="${esc(x.s)}">${im(sl.im)}<div class="nm"><b>${sl.n!=null?'#'+sl.n+' ':''}${esc(dn(sl))}</b><div class="mu">${esc(sl.el.map(elN).join(' / '))}${selosSk(x)}${outro}</div></div>${ac}${lv}</div>`}
+// seção recolhível como a de elementos: começa fechada e lembra se a pessoa deixou aberta
+const secSk=k=>{const l=Object.values(SKS[k]||{}).sort(ordemSk);let ab=false;try{ab=localStorage.getItem('skills-aberto')=='1'}catch{}
+ return`<details class="sec" id="secsk"${ab?' open':''}><summary>${t('sk_sec',{n:l.length})}</summary>${l.map(x=>linhaSk(x,1)).join('')||`<p class="mu" style="margin:4px 0">${t('sk_nenhuma')}</p>`}<span class="lk sm" id="skadd">${t('sk_anotar')}</span></details>`};
+// chips de elemento: "do slime" (se tiver slime), "todas" e cada elemento
+const chipsEl=(on,comSlime)=>`<div class="chips">${comSlime?`<span class="chip${on==='slime'?' on':''}" data-skel="slime">${t('sk_do_slime')}</span>`:''}<span class="chip${on===''?' on':''}" data-skel="">${t('sk_todas')}</span>${ELS.map(e=>`<span class="chip${on===e?' on':''}" data-skel="${esc(e)}">${esc(elN(e))}</span>`).join('')}</div>`;
+function filtraSk(q,el,slime){let l=SK;const els=el==='slime'?(K[slime]?K[slime].el:null):el?[el]:null;
+ if(els)l=l.filter(s=>els.includes(s.el));let r=Skills.busca(q,l,ptSk());
+ if(!r.length&&els&&q.trim())r=Skills.busca(q,SK,ptSk()); // nada no elemento: procura em todas
+ return r}
+// ---- anotar skill: slime + skill (da lista ou cadastrada) + nível ----
+let SKF=null;
+function skillForm(o){o=o||{};semBusca();cur=null;sel=-1;
+ if(o.s!==undefined||o.k!==undefined||!SKF){const m=o.s&&o.k&&M.sk&&M.sk[o.s]&&M.sk[o.s][o.k];
+  SKF={s:o.s&&K[o.s]?rot(K[o.s]):'',k:o.k&&SKK[o.k]?o.k:'',q:'',el:o.s&&!o.k?'slime':'',lv:m&&m.l!=null?String(m.l):'',cp:m?m.cp===true:false,novo:false,nn:'',ne:'',orig:m?{s:o.s,k:o.k}:null}}
+ marca({t:'skform'});
+ bd.innerHTML=`${voltarLk()}<h4>${t('sk_anotar_h')}</h4><div class="form">
+ <label>${t('sk_slime')}</label><input id="sks" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${esc(SKF.s)}">
+ <label>${t('sk_skill')}</label><div class="skesc" id="skesc"></div>
+ <label>${t('level')}</label><input id="sklv" type="number" min="1" max="99" placeholder="${esc(t('sk_lv_ph'))}" value="${esc(SKF.lv)}">
+ <div class="tgl" style="grid-column:1/-1"><span class="sw${SKF.cp?' on':''}" id="skcp"><i></i></span><span>${t('tst_cp')}</span><span class="mu">· ${t(SKF.cp?'tst_cp_on':'tst_cp_off')}</span></div>
+ <div class="bt"><span class="err" id="ske"></span><button class="btn" id="skcan">${t('cancel')}</button><button class="btn pri" id="sksv">${t('sk_salvar')}</button></div></div>
+ <div id="sknova"></div>
+ <input id="skq" placeholder="${esc(t('sk_busca_ph'))}" value="${esc(SKF.q)}" style="width:100%;margin-top:6px"><div id="skch"></div><div id="sklista"></div>
+ <p><span class="lk sm" id="sknv">${t('sk_nao_achei')}</span></p>`;
+ skEsc();skNova();skLista();
+ sks.oninput=()=>{SKF.s=sks.value;if(K[chave(SKF.s)]&&!SKF.k&&SKF.el==='')SKF.el='slime';skLista()};
+ sklv.oninput=()=>SKF.lv=sklv.value;
+ skq.oninput=()=>{SKF.q=skq.value;skLista()};
+ skcp.onclick=()=>{SKF.cp=!SKF.cp;skcp.classList.toggle('on',SKF.cp);skcp.nextElementSibling.nextElementSibling.textContent='· '+t(SKF.cp?'tst_cp_on':'tst_cp_off')};
+ skcan.onclick=voltar;sksv.onclick=salvaSk;
+ bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')salvaSk();else if(e.key=='Escape')voltar()};
+ if(!SKF.s)sks.focus();else if(!SKF.k)skq.focus()}
+function skEsc(){const el=document.getElementById('skesc');if(!el)return;const s=SKK[SKF.k];
+ el.innerHTML=s?`${skIco(s)}<b>${esc(skNm(s))}</b>${ep(s.el)}`:SKF.novo&&SKF.nn.trim()?`${skIco({nm:SKF.nn,el:SKF.ne})}<b>${esc(SKF.nn.trim())}</b>${ep(SKF.ne)}<span class="meu">${t('sk_cadastrada')}</span>`:`<span class="mu">${t('sk_nenhuma_esc')}</span>`}
+function skLista(){const ch=document.getElementById('skch'),el=document.getElementById('sklista');if(!el)return;const sl=chave(SKF.s);
+ if(SKF.el==='slime'&&!K[sl])SKF.el='';
+ ch.innerHTML=chipsEl(SKF.el,!!K[sl]);
+ const l=filtraSk(SKF.q,SKF.el,sl),ja=SKS[sl]||{};
+ el.innerHTML=l.map(s=>`<div class="sk${s.k===SKF.k?' on':''}" data-skp="${esc(s.k)}">${skIco(s)}<div class="nm"><b>${esc(skNm(s))}</b>${skAlt(s)?` <span class="mu" style="display:inline">${esc(skAlt(s))}</span>`:''}<div class="mu">${ep(s.el)}<span>${esc(kiN(s.ki))}</span>${ja[s.k]&&ja[s.k].meu?`<span class="meu">${t('mine')}</span>`:''}</div></div>${ja[s.k]&&ja[s.k].l!=null?`<span class="lv">${t('lv')} ${ja[s.k].l}</span>`:''}</div>`).join('')||`<p class="mu">${t('sk_lista_vazia')}</p>`}
+// cadastro de skill que não está na lista: enquanto digita, sugere as parecidas ("é essa?")
+function skNova(){const el=document.getElementById('sknova');if(!el)return;if(!SKF.novo){el.innerHTML='';return}
+ el.innerHTML=`<h4>${t('sk_nova_h')}</h4><div class="form"><label>${t('sk_nova_nome')}</label><input id="skn1" maxlength="40" value="${esc(SKF.nn)}">
+ <label>${t('sk_nova_el')}</label><select id="ske1"><option value="">—</option>${ELS.map(e=>`<option value="${esc(e)}"${SKF.ne===e?' selected':''}>${esc(elN(e))}</option>`).join('')}</select><div id="skpar" style="grid-column:1/-1"></div></div>`;
+ const par=()=>{const p=SKF.nn.trim().length>=3?Skills.parecidas(SKF.nn,SK,ptSk()).slice(0,3):[];
+  skpar.innerHTML=p.length?`<p class="mu">${t('sk_parece')}</p>${p.map(s=>`<div class="sk" data-skp="${esc(s.k)}">${skIco(s)}<div class="nm"><b>${esc(skNm(s))}</b> <span class="mu" style="display:inline">${t('sk_essa')}</span><div class="mu">${ep(s.el)}</div></div></div>`).join('')}`:''};
+ skn1.oninput=()=>{SKF.nn=skn1.value;const e=Skills.elementoDe(SKF.nn);if(e&&!ske1.dataset.mexeu){SKF.ne=e;ske1.value=e}SKF.k='';skEsc();par()};
+ ske1.onchange=()=>{SKF.ne=ske1.value;ske1.dataset.mexeu=1;skEsc()};par();skn1.focus()}
+async function salvaSk(){const sl=chave(SKF.s);if(!sl){ske.textContent=t('sk_err_slime');return}
+ const v=String(SKF.lv).trim(),l=v===''?null:Number(v);if(l!==null&&!(Number.isInteger(l)&&l>=1&&l<=99)){ske.textContent=t('sk_err_lv');return}
+ let k=SKF.k;
+ if(!k&&SKF.novo){const n=SKF.nn.trim();if(n.length<2||n.length>40){ske.textContent=t('sk_err_nome');return}if(!EL_COR[SKF.ne]){ske.textContent=t('sk_err_el');return}
+  const igual=SK.find(s=>[s.en,s.nm,ptSk()[s.k]].some(x=>x&&Skills.norm(x)===Skills.norm(n))); // mesmo nome de uma que já existe: usa ela
+  if(igual)k=igual.k;else{k='u:'+Skills.norm(n).replace(/ /g,'-');M.skc=Array.isArray(M.skc)?M.skc:[];if(!M.skc.some(c=>c.k===k))M.skc.push({k,nm:n,el:SKF.ne})}}
+ if(!k){ske.textContent=t('sk_err_skill');return}
+ M.sk=M.sk||{};if(SKF.orig&&(SKF.orig.s!==sl||SKF.orig.k!==k))tiraSk(SKF.orig.s,SKF.orig.k); // editou e trocou o slime ou a skill
+ (M.sk[sl]=M.sk[sl]||{})[k]={l,cp:!!SKF.cp,ts:Date.now()};
+ SKF=null;await salva();monta();vista=null;ficha(sl)}
+function tiraSk(sl,k){if(M.sk&&M.sk[sl]){delete M.sk[sl][k];if(!Object.keys(M.sk[sl]).length)delete M.sk[sl]}
+ if(Array.isArray(M.skc)&&String(k).startsWith('u:')&&!Object.values(M.sk||{}).some(o=>k in o))M.skc=M.skc.filter(c=>c.k!==k)} // cadastrada que ficou sem uso sai
+// ---- tela de skills: todas, com busca e chips de elemento; clicar abre o detalhe ----
+let SKT={q:'',el:''};
+function skillsTela(){semBusca();cur=null;sel=-1;marca({t:'skills'});
+ bd.innerHTML=`${voltarLk()}<h4>${t('sk_h')} <span class="mu">${SK.length}</span></h4><input id="stq" placeholder="${esc(t('sk_busca_ph'))}" value="${esc(SKT.q)}" style="width:100%"><div id="stch"></div><div id="stl"></div>`;
+ const lista=()=>{stch.innerHTML=chipsEl(SKT.el,false);const l=filtraSk(SKT.q,SKT.el);
+  stl.innerHTML=l.map(s=>{const n=(SKU[s.k]||[]).length;return`<div class="sk" data-skv="${esc(s.k)}">${skIco(s)}<div class="nm"><b>${esc(skNm(s))}</b>${skAlt(s)?` <span class="mu" style="display:inline">${esc(skAlt(s))}</span>`:''}<div class="mu">${ep(s.el)}<span>${esc(kiN(s.ki))}</span>${s.cad?`<span class="meu">${t('sk_cadastrada')}</span>`:''}</div></div>${n?`<span class="mu">${esc(pl('sk_nslimes',n))}</span>`:''}</div>`}).join('')||`<p class="mu">${t('sk_lista_vazia')}</p>`};
+ SKT.lista=lista;lista();stq.oninput=()=>{SKT.q=stq.value;lista()};stq.onkeydown=e=>{if(e.key=='Escape')voltar()};stq.focus()}
+const pl=(k,n)=>{const [s,p]=t(k,{n}).split('|');return n===1?s:p??s};
+function skillDet(k){const s=SKK[k];if(!s)return skillsTela();semBusca();cur=null;sel=-1;marca({t:'skill',k});const l=(SKU[k]||[]).slice().sort(ordemSl),pt=(M.skn||{})[k]||(CM&&CM.skn&&CM.skn[k])||'';
+ const ds=LANG==='pt'?(s.ds||s.de):(s.de||s.ds);
+ bd.innerHTML=`${voltarLk()}<div class="fh">${skIco(s,'sib')}<div><b>${esc(skNm(s))}</b>${skAlt(s)?`<div class="mu">${esc(skAlt(s))}</div>`:''}
+ <div class="mu" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${ep(s.el)}${[kiN(s.ki),s.mp!=null?t('sk_mp',{n:s.mp}):'',s.cd!=null?t('sk_cd',{n:s.cd}):''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join(' · ')}</div>
+ ${s.cad?'':`<div id="skptw"><span class="lk sm" id="skpt">${t(pt?'sk_pt_edit':'sk_pt_add')}</span></div>`}</div></div>
+ ${ds?`<p class="mu" style="font-size:12px">${esc(ds)}</p>`:''}
+ <h4>${t('sk_quem',{n:l.length})}</h4>${l.map(x=>linhaSk(x,0)).join('')||`<p class="mu">${t('sk_ninguem')}</p>`}
+ <button class="btn pri" id="skem" style="margin:8px 0">${t('sk_anotar_em')}</button>`;bd.scrollTop=0}
+function editaSkPT(){const k=vista&&vista.k,s=SKK[k];if(!s)return;skptw.innerHTML=`<input id="skpti" maxlength="40" placeholder="${esc(t('sk_pt_ph'))}" value="${esc((M.skn||{})[k]||(CM&&CM.skn&&CM.skn[k])||'')}" style="padding:2px 6px;font-size:12px;width:190px">`;skpti.focus();skpti.select();let feito=false;
+ const ok=()=>{if(feito)return;feito=true;const v=skpti.value.trim();M.skn=M.skn||{};if(v)M.skn[k]=v;else delete M.skn[k];salva().then(()=>{monta();skillDet(k)})};
+ skpti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;skillDet(k)}};skpti.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
 // ---- CSV no formato da planilha da comunidade (Result, ID, Level, Slime 1, Slime 2, Material, notas/chance...) ----
 function lerCsv(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];
   if(q){if(c=='"'&&t[i+1]=='"'){f+='"';i++}else if(c=='"')q=false;else f+=c}
@@ -370,6 +497,7 @@ function importaCsv(texto){const rows=lerCsv(texto);if(rows[0]&&/result|resultad
  const par=(a,b,r)=>a+'+'+b+'>'+r,idx={}; // a ordem importaC.forEach(c=>idx[par(c.a,c.b,c.r)]=c);const o={novas:0,pcs:0,ja:0,falha:new Set()};
  for(const [res,idn,lv,a1,a2,mat,...rest] of rows){if(!res||/^\?+$/.test(res.trim())||/^\*/.test(res.trim())||res.length>60)continue; // pula "?" e linhas de nota
   const k={r:chaveCsv(res)||porNumero(idn,res),a:chaveCsv(a1),b:chaveCsv(a2)};
+  if(k.r&&(k.r===k.a||k.r===k.b))continue; // resultado igual a um dos slimes: não existe
   if(!k.r||!k.a||!k.b){[[res,k.r],[a1,k.a],[a2,k.b]].forEach(([n,v])=>{if(!v&&n&&n.trim())o.falha.add(n.trim())});continue}
   const m=rest.join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/),ch=m?parseFloat(m[1].replace(',','.')):null,ex=idx[par(k.a,k.b,k.r)];
   if(ex){o.ja++;if(ch!=null&&ex.ch==null){if(ex.meu){const u=M.combos.find(x=>x.id===ex.id);if(u)u.ch=ch}else M.pc[cid(ex)]=ch;ex.ch=ch;o.pcs++}continue} // já existe: só completa a chance
@@ -383,11 +511,14 @@ function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){semBusca();cur=null;sel=-1;marca({t:'envio'});
  const comp=M.combos.filter(c=>c.cp!==false),p={pt:M.pt,pc:M.pc,combos:[...comp.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
+ const skp=[],usadas=new Set();for(const sl in M.sk||{})for(const k in M.sk[sl]){const v=M.sk[sl][k];if(v&&v.cp===true&&K[sl]){skp.push({s:sl,k,l:Number.isInteger(v.l)?v.l:null});usadas.add(k)}}
+ const skc=(M.skc||[]).filter(c=>usadas.has(c.k)).map(({k,nm,el})=>({k,nm,el})),nsn=Object.keys(M.skn||{}).length;
+ if(skp.length)p.sk=skp;if(nsn)p.skn=M.skn;if(skc.length)p.skc=skc;
  const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=comp.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
- const vazio=!(n+c+k+v+u+lo+pe+ap),igual=sig===ult;
+ const vazio=!(n+c+k+v+u+lo+pe+ap+skp.length+nsn),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga']])}
+ ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga'],[skp.length,'u_skill'],[nsn,'u_sknome']])}
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -401,10 +532,10 @@ const chips=l=>{const c=l.filter(([n])=>n>0).map(([n,k])=>{const [s,p]=t(k).spli
 function semBusca(){qi.value='';limpaX()} // a busca não tem a ver com esta tela
 function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
- ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado']])||`<p class="mu">${t('my_vazio')}</p>`}
+ ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado'],[Object.values(M.sk||{}).reduce((s,o)=>s+Object.keys(o).length,0),'u_skill'],[Object.keys(M.skn||{}).length,'u_sknome']])||`<p class="mu">${t('my_vazio')}</p>`}
  <p class="mu">${t('my_where_curto')} <span class="lk" id="pasta">${t('abrir_pasta')}</span></p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
- ${(()=>{const n=M.combos.length,on=M.combos.filter(c=>c.cp!==false).length;return n?`<h4>${t('tst_cp_geral')}</h4><p class="mu">${t('tst_cp_geral_tip')}</p><div class="tgl"><span class="sw${on===n?' on':''}" id="cpg"><i></i></span><span>${t(on===n?'ligado':'desligado')}</span><span class="mu">${on} / ${n}</span></div>`:''})()}
+ ${(()=>{const an=Object.values(M.sk||{}).flatMap(o=>Object.values(o)),n=M.combos.length+an.length,on=M.combos.filter(c=>c.cp!==false).length+an.filter(a=>a.cp===true).length;return n?`<h4>${t('tst_cp_geral')}</h4><p class="mu">${t('tst_cp_geral_tip')}</p><div class="tgl"><span class="sw${on===n?' on':''}" id="cpg"><i></i></span><span>${t(on===n?'ligado':'desligado')}</span><span class="mu">${on} / ${n}</span></div>`:''})()}
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
@@ -412,7 +543,7 @@ function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.k
  ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="tgl"><span class="sw${mapaOn?' on':''}" id="mapat" title="${esc(t(mapaOn?'mapa_on':'mapa_off'))}"><i></i></span><span>${t(mapaOn?'ligado':'desligado')}</span></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
  nv2.onclick=()=>formCombo(null);env.onclick=envio;
- const cpg=document.getElementById('cpg');if(cpg)cpg.onclick=()=>{const tudo=M.combos.every(c=>c.cp!==false);M.combos.forEach(c=>c.cp=!tudo);salva().then(()=>meus())}; // liga/desliga todas
+ const cpg=document.getElementById('cpg');if(cpg)cpg.onclick=()=>{const an=Object.values(M.sk||{}).flatMap(o=>Object.values(o)),tudo=M.combos.every(c=>c.cp!==false)&&an.every(a=>a.cp===true);M.combos.forEach(c=>c.cp=!tudo);an.forEach(a=>a.cp=!tudo);salva().then(()=>meus())}; // liga/desliga todas
 pasta.onclick=()=>ov.abrirPasta();
  const mt=document.getElementById('mapat');if(mt)mt.onclick=()=>{mapaOn=!mapaOn;try{localStorage.setItem('mapa-tab',mapaOn?'1':'0')}catch{}
   mapaStatus=mapaOn?t('mapa_iniciando'):'';mapaAberto=false;ov.mapa.ligar(mapaOn);meus()};
@@ -424,12 +555,15 @@ pasta.onclick=()=>ov.abrirPasta();
   let d;try{d=JSON.parse(f.texto)}catch{return meus(t('msg_invalid'))}
   if(!d||typeof d!='object'||Array.isArray(d))return meus(t('msg_invalid'));
   M.pt={...M.pt,...(d.pt||{})};M.pc={...M.pc,...(d.pc||{})};M.votos={...M.votos,...(d.votos&&typeof d.votos=="object"?d.votos:{})};M.num={...M.num,...(d.num&&typeof d.num=="object"?d.num:{})};const ids=new Set(M.combos.map(c=>c.id));
-  const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&(K[c.r]||c.r==null)&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
+  const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&(K[c.r]||c.r==null)&&K[c.a]&&K[c.b]&&c.r!==c.a&&c.r!==c.b&&!ids.has(c.id));M.combos.push(...novas);
+  if(d.sk&&typeof d.sk=='object'){M.sk=M.sk||{};for(const sl in d.sk)if(K[sl]&&d.sk[sl]&&typeof d.sk[sl]=='object')M.sk[sl]={...(M.sk[sl]||{}),...d.sk[sl]}}
+  if(d.skn&&typeof d.skn=='object')M.skn={...(M.skn||{}),...d.skn};
+  if(Array.isArray(d.skc)){M.skc=Array.isArray(M.skc)?M.skc:[];d.skc.forEach(c=>{if(c&&typeof c.k=='string'&&!M.skc.some(x=>x.k===c.k))M.skc.push(c)})}
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
 let VERSAO='',PASTA='';
 // textos fixos do topo (mudam com o idioma)
 function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');chk.title=t('chk_title');qx.title=t('clear');
- inf.title=t('info_tip');tsb.title=t('tst_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+ inf.title=t('info_tip');tsb.title=t('tst_title');skb.title=t('sk_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
@@ -438,11 +572,11 @@ function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Mat
 let campo=null;bd.addEventListener('focusin',e=>{if(e.target.tagName=='INPUT')campo=e.target});
 function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;const tst=vista&&vista.t=='testador';if(tst)ov.largo(true);ov.size(true);
  if(tst){(campo&&bd.contains(campo)?campo:ts1).focus();return}
- if(vista&&(vista.t=='form'||vista.t=='ficha')&&campo&&bd.contains(campo)){campo.focus();return}
+ if(vista&&(vista.t=='form'||vista.t=='ficha'||vista.t=='skform')&&campo&&bd.contains(campo)){campo.focus();return}
  qi.value='';hist=[];vista=null;list();qi.focus()}
 let fechouEm=0; // quando o painel fechou (o Esc que fecha o painel não fecha os slimes do mapa)
 function close(){fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false);ov.largo(false)}
-x.onclick=close;tsb.onclick=()=>testador();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
+x.onclick=close;tsb.onclick=()=>testador();skb.onclick=()=>skillsTela();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
  if(e.key=='ArrowDown'){e.preventDefault();mark(sel+1)}
@@ -451,6 +585,15 @@ qi.onkeydown=e=>{
  else if(e.key=='Escape')close()};
 bd.onclick=e=>{const t=e.target;
  if(t.id=='bk')return voltar();
+ const skd=t.closest('[data-skdel]');if(skd){const [s,k]=skd.dataset.skdel.split('|');tiraSk(s,k);salva().then(()=>{monta();redesenha()});return} // apagar anotação de skill
+ const ske=t.closest('[data-sked]');if(ske){const [s,k]=ske.dataset.sked.split('|');return skillForm({s,k})}
+ const skp=t.closest('[data-skp]');if(skp&&SKF){SKF.k=skp.dataset.skp;SKF.novo=false;SKF.nn='';skNova();skEsc();skLista();return} // escolheu a skill na lista (ou no "é essa?")
+ const skel=t.closest('[data-skel]');if(skel){if(vista&&vista.t=='skform'&&SKF){SKF.el=skel.dataset.skel;skLista()}else if(vista&&vista.t=='skills'){SKT.el=skel.dataset.skel;SKT.lista&&SKT.lista()}return}
+ const skv=t.closest('[data-skv]');if(skv)return skillDet(skv.dataset.skv);
+ if(t.id=='skadd')return skillForm({s:cur});
+ if(t.id=='skem')return skillForm({k:vista&&vista.k});
+ if(t.id=='sknv'&&SKF){SKF.novo=!SKF.novo;if(SKF.novo){SKF.k='';if(!SKF.ne){const s=K[chave(SKF.s)];SKF.ne=s&&s.el[0]||''}}skNova();skEsc();skLista();return}
+ if(t.id=='skpt')return editaSkPT();
  const tcp=t.closest('[data-tcp]');if(tcp){const c=M.combos.find(x=>x.id===tcp.dataset.tcp);if(c){c.cp=!c.cp;salva().then(()=>testador())}return} // compartilhar este teste
  const tdl=t.closest('[data-tdel]');if(tdl){const id=tdl.dataset.tdel;M.combos=M.combos.filter(c=>c.id!==id);M.fav=M.fav.filter(f=>f.id!==id);if(TST.ed===id)TST.ed=null;salva().then(()=>{monta();testador()});return}
  const te=t.closest('[data-te]');if(te)return testador({ed:te.dataset.te});
@@ -582,7 +725,7 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],...semApelidos(d)};monta()});
+ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],...semApelidos(d)};monta()});
 ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base

@@ -34,7 +34,7 @@ const TXT = {
     used: 'Usado em ({n})', new_btn: '＋ Nova combinação',
     form_h: 'Nova combinação', result: 'Resultado', slime1: 'Slime 1', slime2: 'Slime 2', material: 'Material', level: 'Nível', chance: 'Chance %',
     pick_ph: 'digite e escolha', opt_ph: 'opcional', mat_ph: 'opcional — digite e escolha', cancel: 'Cancelar', save: 'Salvar',
-    form_err: 'Escolha o resultado e os dois slimes da lista',
+    form_err: 'Escolha o resultado e os dois slimes da lista', form_err_self: 'O resultado não pode ser um dos slimes da combinação.',
     form_tip: 'Para cadastrar várias de uma vez, use ⋯ → Importar com um CSV no formato da planilha (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Enviar minhas descobertas', send_counts: '{k} combinação(ões) · {c} chance(s) · {v} voto(s) · {n} nome(s) em PT-BR · {u} número(s) · {lo} slime(s) em mapas · {pe} dia/noite · {ap} apagada(s)',
     send_info: 'Vai para a base colaborativa. De hora em hora os envios são revisados e o que for aprovado entra na base de todo mundo. Não vai nada pessoal — só um código aleatório deste PC.',
@@ -59,7 +59,17 @@ const TXT = {
     tst_poss: 'Possibilidades', tst_escolha: 'Escolha o slime 1 e o slime 2 para ver o que pode sair.', tst_conhecidas: 'Já conhecidas', tst_testada: 'já testada, resultado desconhecido',
     tst_inversa: 'Na ordem inversa ({b} + {a}):', tst_estim: 'Estimativas', tst_estim_outras: 'Outras possibilidades (estimativa)', tst_estim_tip: 'Calculado pelos elementos e espécies dos dois slimes e pelas combinações conhecidas. A certa costuma estar entre as 5 primeiras.',
     tst_mais: 'ver mais', tst_nada: 'Nenhum slime tem elemento em comum com esses dois.', tst_pick: 'Clique para marcar como resultado do teste', tst_editando: 'Editando um teste salvo',
-    tst_cp_geral: 'Compartilhar minhas combinações', tst_cp_geral_tip: 'Liga ou desliga de uma vez o "Compartilhar" de todas as suas combinações e testes. Só as compartilhadas vão no envio.',
+    tst_cp_geral: 'Compartilhar minhas contribuições', tst_cp_geral_tip: 'Liga ou desliga de uma vez o "Compartilhar" de todas as suas combinações, testes e skills anotadas. Só as compartilhadas vão no envio.',
+    sk_title: 'Skills', sk_h: 'Skills', sk_sec: 'Skills ({n})', sk_nenhuma: 'Nenhuma skill anotada ainda.', sk_anotar: '+ Anotar skill', sk_anotar_h: 'Anotar skill', sk_anotar_em: 'Anotar em um slime',
+    sk_slime: 'Slime', sk_skill: 'Skill', sk_busca_ph: 'buscar skill (PT ou EN)', sk_lv_ph: 'nível em que pegou (opcional)', sk_todas: 'todas', sk_do_slime: 'do slime',
+    sk_escolhida: 'Escolhida:', sk_nenhuma_esc: 'Clique numa skill da lista.', sk_salvar: 'Salvar', sk_salvo: 'Skill anotada.', sk_err_slime: 'Escolha o slime.', sk_err_skill: 'Escolha uma skill da lista ou cadastre uma nova.',
+    sk_err_lv: 'Nível de 1 a 99 (ou vazio).', sk_nao_achei: 'Não achei, cadastrar nova', sk_nova_h: 'Skill nova', sk_nova_nome: 'Nome (como aparece no jogo)', sk_nova_el: 'Elemento',
+    sk_err_nome: 'Nome de 2 a 40 letras.', sk_err_el: 'Escolha o elemento.', sk_parece: 'Parece com:', sk_essa: 'é essa?', sk_lista_vazia: 'Nenhuma skill com esse nome.',
+    sk_nslimes: '{n} slime|{n} slimes', sk_quem: 'Slimes que pegam ({n})', sk_ninguem: 'Nenhum slime anotado ainda.', sk_mp: 'MP {n}', sk_cd: 'recarga {n}s',
+    sk_pt_add: 'adicionar nome no jogo (PT)', sk_pt_edit: 'corrigir nome no jogo (PT)', sk_pt_ph: 'nome como aparece no jogo', sk_base: 'wiki', sk_base_title: 'A wiki lista esta skill para este slime (sem nível)',
+    sk_com_title: 'Anotada por {n} pessoa(s); nível que mais mandaram', sk_com_lv: 'comunidade: nv {l}', sk_cadastrada: 'cadastrada',
+    k_attack: 'ataque', k_support: 'suporte', k_dash: 'investida', k_specialty: 'especialidade',
+    u_skill: 'skill anotada|skills anotadas', u_sknome: 'nome de skill|nomes de skill',
     err: {}
   },
   en: {
@@ -96,7 +106,7 @@ const TXT = {
     used: 'Used in ({n})', new_btn: '＋ New combination',
     form_h: 'New combination', result: 'Result', slime1: 'Slime 1', slime2: 'Slime 2', material: 'Material', level: 'Level', chance: 'Chance %',
     pick_ph: 'type and pick', opt_ph: 'optional', mat_ph: 'optional — type and pick', cancel: 'Cancel', save: 'Save',
-    form_err: 'Pick the result and both slimes from the list',
+    form_err: 'Pick the result and both slimes from the list', form_err_self: 'The result cannot be one of the slimes in the combination.',
     form_tip: 'To add many at once, use ⋯ → Import with a CSV in the spreadsheet format (Result, ID, Level, Slime 1, Slime 2, Material, Chance).',
     send_h: 'Send my discoveries', send_counts: '{k} combination(s) · {c} chance(s) · {v} vote(s) · {n} Portuguese name(s) · {u} number(s) · {lo} slime(s) on maps · {pe} day/night · {ap} deleted',
     send_info: 'It goes to the collaborative database. Every hour submissions are reviewed, and whatever is approved is added for everyone. Nothing personal is sent — only a random code for this PC.',
@@ -121,9 +131,19 @@ const TXT = {
     tst_poss: 'Possibilities', tst_escolha: 'Pick slime 1 and slime 2 to see what may come out.', tst_conhecidas: 'Already known', tst_testada: 'already tested, result unknown',
     tst_inversa: 'In reverse order ({b} + {a}):', tst_estim: 'Estimates', tst_estim_outras: 'Other possibilities (estimate)', tst_estim_tip: 'Based on the elements and species of both slimes and on the known combinations. The right one is usually in the top 5.',
     tst_mais: 'show more', tst_nada: 'No slime shares an element with these two.', tst_pick: 'Click to set as the result of this test', tst_editando: 'Editing a saved test',
-    tst_cp_geral: 'Share my combinations', tst_cp_geral_tip: 'Turns "Share" on or off for all your combinations and tests at once. Only shared ones are sent.',
+    tst_cp_geral: 'Share my contributions', tst_cp_geral_tip: 'Turns "Share" on or off for all your combinations, tests and noted skills at once. Only shared ones are sent.',
+    sk_title: 'Skills', sk_h: 'Skills', sk_sec: 'Skills ({n})', sk_nenhuma: 'No skills noted yet.', sk_anotar: '+ Note a skill', sk_anotar_h: 'Note a skill', sk_anotar_em: 'Note on a slime',
+    sk_slime: 'Slime', sk_skill: 'Skill', sk_busca_ph: 'search skill (PT or EN)', sk_lv_ph: 'level it learned it (optional)', sk_todas: 'all', sk_do_slime: 'slime\'s',
+    sk_escolhida: 'Chosen:', sk_nenhuma_esc: 'Click a skill in the list.', sk_salvar: 'Save', sk_salvo: 'Skill noted.', sk_err_slime: 'Pick the slime.', sk_err_skill: 'Pick a skill from the list or add a new one.',
+    sk_err_lv: 'Level from 1 to 99 (or empty).', sk_nao_achei: 'Not found, add a new one', sk_nova_h: 'New skill', sk_nova_nome: 'Name (as shown in the game)', sk_nova_el: 'Element',
+    sk_err_nome: 'Name with 2 to 40 letters.', sk_err_el: 'Pick the element.', sk_parece: 'Looks like:', sk_essa: 'is it this one?', sk_lista_vazia: 'No skill with that name.',
+    sk_nslimes: '{n} slime|{n} slimes', sk_quem: 'Slimes that learn it ({n})', sk_ninguem: 'No slime noted yet.', sk_mp: 'MP {n}', sk_cd: 'cooldown {n}s',
+    sk_pt_add: 'add in-game name (PT)', sk_pt_edit: 'fix in-game name (PT)', sk_pt_ph: 'name as shown in the game', sk_base: 'wiki', sk_base_title: 'The wiki lists this skill for this slime (no level)',
+    sk_com_title: 'Noted by {n} person(s); most sent level', sk_com_lv: 'community: lv {l}', sk_cadastrada: 'added',
+    k_attack: 'attack', k_support: 'support', k_dash: 'dash', k_specialty: 'specialty',
+    u_skill: 'noted skill|noted skills', u_sknome: 'skill name|skill names',
     err: { 'limite diário de envios atingido': 'daily upload limit reached', 'muitos envios agora, tente mais tarde': 'too many uploads right now, try again later',
-      'formato inválido': 'invalid format', 'votos inválido': 'invalid votes', 'combos inválido': 'invalid combinations', 'sem conexão com a internet': 'no internet connection' }
+      'formato inválido': 'invalid format', 'votos inválido': 'invalid votes', 'combos inválido': 'invalid combinations', 'sk inválido': 'invalid skills', 'skn inválido': 'invalid skill names', 'skc inválido': 'invalid new skills', 'sem conexão com a internet': 'no internet connection' }
   }
 };
 let LANG = (() => { try { const l = localStorage.getItem('lang'); if (l === 'pt' || l === 'en') return l } catch {} return (navigator.language || '').toLowerCase().startsWith('pt') ? 'pt' : 'en' })();

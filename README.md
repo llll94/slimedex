@@ -28,6 +28,7 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 | Idioma | botão **⋯** → **Português / English** |
 | Limpar a busca | **×** dentro do campo |
 | Fixar na tela | **☆** numa combinação ou ao lado do nome do slime — vira uma janelinha por cima do jogo, arrastável (até 8). Na janelinha, **★** desfixa e **×** só esconde; em **Fixados** (busca vazia) cada um tem uma chave liga/desliga |
+| Skills | botão de **raio** no topo — todas as skills, por elemento; na ficha, **+ Anotar skill** guarda em que nível o slime pega cada uma |
 | Slimes do mapa (beta, Windows) | **⋯** → ligar; no jogo, **Tab** mostra os slimes que nascem no mapa atual |
 | Sair | botão direito no ícone da bandeja → **Sair** |
 
@@ -55,6 +56,16 @@ Escolha o **slime 1**, o **slime 2** e, se quiser, o **material**: o painel alar
 - **Compartilhar** — cada teste tem sua chave (começa desligada): só os compartilhados vão no *Enviar minhas descobertas*. Teste compartilhado sem resultado entra na base da comunidade com o selo **teste**. Em **⋯** há uma chave geral que liga/desliga todas as suas combinações.
 
 O botão **Testar combinação** na ficha abre o testador já com o slime no campo 1.
+
+### Skills (botão de raio no topo)
+
+As **160 skills** do jogo (lista da [World of Slime Wiki](https://world-of-slime-wiki.vercel.app)), com ícone, elemento, tipo, MP e recarga. Busque em português ou inglês ("barreira" acha *Aqua Barrier*) e filtre por elemento. Clique numa skill para ver os detalhes e **quais slimes pegam ela, e em que nível**.
+
+- **Na ficha** — seção **Skills** com as skills do slime, do menor nível para o maior, e de onde veio cada uma (**wiki**, **comunidade** ou **meu**).
+- **+ Anotar skill** — escolha a skill (a lista começa nos elementos do slime) e o **nível** em que ele pegou. Ex.: Mud Bass pega a Barreira Aquática no nível 26.
+- **Não achou?** — **cadastre uma nova** com nome e elemento; se o nome parecer com uma skill que já existe, o app pergunta "é essa?".
+- **Nome no jogo (PT)** — enquanto ninguém manda o nome em português, aparece o nome em inglês da wiki; no detalhe da skill dá para corrigir.
+- **Compartilhar** — igual às combinações: cada anotação tem sua chave (começa desligada) e a chave geral de **⋯** vale para tudo. Quando várias pessoas anotam níveis diferentes, a comunidade mostra o que mais gente mandou.
 
 ### Slimes do mapa (Tab) · beta, só Windows
 
@@ -114,6 +125,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.1.0 (Windows) | `0C3D39253530817B00F46FFD5F037281DB68F6412A16C0454537C7E0EEC0C475` | em análise |
 | 2.0.0 (Windows) | `4F9A94ADC888DE92498039B065D5F3CE95436BF30A911B26F7B29DAE49CD280B` | [**1/64** — ver análise](https://www.virustotal.com/gui/file/4f9a94adc888de92498039b065d5f3ce95436bf30a911b26f7b29dae49cd280b/detection) |
 | 2.0.0 (Mac, chip Apple) | `2DEB3C7D6866F48DE80EAEF2F290122D486E147BB85870114D28EEAFF9A238DE` | — |
 | 2.0.0 (Mac, Intel) | `337EE50DF12096028CFA6A2E07616654C855BDFFF4A9D78499956D1654377C03` | — |
