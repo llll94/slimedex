@@ -2,15 +2,18 @@ name: Discord #atualizações
 
 on:
   release:
-    types: [published]     # versão publicada: posta as novidades em PT
+    types: [published]     # versão publicada: posta as novidades em PT (#atualizações)
+  workflow_run:
+    workflows: ['Build macOS']
+    types: [completed]     # .dmg anexados: posta qual arquivo baixar (#download)
   workflow_dispatch:       # manual: Actions → Discord #atualizações → Run workflow
     inputs:
       tipo:
-        description: 'teste | versao | aviso'
+        description: 'teste | versao | aviso | download'
         required: true
         default: 'teste'
       valor:
-        description: 'versao: a tag (ex.: v2.1.0) · aviso: o texto'
+        description: 'versao/download: a tag (ex.: v2.1.0; download vazio = última) · aviso: o texto'
         required: false
         default: ''
 
@@ -20,6 +23,8 @@ permissions:
 jobs:
   post:
     runs-on: ubuntu-latest
+    # workflow_run: só quando o build do Mac veio de um release e deu certo
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'release')
     steps:
       - uses: actions/checkout@v5
         with:
@@ -31,7 +36,11 @@ jobs:
 
       - name: Postar
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_ATUALIZACOES }}
-          TIPO: ${{ github.event_name == 'release' && 'versao' || inputs.tipo }}
-          VALOR: ${{ github.event.release.tag_name || inputs.valor }}
-        run: node scripts/discord-atualizacao.js "$TIPO" "$VALOR"
+          TIPO: ${{ github.event_name == 'release' && 'versao' || github.event_name == 'workflow_run' && 'download' || inputs.tipo }}
+          VALOR: ${{ github.event.release.tag_name || github.event.workflow_run.head_branch || inputs.valor }}
+          HOOK_ATUALIZACOES: ${{ secrets.DISCORD_WEBHOOK_ATUALIZACOES }}
+          HOOK_DOWNLOAD: ${{ secrets.DISCORD_WEBHOOK_DOWNLOAD }}
+        run: |
+          if [ "$TIPO" = "download" ]; then export DISCORD_WEBHOOK="$HOOK_DOWNLOAD"; else export DISCORD_WEBHOOK="$HOOK_ATUALIZACOES"; fi
+          if [ -z "$DISCORD_WEBHOOK" ]; then echo "secret do canal não configurado"; exit 1; fi
+          node scripts/discord-atualizacao.js "$TIPO" "$VALOR"

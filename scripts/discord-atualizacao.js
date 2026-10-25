@@ -2,6 +2,7 @@
 //   node scripts/discord-atualizacao.js versao v2.1.0   -> novidades da versão (novidades.json, em PT) + link do release
 //                                                          + galeria com até 4 prints da cartilha (campo prints da versão)
 //   node scripts/discord-atualizacao.js aviso "texto"   -> aviso avulso
+//   node scripts/discord-atualizacao.js download [tag]  -> canal #download: qual arquivo baixar (Windows, Mac chip Apple, Mac Intel)
 //   node scripts/discord-atualizacao.js teste           -> mensagem de teste
 // Sem DISCORD_WEBHOOK: só mostra o que seria enviado (para conferir localmente).
 const fs = require('fs'), path = require('path');
@@ -28,8 +29,26 @@ async function mensagem() {
     if (!t) throw new Error('aviso sem texto');
     return { embeds: [{ description: t.slice(0, 4000), color: COR }] };
   }
+  if (tipo === 'download') return download();
   if (tipo === 'teste') return { content: '✅ Teste do webhook do Slimedex: as atualizações vão aparecer aqui.' };
   throw new Error('tipo desconhecido: ' + tipo);
+}
+
+// canal #download: qual arquivo baixar em cada computador, com link direto (release mais recente ou a tag informada)
+async function download() {
+  const rel = await (await fetch(`https://api.github.com/repos/${REPO}/releases/${arg ? 'tags/' + arg : 'latest'}`, { headers: { 'User-Agent': 'slimedex' } })).json();
+  if (!rel.tag_name) throw new Error('release não encontrado');
+  const v = rel.tag_name.replace(/^v/, ''), a = re => rel.assets.find(x => re.test(x.name));
+  const exe = a(/-portable\.exe$/), arm = a(/-mac-arm64\.dmg$/), x64 = a(/-mac-x64\.dmg$/);
+  const lk = (x, txt) => x ? `**[${txt}](${x.browser_download_url})**` : '_(ainda não disponível)_';
+  const fields = [
+    { name: '🪟 Windows', value: `${lk(exe, 'Baixar para Windows')} · \`${exe ? exe.name : ''}\`\nÉ só abrir, não precisa instalar. Se o Windows avisar, clique em *Mais informações → Executar assim mesmo*.` },
+    { name: '🍎 Mac com chip Apple (M1, M2, M3, M4…)', value: `${lk(arm, 'Baixar para Mac (chip Apple)')} · \`${arm ? arm.name : ''}\`` },
+    { name: '🍎 Mac com processador Intel', value: `${lk(x64, 'Baixar para Mac (Intel)')} · \`${x64 ? x64.name : ''}\`` },
+    { name: 'Qual é o meu Mac?', value: 'Clique na maçã no canto de cima da tela → **Sobre Este Mac**. Se aparecer **Chip Apple M…**, é chip Apple. Se aparecer **Processador Intel**, é Intel.' },
+    { name: 'Primeira vez no Mac', value: 'Abra o `.dmg` e arraste o Slimedex para **Aplicativos**. Na primeira vez o macOS avisa que não pode verificar o app: feche o aviso, vá em **Ajustes do Sistema → Privacidade e Segurança** e clique em **Abrir mesmo assim**. Das próximas vezes ele abre direto.' }];
+  return { embeds: [{ title: `⬇️ Baixar o Slimedex ${v}`, url: rel.html_url, color: COR, description: 'Escolha o arquivo do seu computador. Depois de instalado, o próprio app avisa quando sair versão nova.', fields,
+    footer: { text: 'Abrir e fechar: Ctrl+Tab (no Mac, Control+Tab) · código aberto em github.com/llll94/slimedex' } }] };
 }
 
 // prints da cartilha da própria tag (o post continua mostrando as telas daquela versão); só os que existem
