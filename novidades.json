@@ -2,6 +2,27 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub.",
   "versoes": [
     {
+      "v": "2.0.0",
+      "pt": [
+        "Testador de combinações (botão ⚗ no topo): escolha dois slimes e veja à direita o que pode sair, do mais provável para o menos provável",
+        "Salve seus testes, com ou sem resultado. Eles ficam só no seu computador, a não ser que você ligue \"Compartilhar\"",
+        "Teste compartilhado sem resultado entra na base da comunidade com o selo \"teste\"",
+        "Nova chave em ⋯ para compartilhar (ou não) todas as suas combinações de uma vez",
+        "Combinações em nova ordem: primeiro as com resultado, da maior para a menor chance; as testadas sem resultado ficam no fim",
+        "Limpeza: saíram as testadas sem resultado que já tinham resultado conhecido",
+        "Botão i virou uma cartilha: janela com o passo a passo de cada recurso, com prints"
+      ],
+      "en": [
+        "Combination tester (⚗ button at the top): pick two slimes and see on the right what may come out, from most to least likely",
+        "Save your tests, with or without a result. They stay on your computer only, unless you turn on \"Share\"",
+        "A shared test without a result joins the community database with the \"test\" badge",
+        "New switch in ⋯ to share (or not) all your combinations at once",
+        "Combinations in a new order: the ones with a result first, from highest to lowest chance; tested ones without a result go last",
+        "Cleanup: removed tested combinations without a result that already had a known result",
+        "The i button is now a guide: a window with step-by-step help for every feature, with screenshots"
+      ]
+    },
+    {
       "v": "1.6.3",
       "pt": [
         "Mais leve e mais rápido: o leitor do Tab gasta bem menos memória e processador, e a lista e as imagens carregam mais rápido",

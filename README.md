@@ -2,7 +2,7 @@
 
 # Slimedex
 
-[![VirusTotal 1/66](https://img.shields.io/badge/VirusTotal-1%2F66_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/c808b77db13b8da98f4fcb0b15c24eec072fea8be80501a50bf71b68a7c0f71d/detection)
+[![VirusTotal 1/64](https://img.shields.io/badge/VirusTotal-1%2F64_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/4f9a94adc888de92498039b065d5f3ce95436bf30a911b26f7b29dae49cd280b/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
 Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
@@ -24,7 +24,7 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 | Voltar | tecla **V**, botão **voltar do mouse** ou **← voltar** |
 | Fechar | **Esc**, **Ctrl+Tab** ou clique fora do painel |
 | Mover o ícone | arraste (a posição é lembrada) |
-| Dicas | botão **i** ao lado da busca — atalhos e recursos explicados |
+| Cartilha | botão **i** ao lado da busca — abre uma janela com o passo a passo de cada recurso, com prints (PT/EN) |
 | Idioma | botão **⋯** → **Português / English** |
 | Limpar a busca | **×** dentro do campo |
 | Fixar na tela | **☆** numa combinação ou ao lado do nome do slime — vira uma janelinha por cima do jogo, arrastável (até 8). Na janelinha, **★** desfixa e **×** só esconde; em **Fixados** (busca vazia) cada um tem uma chave liga/desliga |
@@ -38,12 +38,23 @@ Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 - **Dia e noite** — ícone ao lado do nome: nasce só de dia, só de noite ou nos dois. Clique para corrigir.
 - **Onde nasce** — os mapas em que ele aparece (clique num mapa para ver ou editar os slimes dele).
 - **Drops** — os itens que ele solta, com ícone.
-- **Como obter** — combinações ordenadas pela maior chance, com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍. Combinação errada? **🗑** apaga (some do seu app na hora; ao enviar suas descobertas, vai para revisão e pode sumir para todos).
-- **Usado em** — combinações em que ele é ingrediente.
+- **Como obter** — combinações ordenadas pela maior chance (sem % por último), com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍. Combinação errada? **🗑** apaga (some do seu app na hora; ao enviar suas descobertas, vai para revisão e pode sumir para todos).
+- **Usado em** — combinações em que ele é ingrediente, na mesma ordem: as com resultado primeiro, da maior para a menor chance; as **testadas sem resultado** ficam no fim, recolhidas (e somem sozinhas quando o mesmo par ganha resultado).
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
 - **✎ nome em PT-BR** e **✎ número** — dá um nome em português e o número da Slimepedia do jogo; a busca acha pelos dois.
 - **✎ em cada combinação** — corrige material, nível ou chance (fica no seu app, por cima da original; a lixeira desfaz). **⇄** junta uma combinação sua com outra igual; combinações suas iguais às da base/comunidade já aparecem juntas numa linha só.
+
+### Testador de combinações (botão ⚗ no topo)
+
+Escolha o **slime 1**, o **slime 2** e, se quiser, o **material**: o painel alarga e mostra à direita o que pode sair.
+
+- **Já conhecidas** — combinações da base, da comunidade ou suas para esse par (na mesma ordem: A + B ≠ B + A), com a chance real;
+- **Estimativas** — os outros resultados possíveis, do mais provável para o menos provável, calculados pelos elementos e espécies dos dois slimes e pelas combinações conhecidas (o resultado quase sempre tem elemento em comum com os pais). Nos testes com as combinações conhecidas, a certa ficou entre as 5 primeiras em ~9 de cada 10 casos;
+- **Salvar teste** — guarda o que você fez, com resultado (clique numa possibilidade ou digite) ou sem ("sei que vira algo, mas não sei o quê"). Os testes ficam em **Meus testes** e na ficha dos slimes;
+- **Compartilhar** — cada teste tem sua chave (começa desligada): só os compartilhados vão no *Enviar minhas descobertas*. Teste compartilhado sem resultado entra na base da comunidade com o selo **teste**. Em **⋯** há uma chave geral que liga/desliga todas as suas combinações.
+
+O botão **Testar combinação** na ficha abre o testador já com o slime no campo 1.
 
 ### Slimes do mapa (Tab) · beta, só Windows
 
@@ -71,7 +82,7 @@ O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](
 
 ### Base colaborativa
 
-Em **⋯ → Enviar minhas descobertas** você manda suas combinações, chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. De hora em hora, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
+Em **⋯ → Enviar minhas descobertas** você manda suas combinações (só as com **Compartilhar** ligado), chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. De hora em hora, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
 
 - uma **combinação nova** entra a partir do primeiro envio, depois de revisada (aparece com o selo *comunidade* e o número de pessoas que a enviaram);
 - a **chance** é a mais enviada (empate: fica a que já estava aprovada, senão a mais recente);
@@ -103,6 +114,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.0.0 (Windows) | `4F9A94ADC888DE92498039B065D5F3CE95436BF30A911B26F7B29DAE49CD280B` | [**1/64** — ver análise](https://www.virustotal.com/gui/file/4f9a94adc888de92498039b065d5f3ce95436bf30a911b26f7b29dae49cd280b/detection) |
 | 1.6.3 (Windows) | `770691A19AA89956370D2645CD749E25928CABEB2FA7F88A5355406C94C37050` | em análise |
 | 1.6.3 (Mac, chip Apple) | `00DF6C084C63ED56D86DCC1347BA93E386241104C2948BC3666F3BC6BCBC6ECB` | — |
 | 1.6.3 (Mac, Intel) | `2ED37474F6B5F7EAADD6A8D3F19F4866583DDAA39DC68789C69A6D26C968EF2F` | — |

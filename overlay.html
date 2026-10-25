@@ -89,12 +89,23 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 /* conferir agora (base nova / versão nova) */
 #chk{flex:none;width:26px;height:26px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#9aa3ad}#chk:hover{color:#fff;background:#262c33}
 #chk svg{width:17px;height:17px;fill:currentColor}#chk.gira svg{animation:gira .8s linear infinite}@keyframes gira{to{transform:rotate(360deg)}}
+/* testador de combinações: painel largo, campos à esquerda e possibilidades à direita (ícone: Material Icons "science", Apache 2.0) */
+#tsb{display:flex;align-items:center;padding:0 2px}#tsb svg{width:17px;height:17px;fill:currentColor}
+.tst{display:grid;grid-template-columns:330px 1fr;gap:12px;height:100%}.tst>div{overflow-y:auto;min-height:0;padding-right:2px}
+.tst .form{grid-template-columns:auto 1fr}.tst .tgl{grid-column:1/-1}
+.tp{display:flex;align-items:center;gap:8px;padding:3px 4px;border-radius:8px;cursor:pointer}.tp:hover{background:#232930}.tp.on{background:#2b3440;box-shadow:inset 0 0 0 1px #6aa8ff}
+.tp img,.tp>i{width:32px;height:32px;object-fit:contain;flex:none}.tp .nm{flex:1;min-width:0}.tp .nm b{font-weight:600}
+.tp .br{flex:none;width:90px;height:6px;border-radius:3px;background:#262c33;overflow:hidden}.tp .br i{display:block;height:100%;background:#4d79c7}
+.tp .es{flex:none;width:40px;text-align:right;font-size:11px;font-style:italic;color:#8fb8ff}
+.tm{display:flex;align-items:center;gap:6px;padding:4px 2px;border-top:1px solid #2d333a;cursor:pointer}.tm:hover{background:#1f252c}.tm .nm{flex:1;min-width:0}.tm.on{background:#2b3440}
+.tm img,.tm>i{width:28px;height:28px;object-fit:contain;flex:none}.tm .sw{margin-left:0}.tm .del svg{width:14px;height:14px;fill:currentColor;pointer-events:none}
 </style></head><body>
 <div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="i18n.js"></script>
+<script src="testador.js"></script>
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app';S.forEach(s=>K[s.k]=s);
 S.forEach(s=>s.n0=s.n); // número da base (o número exibido pode vir do usuário ou da comunidade)
@@ -123,14 +134,16 @@ const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resulta
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
 const dn=s=>LANG==='pt'?(s.pt||s.nm):s.nm,nm=k=>K[k]?dn(K[k]):k;
 const alt=s=>LANG==='pt'?(s.pt?s.nm:''):(s.pt||''); // nome no outro idioma, se houver
+// ordem de toda lista de combinações: com resultado antes, maior % antes (sem % por último), confirmada antes de "teste", mais 👍, nome do resultado
+const ordemC=(a,b)=>!a.r-!b.r||(b.ch??-1)-(a.ch??-1)||!!(a.ts&&!confirmada(a))-!!(b.ts&&!confirmada(b))||((b.v?b.v.u-b.v.d:0)-(a.v?a.v.u-a.v.d:0))||(a.r?nm(a.r):'').localeCompare(b.r?nm(b.r):'');
 function monta(){
  S.forEach(s=>{s.pt=M.pt[s.k]||(CM&&CM.pt&&CM.pt[s.k])||'';const nu=(M.num||{})[s.k]??(CM&&CM.num&&CM.num[s.k]);s.n=s.n0??(Number.isInteger(nu)?nu:null);
   s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.el.map(e=>EL_EN[e]||'').join(' '),s.lc.join(' '),s.lc.map(l=>(D.locEn&&D.locEn[l])||'').join(' ')].join(' '))});
  const cpc=(CM&&CM.pc)||{},cvt=(CM&&CM.votos)||{};
  const naBase=new Set(D.combos.filter(c=>c.r).map(chaveC)); // a da comunidade que já virou base (versão nova) não repete
- const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&K[c.r]&&K[c.a]&&K[c.b]&&!naBase.has(chaveC(c)))
-  .map(c=>({id:c.id,r:c.r,a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
- C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true}))];
+ const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&(K[c.r]||(c.r==null&&c.ts))&&K[c.a]&&K[c.b]&&!naBase.has(chaveC(c))) // sem resultado: teste compartilhado (selo teste)
+  .map(c=>({id:c.id,r:c.r||null,...(c.r?{}:{ts:1}),a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
+ C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true,...(c.r?{}:{ts:1})}))]; // seu teste sem resultado também leva o selo teste
  // combinação sua igual a uma da base/comunidade vira uma linha só, com o que cada uma tem de informação
  // c.alvo = presa a uma combinação da base/comunidade: modo 'editar' substitui os campos, 'juntar' só completa o que falta;
  // sem alvo, junta sozinha com a igual (mesmos slimes, mesmo resultado, material compatível)
@@ -144,10 +157,11 @@ function monta(){
   alvo.meuId=c.id;return false});
  const apag=new Set([...(M.apaga||[]),...((CM&&CM.apagadas)||[])]);CA=C.filter(c=>!c.meu&&!c.meuId&&apag.has(cid(c)));C=C.filter(c=>c.meu||c.meuId||!apag.has(cid(c))); // 🗑 numa da base/comunidade
  C.forEach(c=>{if(c.meu&&c.r){const o=C.find(x=>x!==c&&x.r&&chaveC(x)===chaveC(c));c.gemeo=o?cid(o):null}}); // igual que não juntou sozinha (⇄)
+ const comR=new Set(C.filter(c=>c.r).map(c=>c.a+'+'+c.b));C=C.filter(c=>c.r||c.meu||!comR.has(c.a+'+'+c.b)); // testada (sem resultado) cujo mesmo par já tem resultado sai
  C.forEach(c=>{const v=cvt[cid(c)];if(v&&typeof v=='object'){c.v={u:v.u|0,d:v.d|0};c.cz=c.v.d>=3&&c.v.d>=2*c.v.u}}); // placar e "contestada"
  made={};used={};
  C.forEach(c=>{if(c.r)(made[c.r]=made[c.r]||[]).push(c);new Set([c.a,c.b]).forEach(k=>(used[k]=used[k]||[]).push(c))});
- const byCh=(a,b)=>(b.ch??-1)-(a.ch??-1);Object.values(made).forEach(v=>v.sort(byCh)); // maior chance primeiro
+ [...Object.values(made),...Object.values(used)].forEach(v=>v.sort(ordemC));
  ordena();LBL={};nomes.innerHTML=ALL.map(s=>{const l=rot(s);LBL[l]=s.k;return`<option value="${esc(l)}">`}).join('');
  // sugestões do campo Material: "Couro (Hide)" em PT, "Hide (Couro)" em EN — acha digitando nas duas línguas
  materiais.innerHTML=(D.itens||[]).map(i=>`<option value="${esc(LANG==='en'?i.en+' ('+i.pt+')':i.pt+' ('+i.en+')')}">`).join('');
@@ -167,12 +181,12 @@ const voltarLk=()=>`<span class="lk" id="bk" title="${esc(t('back_title'))}">${t
 let vista=null,hist=[],voltando=false;
 function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  if(!voltando&&vista&&!igual&&!(vista.t=='lista'&&v.t=='lista')){hist.push(vista);if(hist.length>50)hist.shift()} // digitar na busca não empilha
- vista=v}
+ vista=v;ov.largo(v.t=='testador')} // só o testador usa o painel largo
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
-function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='info')info();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m)}finally{voltando=false}}
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador()}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
@@ -241,7 +255,7 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <h4>${t('drops')}</h4>${(s.dp||[]).length?`<div class="drs">${s.dp.map(d=>`<span class="dr">${ii(itemIco(d))}${esc(itemNome(d))}</span>`).join('')}</div>`:`<span class="mu">${t('no_drops')}</span>`}
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<p class="mu" style="margin:4px 0">${t('no_combo')}</p>`}
  ${(()=>{const a=CA.filter(c=>(M.apaga||[]).includes(cid(c))&&[c.r,c.a,c.b].includes(k));return a.length?`<p class="mu">${t('apagadas')} ${a.map(c=>`${esc(nm(c.r)||'?')} = ${esc(nm(c.a))} + ${esc(nm(c.b))} <span class="lk sm" data-desapaga="${esc(cid(c))}" title="${esc(t('desapagar_title'))}">↺</span>`).join(' · ')}</p>`:''})()}
- <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button>
+ <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button> <button class="btn" id="tstc" style="margin:6px 0">${t('tst_btn')}</button>
  ${(()=>{const ok=u.filter(c=>c.r),sem=u.filter(c=>!c.r); // as "?" (só testadas) ficam num bloco fechado
   return`<h4>${t('used',{n:ok.length})}</h4>${ok.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}`+
   (sem.length?`<details class="sec"><summary>${t('testadas',{n:sem.length})}</summary>${sem.map(c=>rc(c,1)).join('')}</details>`:'')})()}
@@ -292,6 +306,57 @@ function formCombo(r,ed){semBusca();const s=r&&K[r],e=ed&&ed.c;cur=null;sel=-1;m
   else M.combos.push({id:'u'+Date.now(),...novo}); // nova (ou mudou os slimes: vira outra combinação)
   await salva();monta();vista=null;ficha(rr)};
  bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')fs.click();else if(e.key=='Escape')sai()}}
+// ---- testador de combinações: slime 1 + slime 2 (+ material) -> possibilidades (testador.js); os testes salvos ficam em M.combos com tst:1 e cp (compartilhar) ----
+let TST={a:'',b:'',m:'',r:'',l:'',ch:'',cp:false,ed:null,msg:'',mais:false}; // campos como foram digitados: a tela volta igual
+const matK=m=>{const i=IT[norm(m)];return i?i.k:norm(m)}; // mesmo material em PT, EN ou "PT (EN)"
+const nivelDe=k=>{const n={};C.forEach(c=>{if(c.r===k&&c.l)n[c.l]=(n[c.l]||0)+1});return Object.keys(n).sort((x,y)=>n[y]-n[x])[0]||''}; // nível é fixo por resultado: o mais visto
+const LIXO='<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+// possibilidade: a conhecida mostra a chance real; a estimativa mostra barra e % em itálico
+const linhaP=(k,sel,ch,p)=>{const s=K[k],lv=nivelDe(k);return`<div class="tp${sel===k?' on':''}" data-tr="${esc(k)}" title="${esc(t('tst_pick'))}">${im(s.im)}<div class="nm"><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${esc(s.el.map(elN).join(' / '))}${lv?' · '+t('lv')+' '+esc(lv):''}</div></div>`+
+ (p==null?`<span class="pc${ch==null?' vazio':''}">${ch==null?'?':'~'+ch+'%'}</span>`:`<span class="br"><i style="width:${Math.max(2,Math.round(p*100))}%"></i></span><span class="es">${p<.01?'<1%':'~'+Math.round(p*100)+'%'}</span>`)+'</div>'};
+const linhaT=c=>`<div class="tm${TST.ed===c.id?' on':''}" data-te="${esc(c.id)}">${im(c.r&&K[c.r]?K[c.r].im:null)}<div class="nm"><b>${c.r?esc(nm(c.r)):'?'}</b> <span class="mu">= ${esc(nm(c.a))} + ${esc(nm(c.b))}</span><div class="mu">${[c.m?esc(matN(c.m)):'',c.l?t('lv')+' '+esc(c.l):'',c.ch!=null?'~'+c.ch+'%':''].filter(Boolean).join(' · ')}</div></div>`+
+ `<span class="sw${c.cp?' on':''}" data-tcp="${esc(c.id)}" title="${esc(t('tst_cp')+' · '+t(c.cp?'tst_cp_on':'tst_cp_off'))}"><i></i></span><span class="del" data-tdel="${esc(c.id)}" title="${esc(t('del_title'))}">${LIXO}</span></div>`;
+function testador(o){o=o||{};
+ if(o.a&&K[o.a])TST={a:rot(K[o.a]),b:'',m:'',r:'',l:'',ch:'',cp:false,ed:null,msg:'',mais:false};
+ if(o.ed){const c=M.combos.find(x=>x.id===o.ed);if(c)TST={a:K[c.a]?rot(K[c.a]):'',b:K[c.b]?rot(K[c.b]):'',m:c.m||'',r:c.r&&K[c.r]?rot(K[c.r]):'',l:c.l||'',ch:c.ch??'',cp:c.cp===true,ed:c.id,msg:'',mais:false}}
+ semBusca();cur=null;sel=-1;marca({t:'testador'});
+ const meusT=M.combos.filter(c=>c.tst).map(c=>({...c,meu:true})).sort(ordemC);
+ bd.innerHTML=`<div class="tst"><div>${voltarLk()}<h4>${t('tst_h')}</h4>${TST.ed?`<p class="mu">${t('tst_editando')}</p>`:''}<div class="form">
+ <label>${t('slime1')}</label><input id="ts1" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${esc(TST.a)}">
+ <label>${t('slime2')}</label><input id="ts2" list="nomes" placeholder="${esc(t('pick_ph'))}" value="${esc(TST.b)}">
+ <label>${t('material')}</label><input id="tsm" list="materiais" placeholder="${esc(t('mat_ph'))}" value="${esc(TST.m)}">
+ <label>${t('tst_res')}</label><input id="tsr" list="nomes" placeholder="${esc(t('tst_res_ph'))}" value="${esc(TST.r)}">
+ <label>${t('level')}</label><input id="tsl" placeholder="${esc(t('opt_ph'))}" value="${esc(TST.l)}">
+ <label>${t('chance')}</label><input id="tsp" type="number" min="0" max="100" placeholder="${esc(t('opt_ph'))}" value="${esc(TST.ch)}">
+ <div class="tgl"><span class="sw${TST.cp?' on':''}" id="tscp"><i></i></span><span>${t('tst_cp')}</span><span class="mu">· ${t(TST.cp?'tst_cp_on':'tst_cp_off')}</span></div>
+ <div class="bt"><span class="err" id="tse"></span><button class="btn" id="tslimpa">${t('tst_limpar')}</button><button class="btn pri" id="tssalva">${t('tst_salvar')}</button></div></div>
+ ${TST.msg?`<p class="ok">${esc(TST.msg)}</p>`:''}
+ <h4>${t('tst_meus',{n:meusT.length})}</h4>${meusT.map(linhaT).join('')||`<p class="mu">${t('tst_vazio')}</p>`}</div>
+ <div id="tsres"></div></div>`;
+ TST.msg='';
+ const liga=(el,f,re)=>el.oninput=()=>{TST[f]=el.value;if(re){if(f!='r')TST.mais=false;possib()}};
+ liga(ts1,'a',1);liga(ts2,'b',1);liga(tsm,'m',1);liga(tsr,'r',1);liga(tsl,'l');liga(tsp,'ch');
+ tscp.onclick=()=>{TST.cp=!TST.cp;testador()};
+ tslimpa.onclick=()=>{TST={a:'',b:'',m:'',r:'',l:'',ch:'',cp:false,ed:null,msg:'',mais:false};testador();ts1.focus()};
+ tssalva.onclick=async()=>{const a=chave(TST.a),b=chave(TST.b);if(!a||!b){tse.textContent=t('tst_err');return}
+  const r=String(TST.r).trim()?chave(TST.r):null;if(String(TST.r).trim()&&!r){tse.textContent=t('tst_err_res');return}
+  const p=String(TST.ch).trim(),novo={r,a,b,m:String(TST.m).trim(),l:String(TST.l).trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[],tst:1,cp:!!TST.cp};
+  const ig=M.combos.find(x=>x.id===TST.ed)||M.combos.find(x=>x.tst&&x.a===a&&x.b===b&&(x.r||null)===r); // o mesmo teste de novo: atualiza
+  if(ig)Object.assign(ig,novo);else M.combos.push({id:'t'+Date.now(),...novo});
+  await salva();monta();TST={...TST,r:'',l:'',ch:'',ed:null,msg:t('tst_salvo')};testador()}; // slimes e material ficam, para testar a próxima
+ bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')tssalva.click();else if(e.key=='Escape')voltar()};
+ possib();if(!TST.a)ts1.focus();else if(!TST.b)ts2.focus()}
+// lado direito: conhecidas para A + B (chance real) em cima, estimativas embaixo
+function possib(){const el=document.getElementById('tsres');if(!el)return;const a=chave(TST.a),b=chave(TST.b),rs=chave(TST.r);
+ if(!a||!b){el.innerHTML=`<h4>${t('tst_poss')}</h4><p class="mu">${t('tst_escolha')}</p>`;return}
+ const par=C.filter(c=>c.a===a&&c.b===b),conh=par.filter(c=>c.r).sort(ordemC).filter((c,i,l)=>l.findIndex(x=>x.r===c.r)===i),test=par.filter(c=>!c.r),inv=a!==b?[...new Set(C.filter(c=>c.a===b&&c.b===a&&c.r).map(c=>c.r))]:[];
+ const ja=new Set(conh.map(c=>c.r)),est=Testador.estimar(K[a],K[b],S,C.filter(c=>c.r),TST.m,matK).filter(x=>!ja.has(x.k)),n=TST.mais?30:10;
+ el.innerHTML=`<h4>${t('tst_poss')} · ${esc(nm(a))} + ${esc(nm(b))}</h4>`+
+  (conh.length?`<h4>${t('tst_conhecidas')}</h4>${conh.map(c=>linhaP(c.r,rs,c.ch)).join('')}`:'')+
+  (test.length?`<p class="mu">? = ${esc(nm(a))} + ${esc(nm(b))} · ${t('tst_testada')}${[...new Set(test.map(c=>c.m).filter(Boolean))].map(m=>' · '+esc(matN(m))).join('')}</p>`:'')+
+  (inv.length?`<p class="mu">${t('tst_inversa',{a:esc(nm(a)),b:esc(nm(b))})} ${inv.map(lk).join(' · ')}</p>`:'')+
+  `<h4>${t(conh.length?'tst_estim_outras':'tst_estim')}</h4><p class="mu">${t('tst_estim_tip')}</p>`+
+  (est.length?est.slice(0,n).map(x=>linhaP(x.k,rs,null,x.p)).join('')+(est.length>n&&!TST.mais?`<span class="lk sm" id="tsmais">${t('tst_mais')}</span>`:''):`<p class="mu">${t('tst_nada')}</p>`)}
 // ---- CSV no formato da planilha da comunidade (Result, ID, Level, Slime 1, Slime 2, Material, notas/chance...) ----
 function lerCsv(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];
   if(q){if(c=='"'&&t[i+1]=='"'){f+='"';i++}else if(c=='"')q=false;else f+=c}
@@ -312,13 +377,13 @@ function importaCsv(texto){const rows=lerCsv(texto);if(rows[0]&&/result|resultad
   M.combos.push(c);idx[par(c.a,c.b,c.r)]={...c,meu:true};o.novas++}
  return o}
 function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v},en=k=>K[k]?.nm||k;
- return [['Result','ID','Level','Slime 1','Slime 2','Material','Chance'],...M.combos.map(c=>[en(c.r),K[c.r]?.n??'',c.l,en(c.a),en(c.b),c.m,c.ch!=null?c.ch+'%':''])]
+ return [['Result','ID','Level','Slime 1','Slime 2','Material','Chance'],...M.combos.map(c=>[c.r?en(c.r):'?',K[c.r]?.n??'',c.l,en(c.a),en(c.b),c.m,c.ch!=null?c.ch+'%':''])]
   .map(l=>l.map(q).join(',')).join('\r\n')}
 // ---- enviar para a base colaborativa (revisada antes de entrar na base de todos; x:1 em combos = pedido para apagar) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){semBusca();cur=null;sel=-1;marca({t:'envio'});
- const p={pt:M.pt,pc:M.pc,combos:[...M.combos.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
- const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=M.combos.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
+ const comp=M.combos.filter(c=>c.cp!==false),p={pt:M.pt,pc:M.pc,combos:[...comp.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
+ const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=comp.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
  const vazio=!(n+c+k+v+u+lo+pe+ap),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
@@ -339,13 +404,16 @@ function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.k
  ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado']])||`<p class="mu">${t('my_vazio')}</p>`}
  <p class="mu">${t('my_where_curto')} <span class="lk" id="pasta">${t('abrir_pasta')}</span></p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
+ ${(()=>{const n=M.combos.length,on=M.combos.filter(c=>c.cp!==false).length;return n?`<h4>${t('tst_cp_geral')}</h4><p class="mu">${t('tst_cp_geral_tip')}</p><div class="tgl"><span class="sw${on===n?' on':''}" id="cpg"><i></i></span><span>${t(on===n?'ligado':'desligado')}</span><span class="mu">${on} / ${n}</span></div>`:''})()}
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn pri" id="nv2">${t('new_btn')}</button><button class="btn" id="imp">${t('import')}</button></div>
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
  ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="tgl"><span class="sw${mapaOn?' on':''}" id="mapat" title="${esc(t(mapaOn?'mapa_on':'mapa_off'))}"><i></i></span><span>${t(mapaOn?'ligado':'desligado')}</span></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
- nv2.onclick=()=>formCombo(null);env.onclick=envio;pasta.onclick=()=>ov.abrirPasta();
+ nv2.onclick=()=>formCombo(null);env.onclick=envio;
+ const cpg=document.getElementById('cpg');if(cpg)cpg.onclick=()=>{const tudo=M.combos.every(c=>c.cp!==false);M.combos.forEach(c=>c.cp=!tudo);salva().then(()=>meus())}; // liga/desliga todas
+pasta.onclick=()=>ov.abrirPasta();
  const mt=document.getElementById('mapat');if(mt)mt.onclick=()=>{mapaOn=!mapaOn;try{localStorage.setItem('mapa-tab',mapaOn?'1':'0')}catch{}
   mapaStatus=mapaOn?t('mapa_iniciando'):'';mapaAberto=false;ov.mapa.ligar(mapaOn);meus()};
  exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
@@ -356,28 +424,25 @@ function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.k
   let d;try{d=JSON.parse(f.texto)}catch{return meus(t('msg_invalid'))}
   if(!d||typeof d!='object'||Array.isArray(d))return meus(t('msg_invalid'));
   M.pt={...M.pt,...(d.pt||{})};M.pc={...M.pc,...(d.pc||{})};M.votos={...M.votos,...(d.votos&&typeof d.votos=="object"?d.votos:{})};M.num={...M.num,...(d.num&&typeof d.num=="object"?d.num:{})};const ids=new Set(M.combos.map(c=>c.id));
-  const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&K[c.r]&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
+  const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&(K[c.r]||c.r==null)&&K[c.a]&&K[c.b]&&!ids.has(c.id));M.combos.push(...novas);
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
-// ---- ajuda: atalhos, como voltar, recursos e idioma ----
 let VERSAO='',PASTA='';
-function info(){semBusca();cur=null;sel=-1;marca({t:'info'});
- bd.innerHTML=`${voltarLk()}<h4>${t('info_h')}</h4><div class="info">${t('info')}
- <p class="mu">${esc(t('info_foot',{v:VERSAO}))}</p></div>`}
 // textos fixos do topo (mudam com o idioma)
 function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');chk.title=t('chk_title');qx.title=t('clear');
- inf.title=t('info_tip');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+ inf.title=t('info_tip');tsb.title=t('tst_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
  r.forEach((e,j)=>e.classList.toggle('on',j==sel));r[sel].scrollIntoView({block:'nearest'})}
 // último campo de edição usado no painel: se o painel fechar no meio (clicou fora, Ctrl+Tab, Alt+Tab), reabre nele com o que já foi digitado
 let campo=null;bd.addEventListener('focusin',e=>{if(e.target.tagName=='INPUT')campo=e.target});
-function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;ov.size(true);
+function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;const tst=vista&&vista.t=='testador';if(tst)ov.largo(true);ov.size(true);
+ if(tst){(campo&&bd.contains(campo)?campo:ts1).focus();return}
  if(vista&&(vista.t=='form'||vista.t=='ficha')&&campo&&bd.contains(campo)){campo.focus();return}
  qi.value='';hist=[];vista=null;list();qi.focus()}
 let fechouEm=0; // quando o painel fechou (o Esc que fecha o painel não fecha os slimes do mapa)
-function close(){fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false)}
-x.onclick=close;mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=info;qi.oninput=list;
+function close(){fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false);ov.largo(false)}
+x.onclick=close;tsb.onclick=()=>testador();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
  if(e.key=='ArrowDown'){e.preventDefault();mark(sel+1)}
@@ -386,6 +451,12 @@ qi.onkeydown=e=>{
  else if(e.key=='Escape')close()};
 bd.onclick=e=>{const t=e.target;
  if(t.id=='bk')return voltar();
+ const tcp=t.closest('[data-tcp]');if(tcp){const c=M.combos.find(x=>x.id===tcp.dataset.tcp);if(c){c.cp=!c.cp;salva().then(()=>testador())}return} // compartilhar este teste
+ const tdl=t.closest('[data-tdel]');if(tdl){const id=tdl.dataset.tdel;M.combos=M.combos.filter(c=>c.id!==id);M.fav=M.fav.filter(f=>f.id!==id);if(TST.ed===id)TST.ed=null;salva().then(()=>{monta();testador()});return}
+ const te=t.closest('[data-te]');if(te)return testador({ed:te.dataset.te});
+ const tp=t.closest('[data-tr]');if(tp){const k=tp.dataset.tr,on=chave(TST.r)===k;TST.r=on?'':rot(K[k]);if(!on&&!String(TST.l).trim())TST.l=nivelDe(k);tsr.value=TST.r;tsl.value=TST.l;return possib()} // marca/desmarca como resultado
+ if(t.id=='tsmais'){TST.mais=true;return possib()}
+ if(t.id=='tstc')return testador({a:cur});
  if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
  const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
@@ -397,7 +468,7 @@ bd.onclick=e=>{const t=e.target;
  const lm=t.closest('[data-lm]');if(lm&&vista&&vista.t=='mapa')return marcaMapa(vista.m,lm.dataset.lm);
  if(t.dataset.mapa)return telaMapa(t.dataset.mapa);
  if(t.dataset.fav)return favorita(t.dataset.fav,t);
- if(t.dataset.ed){const c=C.find(x=>cid(x)===t.dataset.ed);if(c)formCombo(c.r,{c,id:c.meu?c.id:c.meuId||null,alvo:c.meu?null:cid(c)});return}
+ if(t.dataset.ed){const c=C.find(x=>cid(x)===t.dataset.ed);if(c&&c.meu&&c.tst)return testador({ed:c.id});if(c)formCombo(c.r,{c,id:c.meu?c.id:c.meuId||null,alvo:c.meu?null:cid(c)});return}
  if(t.dataset.jn){juntar(t.dataset.jn);return}
  if(t.dataset.del){M.combos=M.combos.filter(c=>c.id!==t.dataset.del);M.fav=M.fav.filter(f=>f.id!==t.dataset.del);return atualiza()}
  if(t.id=='ptedit')return editaPT();

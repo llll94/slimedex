@@ -14,6 +14,8 @@
 //   - slime visto num mapa (loc): entra se >= MIN_PESSOAS pessoas marcaram; só mapas da lista (D.mapas) e só o que a base ainda não tem
 //   - dia/noite (per): o mais marcado por slime (dia | noite | ambos), só quando difere da base; trocar um já aprovado → revisão
 //   - combinação "teste" da base (veio da planilha, ts) fica confirmada (conf) quando alguém a manda ou dá 👍 nela
+//   - teste sem resultado (r: null, vem do testador com "Compartilhar" ligado): vira testada da comunidade (id 'c:A+B>?', selo teste);
+//     não entra (ou sai sozinha) quando o mesmo par A + B já tem resultado, ou quando a base já tem essa testada
 //   - 🗑 apagar (entrada {x:1, id} em combos): vai para 'apagadas' (combinação da base) ou tira da comunidade — sempre com revisão
 //   - bloqueios.json: autores, combinações, nomes e números que o merge ignora (rollback de verdade: o revert do PR
 //     sozinho não basta, porque o merge seguinte recalcularia tudo do Supabase)
@@ -38,7 +40,8 @@ const cidBase = c => [c.a, c.b, c.r, c.m].join('|'); // mesmo id que o app usa p
 const par = (a, b, r) => a + '+' + b + '>' + r; // a ordem importa: A + B e B + A são combinações diferentes (chance diferente)
 // "base" = o data.json que os apps já têm (o da última versão publicada). O data.json do repositório pode estar à
 // frente: o que ele tem a mais (PENDENTES) vai no comunidade.json até sair uma versão nova com ele.
-let baseIdx, baseCids, PENDENTES = [];
+let baseIdx, baseCids, PENDENTES = [], PARES_COM_R = new Set(); // PARES_COM_R: 'A+B' que já têm resultado (base, repositório ou comunidade)
+const parT = (a, b) => a + '+' + b; // testada: só o par (ainda sem resultado)
 const pcNota = c => { const m = (c.nt || []).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/); return m ? +m[1].replace(',', '.') : null }; // igual ao app
 async function baseDoApp() {
   if (process.env.BASE_APP_JSON) return { tag: 'arquivo', D: JSON.parse(fs.readFileSync(process.env.BASE_APP_JSON, 'utf8')) };
@@ -118,11 +121,15 @@ async function lerEnvios() {
   const periodos = new Map(); // slime -> Map(dia|noite|ambos -> Set(autores))
   const confirmadas = new Set(); // id (do app) das combinações "teste" que alguém mandou ou deu 👍
   const pedidosApagar = new Map(); // id da combinação (base: a|b|r|m, comunidade: c:...) -> Set(autores)
+  const testadas = new Map(); // par A+B -> { a, b, quem:Set, m:[] } (testes sem resultado compartilhados)
   for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
 
   for (const [autor, p] of [...ultimo].sort((x, y) => ordem.get(x[0]) - ordem.get(y[0]))) { // do envio mais antigo ao mais recente
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
       if (c && c.x === 1) { if (typeof c.id === 'string' && c.id.length <= 300) (pedidosApagar.get(c.id) || pedidosApagar.set(c.id, new Set()).get(c.id)).add(autor); continue }
+      if (c && c.r == null && SLIMES.has(c.a) && SLIMES.has(c.b)) { const k = parT(c.a, c.b); if (BQ_COMBO.has('c:' + k + '>?')) continue;
+        const n = testadas.get(k) || testadas.set(k, { a: c.a, b: c.b, quem: new Set(), m: [] }).get(k);
+        if (!n.quem.has(autor)) { n.quem.add(autor); n.m.push(txt(c.m, 60)) } continue }
       if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b)) continue;
       const k = par(c.a, c.b, c.r), base = baseIdx.get(k);
       if (TESTE_IDX.has(k)) confirmadas.add(cidBase(TESTE_IDX.get(k)));
@@ -169,6 +176,12 @@ async function lerEnvios() {
     .filter(([k, n]) => n.quem.size >= MIN_PESSOAS && !contestada(votos.get('c:' + k)))
     .map(([k, n]) => ({ id: 'c:' + k, r: n.r, a: n.a, b: n.b, m: maisCitado(n.m), l: maisCitado(n.l), ch: n.ch.length ? maisEnviada(n.ch, ((ANTES && ANTES.combos || []).find(c => c.id === 'c:' + k) || {}).ch) : null, n: n.quem.size }))
     .sort((x, y) => (x.id < y.id ? -1 : 1));
+  PARES_COM_R = new Set([...app.D.combos, ...D.combos, ...combos].filter(c => c.r).map(c => parT(c.a, c.b)));
+  const testadaNaBase = new Set([...app.D.combos, ...D.combos].filter(c => !c.r).map(c => parT(c.a, c.b)));
+  combos.push(...[...testadas.entries()]
+    .filter(([k, n]) => n.quem.size >= MIN_PESSOAS && !PARES_COM_R.has(k) && !testadaNaBase.has(k) && !contestada(votos.get('c:' + k + '>?')))
+    .map(([k, n]) => ({ id: 'c:' + k + '>?', r: null, a: n.a, b: n.b, m: maisCitado(n.m), l: '', ch: null, n: n.quem.size, ts: 1 }))
+    .sort((x, y) => (x.id < y.id ? -1 : 1)));
   const aceitos = new Set([...baseCids, ...combos.map(c => c.id)]);
   const pc = Object.fromEntries([...chances].filter(([id, v]) => v.length >= MIN_PESSOAS).sort().map(([id, v]) => [id, { ch: maisEnviada(v, ANTES && ANTES.pc && ANTES.pc[id] && ANTES.pc[id].ch), n: v.length }]));
   const pt = Object.fromEntries([...nomes].map(([k, m]) => { const top = [...m.values()].sort((a, b) => b.quem.size - a.quem.size || (a.nome < b.nome ? -1 : 1))[0]; return [k, top] })
@@ -207,7 +220,7 @@ async function lerEnvios() {
     const p = l.payload, out = [`**${l.autor.slice(0, 8)}** · ${String(l.created_at).slice(0, 16).replace('T', ' ')} UTC`], qt = k => Object.keys(p[k] && typeof p[k] === 'object' ? p[k] : {}).length;
     for (const c of (Array.isArray(p.combos) ? p.combos : []).slice(0, 60)) { if (!c) continue;
       const desc = `${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ' · ' + txt(c.m, 60) : ''}${c.l ? ' · nv ' + txt(c.l, 10) : ''}${chance(c.ch) != null ? ' · ' + c.ch + '%' : ''}`;
-      const o = !c.r ? 'sem resultado: ignorada' : ![c.r, c.a, c.b].every(k => SLIMES.has(k)) ? 'slime desconhecido: ignorada'
+      const o = !c.r ? (SLIMES.has(c.a) && SLIMES.has(c.b) ? (PARES_COM_R.has(parT(c.a, c.b)) ? 'teste sem resultado: o par já tem resultado, ignorada' : 'teste sem resultado (selo teste)') : 'slime desconhecido: ignorada') : ![c.r, c.a, c.b].every(k => SLIMES.has(k)) ? 'slime desconhecido: ignorada'
         : baseIdx.has(par(c.a, c.b, c.r)) ? 'já está na base' + (chance(c.ch) != null ? ' (conta como relato de chance)' : '') : 'nova (comunidade)';
       out.push(`  - ${desc} → ${o}`) }
     const pa = (Array.isArray(p.combos) ? p.combos : []).filter(c => c && c.x === 1).length; if (pa) out.push(`  - pediu para apagar: ${pa} combinação(ões)`);
@@ -220,10 +233,10 @@ async function lerEnvios() {
     `- Combinações novas aceitas (≥${MIN_PESSOAS} pessoas): **${combos.length}** · candidatas ainda sem consenso: ${[...novos.values()].filter(n => n.quem.size < MIN_PESSOAS).length}`,
     `- Chances com consenso: **${Object.keys(pc).length}** · nomes PT-BR: **${Object.keys(pt).length}** · números: **${Object.keys(numOrd).length}** · combinações com votos: **${Object.keys(vt).length}**`,
     `- Contestadas (muitos 👎): ${Object.entries(vt).filter(([, v]) => contestada(v)).length}`, '',
-    ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)`), ''] : []),
+    ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)${c.r ? '' : ' · teste'}`), ''] : []),
     ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : []),
-    ...(apag.length ? ['### Apagar (pedido de alguém)', '', ...apag.map(id => id.startsWith('c:') ? `- ${(() => { const c = combos.find(x => x.id === id); return c ? `${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}` : id })()} (comunidade)` : `- ${(() => { const [a, b, r] = id.split('|'); return `${r ? nm(r) : '?'} = ${nm(a)} + ${nm(b)}` })()} (base)`), ''] : []),
+    ...(apag.length ? ['### Apagar (pedido de alguém)', '', ...apag.map(id => id.startsWith('c:') ? `- ${(() => { const c = combos.find(x => x.id === id); return c ? `${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}` : id })()} (comunidade)` : `- ${(() => { const [a, b, r] = id.split('|'); return `${r ? nm(r) : '?'} = ${nm(a)} + ${nm(b)}` })()} (base)`), ''] : []),
     ...(conf.length ? ['### Confirmadas (saem do selo "teste")', '', ...conf.map(id => { const [a, b, r] = id.split('|'); return `- ${nm(r)} = ${nm(a)} + ${nm(b)}` }), ''] : []),
     ...(Object.keys(per).length ? ['### Dia / noite', '', ...Object.entries(per).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(loc).length ? ['### Slimes vistos nos mapas', '', ...Object.entries(loc).map(([mapa, ks]) => `- ${mapa}: ${ks.map(k => k[0] === '-' ? `~~${nm(k.slice(1))}~~ (não nasce aqui)` : nm(k)).join(', ')}`), ''] : []),
@@ -254,6 +267,7 @@ function verifica(antes, agora, nm) {
     const o = ant.get(c.id); if (o && o.m === c.m && o.l === c.l && o.ch === c.ch) continue;
     novidades++;
     if (pend.has(c.id) && c.n === 1) continue; // veio do data.json do repositório (revisado no commit), não de envio
+    if (!c.r) { if (c.m && !ehItem(c.m)) barrados.push(`? = ${nm(c.a)} + ${nm(c.b)} (teste): material "${c.m}" não está na lista de itens`); continue } // testada: os slimes já foram conferidos no merge
     const desc = `${nm(c.r)} = ${nm(c.a)} + ${nm(c.b)}`, el = new Set([...K[c.a].el, ...K[c.b].el]);
     if (!K[c.r].el.some(e => el.has(e))) barrados.push(`${desc}: nenhum elemento em comum com os pais`);
     if (c.m && !ehItem(c.m)) barrados.push(`${desc}: material "${c.m}" não está na lista de itens`);
@@ -261,7 +275,7 @@ function verifica(antes, agora, nm) {
     else if (c.l && nivelBase.has(c.r) && !nivelBase.get(c.r).has(c.l)) barrados.push(`${desc}: nível ${c.l}, a base diz ${[...nivelBase.get(c.r)].join('/')}`);
     if (o && o.ch != null && c.ch != null && Math.abs(o.ch - c.ch) > 25) barrados.push(`${desc}: chance mudaria de ${o.ch}% para ${c.ch}%`);
   }
-  removidos += antes.combos.filter(c => !ids.has(c.id) && !baseIdx.has(c.id.slice(2))).length; // as que viraram base não contam
+  removidos += antes.combos.filter(c => !ids.has(c.id) && !baseIdx.has(c.id.slice(2)) && !(c.r == null && PARES_COM_R.has(parT(c.a, c.b)))).length; // as que viraram base e as testadas que ganharam resultado não contam
 
   for (const [id, v] of Object.entries(agora.pc)) {
     const o = antes.pc[id]; if (o && o.ch === v.ch) continue;

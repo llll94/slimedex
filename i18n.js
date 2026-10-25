@@ -1,7 +1,7 @@
 // Textos da interface em PT-BR e inglês. t('chave', {var}) troca {var} pelos valores.
 const TXT = {
   pt: {
-    search_ph: 'buscar slime', clear: 'Limpar busca', info_tip: 'Dicas', new_title: 'Nova combinação',
+    search_ph: 'buscar slime', clear: 'Limpar busca', info_tip: 'Cartilha: como usar', new_title: 'Nova combinação',
     my_title: 'Meus dados e idioma', close_title: 'Fechar (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — arraste para mover',
     back: '← voltar', back_title: 'Voltar (tecla V ou botão voltar do mouse)',
     recent: 'Recentes', all: 'Todos ({n})', nothing: 'Nada encontrado.',
@@ -53,37 +53,17 @@ const TXT = {
     nova_versao: '⬆ Nova versão {v} disponível — Atualizar', nova_versao_baixar: '⬆ Nova versão {v} disponível — Baixar', nova_versao_tip: 'nova versão {v}',
     atualizando: 'Atualizando… {p}%', atualizado: '✓ Atualizado para a versão {v}', novidades_h: 'Novidades da versão {v}', novidades_varias: 'O que mudou desde a sua versão ({v})',
     versao_x: 'Versão {v}', confirma_atualizar: 'Atualizar para a versão {v} agora? O Slimedex vai fechar e abrir de novo sozinho.', confirma_baixar: 'Baixar a versão {v}? A página de download vai abrir no navegador.', atualizar_agora: 'Atualizar agora', baixar_mac: 'Baixar no GitHub', depois: 'Depois', sem_novidades: 'Melhorias e correções.', falha_atualizar: 'Não consegui atualizar ({e}) — tentar de novo',
-    info_h: 'Dicas',
-    info: `<h4>Abrir e fechar</h4><ul>
-<li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> abre e fecha de qualquer lugar, inclusive com o jogo em foco</li>
-<li>Clique no ícone para abrir; <kbd>Esc</kbd> ou clicar fora do painel fecha</li>
-<li>Arraste o ícone para mudar de lugar — a posição é lembrada</li></ul>
-<h4>Buscar</h4><ul>
-<li>Digite o nome (EN ou PT-BR), o número, um elemento ou um local</li>
-<li><kbd>↓</kbd> <kbd>↑</kbd> escolhe e <kbd>Enter</kbd> abre a ficha · o <b>×</b> dentro do campo limpa a busca</li>
-<li>Numa ficha, é só começar a digitar que a busca recomeça</li></ul>
-<h4>Voltar</h4><ul>
-<li>Tecla <kbd>V</kbd>, botão <b>voltar do mouse</b> ou o link <b>← voltar</b></li></ul>
-<h4>Na ficha</h4><ul>
-<li><b>Como obter</b>: combinações, da maior chance para a menor — clique no <b>%</b> para editar</li>
-<li><b>👍 / 👎</b>: diga se a combinação funciona; o número ao lado é o placar da comunidade</li>
-<li><b>☆</b> (na combinação ou ao lado do nome do slime): fixa na tela, por cima do jogo — arraste para onde quiser; clique abre a ficha; <b>×</b> tira (até 8)</li>
-<li><b>＋ Nova combinação</b>: cadastre o que você descobriu (com sugestões de slimes e materiais)</li>
-<li><b>✎ nome em PT-BR</b> e <b>✎ número</b>: dê um nome em português e o número da Slimepedia do jogo</li>
-<li><b>Elementos</b> (abre e fecha): contra quem o ataque é forte/fraco e de quem ele toma mais/menos dano</li></ul>
-<h4>Seus dados e idioma (⋯)</h4><ul>
-<li>Troque o idioma (Português / English)</li>
-<li>Ficam só no seu PC e não se perdem ao atualizar</li>
-<li>Importe/exporte CSV no formato da planilha da comunidade ou faça backup em JSON</li></ul>
-<h4>Base colaborativa</h4><ul>
-<li><b>⋯ → Enviar minhas descobertas</b> manda suas combinações, chances, votos e nomes</li>
-<li>De hora em hora os envios são revisados e o que for aprovado entra para todo mundo (selo <b>comunidade</b>); os 👎 tiram o que estiver errado</li>
-<li>Nada pessoal é enviado — só um código aleatório deste PC</li></ul>`,
-    info_foot: 'Slimedex v{v} · dados da World of Slime Wiki e da comunidade · código aberto em github.com/llll94/slimedex',
+    tst_title: 'Testador de combinações', tst_h: 'Testador de combinações', tst_btn: 'Testar combinação', tst_res: 'Resultado', tst_res_ph: 'opcional · clique numa possibilidade',
+    tst_salvar: 'Salvar teste', tst_limpar: 'Limpar', tst_cp: 'Compartilhar', tst_cp_on: 'Vai no próximo "Enviar minhas descobertas"', tst_cp_off: 'Fica só neste computador',
+    tst_err: 'Escolha o slime 1 e o slime 2.', tst_err_res: 'Resultado não encontrado. Escolha da lista ou deixe vazio.', tst_salvo: 'Teste salvo.', tst_meus: 'Meus testes ({n})', tst_vazio: 'Nenhum teste salvo ainda.',
+    tst_poss: 'Possibilidades', tst_escolha: 'Escolha o slime 1 e o slime 2 para ver o que pode sair.', tst_conhecidas: 'Já conhecidas', tst_testada: 'já testada, resultado desconhecido',
+    tst_inversa: 'Na ordem inversa ({b} + {a}):', tst_estim: 'Estimativas', tst_estim_outras: 'Outras possibilidades (estimativa)', tst_estim_tip: 'Calculado pelos elementos e espécies dos dois slimes e pelas combinações conhecidas. A certa costuma estar entre as 5 primeiras.',
+    tst_mais: 'ver mais', tst_nada: 'Nenhum slime tem elemento em comum com esses dois.', tst_pick: 'Clique para marcar como resultado do teste', tst_editando: 'Editando um teste salvo',
+    tst_cp_geral: 'Compartilhar minhas combinações', tst_cp_geral_tip: 'Liga ou desliga de uma vez o "Compartilhar" de todas as suas combinações e testes. Só as compartilhadas vão no envio.',
     err: {}
   },
   en: {
-    search_ph: 'search slime', clear: 'Clear search', info_tip: 'Tips', new_title: 'New combination',
+    search_ph: 'search slime', clear: 'Clear search', info_tip: 'Guide: how to use', new_title: 'New combination',
     my_title: 'My data & language', close_title: 'Close (Esc)', ico_title: 'Slimedex (Ctrl+Tab) — drag to move',
     back: '← back', back_title: 'Back (V key or mouse back button)',
     recent: 'Recent', all: 'All ({n})', nothing: 'Nothing found.',
@@ -135,33 +115,13 @@ const TXT = {
     nova_versao: '⬆ New version {v} available — Update', nova_versao_baixar: '⬆ New version {v} available — Download', nova_versao_tip: 'new version {v}',
     atualizando: 'Updating… {p}%', atualizado: '✓ Updated to version {v}', novidades_h: "What's new in {v}", novidades_varias: 'What changed since your version ({v})',
     versao_x: 'Version {v}', confirma_atualizar: 'Update to version {v} now? Slimedex will close and reopen by itself.', confirma_baixar: 'Download version {v}? The download page will open in your browser.', atualizar_agora: 'Update now', baixar_mac: 'Download from GitHub', depois: 'Later', sem_novidades: 'Improvements and fixes.', falha_atualizar: 'Update failed ({e}) — try again',
-    info_h: 'Tips',
-    info: `<h4>Open and close</h4><ul>
-<li><kbd>Ctrl</kbd>+<kbd>Tab</kbd> opens and closes it from anywhere, even with the game focused</li>
-<li>Click the icon to open; <kbd>Esc</kbd> or clicking outside the panel closes it</li>
-<li>Drag the icon to move it — its position is remembered</li></ul>
-<h4>Search</h4><ul>
-<li>Type a name (EN or PT-BR), a number, an element or a location</li>
-<li><kbd>↓</kbd> <kbd>↑</kbd> select and <kbd>Enter</kbd> opens the entry · the <b>×</b> inside the field clears the search</li>
-<li>On an entry, just start typing to search again</li></ul>
-<h4>Back</h4><ul>
-<li><kbd>V</kbd> key, the <b>mouse back button</b> or the <b>← back</b> link</li></ul>
-<h4>On an entry</h4><ul>
-<li><b>How to get</b>: combinations, highest chance first — click the <b>%</b> to edit it</li>
-<li><b>👍 / 👎</b>: say whether a combination works; the number next to it is the community score</li>
-<li><b>☆</b> (on a combination or next to the slime's name): pins it on screen, on top of the game — drag it anywhere; click opens the entry; <b>×</b> removes it (up to 8)</li>
-<li><b>＋ New combination</b>: add something you discovered (with slime and material suggestions)</li>
-<li><b>✎ Portuguese name</b> and <b>✎ number</b>: give the slime a Portuguese name and its in-game Slimepedia number</li>
-<li><b>Elements</b> (collapsible): what its attacks are strong/weak against and what hurts it more/less</li></ul>
-<h4>Your data & language (⋯)</h4><ul>
-<li>Switch the language (Português / English)</li>
-<li>Stored only on your PC and kept across updates</li>
-<li>Import/export CSV in the community spreadsheet format, or back up everything as JSON</li></ul>
-<h4>Collaborative database</h4><ul>
-<li><b>⋯ → Send my discoveries</b> uploads your combinations, chances, votes and names</li>
-<li>Every hour submissions are reviewed and approved ones are added for everyone (<b>community</b> badge); 👎 votes remove wrong ones</li>
-<li>Nothing personal is sent — only a random code for this PC</li></ul>`,
-    info_foot: 'Slimedex v{v} · data from the World of Slime Wiki and the community · open source at github.com/llll94/slimedex',
+    tst_title: 'Combination tester', tst_h: 'Combination tester', tst_btn: 'Test a combination', tst_res: 'Result', tst_res_ph: 'optional · click a possibility',
+    tst_salvar: 'Save test', tst_limpar: 'Clear', tst_cp: 'Share', tst_cp_on: 'Goes with the next "Send my discoveries"', tst_cp_off: 'Stays on this computer only',
+    tst_err: 'Pick slime 1 and slime 2.', tst_err_res: 'Result not found. Pick from the list or leave it empty.', tst_salvo: 'Test saved.', tst_meus: 'My tests ({n})', tst_vazio: 'No saved tests yet.',
+    tst_poss: 'Possibilities', tst_escolha: 'Pick slime 1 and slime 2 to see what may come out.', tst_conhecidas: 'Already known', tst_testada: 'already tested, result unknown',
+    tst_inversa: 'In reverse order ({b} + {a}):', tst_estim: 'Estimates', tst_estim_outras: 'Other possibilities (estimate)', tst_estim_tip: 'Based on the elements and species of both slimes and on the known combinations. The right one is usually in the top 5.',
+    tst_mais: 'show more', tst_nada: 'No slime shares an element with these two.', tst_pick: 'Click to set as the result of this test', tst_editando: 'Editing a saved test',
+    tst_cp_geral: 'Share my combinations', tst_cp_geral_tip: 'Turns "Share" on or off for all your combinations and tests at once. Only shared ones are sent.',
     err: { 'limite diário de envios atingido': 'daily upload limit reached', 'muitos envios agora, tente mais tarde': 'too many uploads right now, try again later',
       'formato inválido': 'invalid format', 'votos inválido': 'invalid votes', 'combos inválido': 'invalid combinations', 'sem conexão com a internet': 'no internet connection' }
   }

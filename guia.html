@@ -1,0 +1,117 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<style>
+/* cartilha: barra de título própria, índice com busca à esquerda, página com prints numerados à direita (mesmas cores do painel) */
+html,body{margin:0;height:100%;background:#14171a;color:#e8eaed;font:14px system-ui,sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#3a414a;border:2px solid transparent;border-radius:8px;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background-color:#56606c}
+/* barra de título (a janela não tem a moldura do sistema): arrasta a janela; duplo clique maximiza */
+#barra{height:32px;flex:none;display:flex;align-items:center;gap:8px;padding-left:12px;background:#0f1215;border-bottom:1px solid #22272d;-webkit-app-region:drag;user-select:none}
+#barra img{width:16px;height:16px}#barra span{font-size:12px;color:#9aa3ad;font-weight:600}
+#barra .ctl{margin-left:auto;display:flex;height:100%;-webkit-app-region:no-drag}
+#barra .ctl button{width:46px;height:100%;padding:0;border:0;border-radius:0;background:transparent;color:#9aa3ad;display:flex;align-items:center;justify-content:center;cursor:default}
+#barra .ctl button:hover{background:#262c33;color:#fff}#barra .ctl #bx:hover{background:#e81123;color:#fff}
+#barra .ctl svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.1}
+body.mac #barra{padding-left:80px}body.mac #barra .ctl{display:none} /* Mac: os botões do sistema (semáforo) ficam à esquerda */
+#corpo{flex:1;display:flex;min-height:0}
+nav{width:230px;flex:none;background:#181c21;border-right:1px solid #2d333a;display:flex;flex-direction:column;padding:14px 10px;box-sizing:border-box;min-height:0}
+nav .tt{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin:0 6px 10px}nav .tt img{width:26px;height:26px}
+.busca{position:relative;margin:0 2px 10px}
+.busca input{width:100%;box-sizing:border-box;background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:6px 26px 6px 9px;font:13px system-ui}
+.busca input:focus{outline:none;border-color:#4d79c7}
+.busca button{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:20px;height:20px;padding:0;border-radius:50%;background:transparent;color:#9aa3ad;font-size:15px;line-height:18px}
+.busca button:hover{background:#2b3440;color:#fff}
+#ix{overflow-y:auto;min-height:0;flex:1}
+nav a{display:flex;gap:8px;align-items:baseline;padding:7px 8px;border-radius:8px;color:#c4cad1;cursor:pointer;text-decoration:none}
+nav a:hover{background:#232930;color:#fff}nav a.on{background:#2b3440;color:#fff;box-shadow:inset 0 0 0 1px #4d79c7}
+nav a i{font-style:normal;color:#6aa8ff;font-size:12px;min-width:14px}
+nav a small{display:block;color:#8a939d;font-size:11px;margin-top:2px;line-height:1.35}
+nav .nada{color:#8a939d;font-size:12px;padding:6px 8px}
+nav .ft{margin-top:10px;font-size:11px;color:#6b747e;padding:0 6px;line-height:1.4}
+mark{background:#4a3f12;color:#ffe9a8;border-radius:3px;padding:0 1px}
+main{flex:1;overflow-y:auto;padding:22px 28px 18px;box-sizing:border-box}
+h1{font-size:20px;margin:0 0 4px}.pg{font-size:12px;color:#9aa3ad;margin-bottom:12px}
+p{line-height:1.5;margin:6px 0 12px;max-width:760px}
+kbd{display:inline-block;padding:0 6px;border:1px solid #3a414a;border-bottom-width:2px;border-radius:5px;background:#1f252c;font:12px system-ui;line-height:18px}
+.figs{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;margin:6px 0 14px}
+figure{position:relative;margin:0;border-radius:14px;padding:14px;background:radial-gradient(circle at 30% 20%,#33405a,#1d2230 70%);box-shadow:inset 0 0 0 1px #2d333a}
+figure .im{position:relative}figure img.print{display:block;max-width:100%;height:auto}
+.mk{position:absolute;box-sizing:border-box;border:2px solid #6aa8ff;border-radius:7px;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 10px rgba(106,168,255,.35);pointer-events:none}
+.mk b{position:absolute;left:-11px;top:-11px;width:20px;height:20px;border-radius:50%;background:#3a6fd8;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff,0 2px 5px rgba(0,0,0,.6)}
+ol.lg,ul.lg{list-style:none;padding:0;margin:4px 0 12px;max-width:760px}
+ol.lg li,ul.lg li{display:flex;gap:10px;align-items:flex-start;margin:7px 0;line-height:1.45}
+ol.lg li b.n{flex:none;width:22px;height:22px;border-radius:50%;background:#3a6fd8;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+ul.lg li:before{content:'•';color:#6aa8ff;flex:none}
+.dica{background:#1b1f24;border:1px solid #2d333a;border-left:3px solid #4d79c7;border-radius:8px;padding:9px 12px;max-width:760px;line-height:1.5;font-size:13px;color:#c4cad1}
+.selos{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;margin:4px 0 14px;max-width:760px;font-size:13px;color:#c4cad1}
+.selo{font-size:11px;padding:0 6px;border-radius:6px;justify-self:start}
+.icone{display:flex;align-items:center;gap:12px;margin:0 0 12px;color:#9aa3ad;font-size:13px}.icone img{width:48px;height:48px}
+.nav2{display:flex;justify-content:space-between;align-items:center;margin-top:18px;max-width:760px}
+button{font:13px system-ui;padding:6px 14px;border-radius:8px;border:0;background:#2b3440;color:#e8eaed;cursor:pointer}button:hover{background:#36414f}
+button.pri{background:#3a6fd8}button.pri:hover{background:#4a7fe8}button:disabled{opacity:.35;cursor:default}
+</style></head><body>
+<header id="barra"><img src="icon.svg" alt=""><span>Slimedex</span><div class="ctl">
+ <button id="bmin"><svg viewBox="0 0 10 10"><path d="M0 5.5h10"/></svg></button>
+ <button id="bmax"><svg viewBox="0 0 10 10"><path id="imax" d="M.5.5h9v9h-9z"/></svg></button>
+ <button id="bx"><svg viewBox="0 0 10 10"><path d="M.5.5l9 9M9.5.5l-9 9"/></svg></button></div></header>
+<div id="corpo">
+<nav><div class="tt"><img src="icon.svg" alt=""><span id="tt"></span></div>
+ <div class="busca"><input id="bq" autocomplete="off" spellcheck="false"><button id="bqx" hidden>×</button></div>
+ <div id="ix"></div><div class="ft" id="ft"></div></nav>
+<main id="mn"></main>
+</div>
+<script src="guia.js"></script>
+<script src="guia/marcas.js"></script>
+<script>
+const q=new URLSearchParams(location.search),L=q.get('lang')==='en'?'en':'pt',V=q.get('v')||'',T=GUIA.TXT[L],P=GUIA.PAGINAS,M=(window.MARCAS||{})[L]||{}; // posições medidas em cada idioma
+document.documentElement.lang=L=='pt'?'pt-BR':'en';document.title=T.titulo;tt.textContent=T.titulo;ft.textContent=T.rodape.replace('{v}',V);bq.placeholder=T.buscar;bqx.title=T.limpar;
+// moldura própria: minimizar, maximizar/restaurar e fechar (via guia-preload.js); no Mac ficam os botões do sistema
+if(q.get('p')==='darwin')document.body.classList.add('mac');
+const J=window.janela||{min(){},max(){},fechar(){close()},onMax(){}};
+bmin.onclick=()=>J.min();bmax.onclick=()=>J.max();bx.onclick=()=>J.fechar();bmin.title=T.min;bx.title=T.fechar;
+const MAXI='M.5.5h9v9h-9z',REST='M2.5.5h7v7M.5 2.5h7v7h-7z';
+J.onMax(m=>{imax.setAttribute('d',m?REST:MAXI);bmax.title=m?T.restaurar:T.maximizar});bmax.title=T.maximizar;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const semTag=s=>String(s).replace(/<[^>]+>/g,'').replace(/&[a-z]+;/g,' ');
+let atual=0;try{atual=Math.max(0,P.findIndex(p=>p.id===localStorage.getItem('guia-pagina')))}catch{}
+// ---- busca: procura no título, texto, legendas e dica de cada página (sem acento); o termo fica marcado na página aberta ----
+const TEXTOS=P.map(p=>[p.titulo[L],semTag(p.intro[L]),...p.itens[L].map(semTag),p.dica?semTag(p.dica[L]):'',...(p.selos?['s_comunidade','s_teste','s_contestada','s_meu'].map(k=>T[k].join(' ')):[])].filter(Boolean));
+let termos=[];
+function trecho(i){if(!termos.length)return'';const ts=TEXTOS[i].slice(1),t=ts.find(x=>termos.some(w=>norm(x).includes(w)));if(!t)return'';
+ const k=norm(t).indexOf(termos.find(w=>norm(t).includes(w))),ini=Math.max(0,k-25);return(ini?'…':'')+t.slice(ini,ini+70)+(ini+70<t.length?'…':'')}
+const marca=s=>{if(!termos.length)return esc(s);let h=esc(s);for(const w of termos){const re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');h=h.replace(re,'<mark>$1</mark>')}return h};
+function indice(){const achou=P.map((p,i)=>i).filter(i=>termos.every(w=>TEXTOS[i].some(x=>norm(x).includes(w))));
+ ix.innerHTML=achou.map(i=>`<a data-i="${i}"${i===atual?' class="on"':''}><i>${i+1}</i><span>${termos.length?marca(P[i].titulo[L]):esc(P[i].titulo[L])}${termos.length&&trecho(i)?`<small>${marca(trecho(i))}</small>`:''}</span></a>`).join('')||`<div class="nada">${esc(T.nada)}</div>`;
+ return achou}
+// marca os termos no texto da página (só nos nós de texto, sem mexer nos prints)
+function destaca(){if(!termos.length)return;const w=document.createTreeWalker(mn,NodeFilter.SHOW_TEXT),nos=[];while(w.nextNode())nos.push(w.currentNode);
+ for(const n of nos){const t=n.nodeValue,nt=norm(t);if(!termos.some(x=>nt.includes(x)))continue;const f=document.createDocumentFragment();let i=0;
+  const re=termos.map(x=>[...nt.matchAll(new RegExp(x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'))].map(m=>[m.index,m.index+x.length])).flat().sort((a,b)=>a[0]-b[0]);
+  for(const [a,b] of re){if(a<i)continue;f.append(t.slice(i,a));const m=document.createElement('mark');m.textContent=t.slice(a,b);f.append(m);i=b}f.append(t.slice(i));n.replaceWith(f)}
+ const pr=mn.querySelector('mark');if(pr)pr.scrollIntoView({block:'center'})}
+function busca(){termos=norm(bq.value).split(/\s+/).filter(Boolean);bqx.hidden=!bq.value;const achou=indice();mostra(termos.length&&achou.length&&!achou.includes(atual)?achou[0]:atual)} // a página aberta pula para o 1º resultado
+bq.oninput=busca;bqx.onclick=()=>{bq.value='';busca();bq.focus()};
+bq.onkeydown=e=>{if(e.key==='Enter'){const a=ix.querySelector('[data-i]');if(a)mostra(+a.dataset.i)}else if(e.key==='Escape'){e.stopPropagation();if(bq.value){bq.value='';busca()}else bq.blur()}};
+// print com os números por cima: a posição vem em % da imagem (medida pelo gerador)
+const fig=f=>{const m=(M[f.img]||{}),src=`guia/${L}-${f.img}.webp`,w=(M._tam||{})[f.img]; // print em 2×: mostra a 1,25× do tamanho real (mais legível)
+ return`<figure><div class="im"><img class="print" src="${src}"${w?` width="${Math.round(w[0]*1.25)}"`:''} alt="" onerror="this.closest('figure').remove()">${(f.marcas||[]).filter(x=>m[x.n]).map(x=>`<span class="mk" style="left:${m[x.n][0]}%;top:${m[x.n][1]}%;width:${m[x.n][2]}%;height:${m[x.n][3]}%"><b>${x.n}</b></span>`).join('')}</div></figure>`};
+function mostra(i){atual=i;const p=P[i];try{localStorage.setItem('guia-pagina',p.id)}catch{}
+ ix.querySelectorAll('a').forEach(a=>a.classList.toggle('on',+a.dataset.i===i));
+ const nums=p.figs.flatMap(f=>f.marcas||[]).map(x=>x.n),it=p.itens[L];
+ mn.innerHTML=`<h1>${esc(p.titulo[L])}</h1><div class="pg">${T.pagina.replace('{a}',i+1).replace('{b}',P.length)}</div>
+ ${p.icone?`<div class="icone"><img src="icon.svg" alt=""></div>`:''}<p>${p.intro[L]}</p>
+ <div class="figs">${p.figs.map(fig).join('')}</div>
+ ${p.lista||!nums.length?`<ul class="lg">${it.map(x=>`<li><span>${x}</span></li>`).join('')}</ul>`:`<ol class="lg">${it.map((x,j)=>`<li><b class="n">${nums[j]??j+1}</b><span>${x}</span></li>`).join('')}</ol>`}
+ ${p.selos?`<h3 style="font-size:14px;margin:14px 0 6px">${T.selos}</h3><div class="selos">${[['s_comunidade','#1d3346','#8fd0ff'],['s_teste','#3a3220','#ffd479'],['s_contestada','#3d2226','#ff9a9a'],['s_meu','#2b3440','#8fb8ff']].map(([k,b,c])=>`<span class="selo" style="background:${b};color:${c}">${esc(T[k][0])}</span><span>${esc(T[k][1])}</span>`).join('')}</div>`:''}
+ ${p.dica?`<div class="dica">${p.dica[L]}</div>`:''}
+ <div class="nav2"><button id="ant"${i?'':' disabled'}>${T.ant}</button><button class="pri" id="prox"${i<P.length-1?'':' disabled'}>${T.prox}</button></div>`;
+ ant.onclick=()=>i&&mostra(i-1);prox.onclick=()=>i<P.length-1&&mostra(i+1);mn.scrollTop=0;destaca()}
+ix.onclick=e=>{const a=e.target.closest('[data-i]');if(a)mostra(+a.dataset.i)};
+addEventListener('keydown',e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();bq.focus();bq.select();return}
+ if(e.target===bq)return;
+ if(e.key==='ArrowRight'&&atual<P.length-1)mostra(atual+1);else if(e.key==='ArrowLeft'&&atual>0)mostra(atual-1);else if(e.key==='Escape')J.fechar()});
+indice();mostra(atual);
+</script></body></html>

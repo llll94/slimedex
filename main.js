@@ -2,10 +2,11 @@ const {app,BrowserWindow,Tray,Menu,screen,ipcMain,nativeImage,globalShortcut,dia
 const atz=require('./atualizador');
 const path=require('path'),fs=require('fs'),crypto=require('crypto');
 const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação em 2 linhas; 100% dos "Como obter" e ~93% dos "Usado em" cabem (medido)
+const LARGO=680; // tela do testador: campos à esquerda, possibilidades à direita
 const MAC=process.platform==='darwin';
 if(process.env.SLIMEDEX_DADOS)app.setPath('userData',process.env.SLIMEDEX_DADOS); // só para teste: pasta de dados separada
-let win,tray,aberto=false,dialogo=false; // dialogo: janela de importar/exportar aberta
-function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?PANEL:ICON,wa=screen.getDisplayMatching(b).workArea;
+let win,tray,aberto=false,dialogo=false,largo=false; // dialogo: janela de importar/exportar aberta; largo: painel na largura do testador
+function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?[largo?LARGO:PANEL[0],PANEL[1]]:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
   win.setBounds({x,y,width:w,height:h});if(!open){win.blur();salva()}} // ao fechar, devolve o foco pro jogo
 // última posição do ícone, salva na pasta de dados do app; ignorada se cair fora de todas as telas
@@ -133,7 +134,18 @@ app.whenReady().then(()=>{
   const NOVIDADES=process.env.SLIMEDEX_NOVIDADES_URL||'https://raw.githubusercontent.com/llll94/slimedex/main/novidades.json'; // variável só para teste local
   ipcMain.handle('novidades',async()=>{try{const r=await fetch(NOVIDADES,{signal:AbortSignal.timeout(6000)});if(r.ok)return await r.json()}catch{}return null});
   ipcMain.on('reiniciar',reinicia);
+  // cartilha (botão i): janela com barra de título própria (sem a moldura do sistema; no Mac fica o semáforo); se já está aberta, só traz para a frente (troca o idioma se mudou)
+  let guiaWin=null;
+  ipcMain.on('guia',(_,l)=>{l=l==='en'?'en':'pt';const q={lang:l,v:app.getVersion(),p:process.platform};
+    if(guiaWin&&!guiaWin.isDestroyed()){if(guiaWin.lang!==l){guiaWin.lang=l;guiaWin.loadFile('guia.html',{query:q})}guiaWin.show();guiaWin.focus();return}
+    guiaWin=new BrowserWindow({width:1040,height:720,minWidth:760,minHeight:520,backgroundColor:'#14171a',icon:path.join(__dirname,'icon.png'),show:false,
+      ...(MAC?{titleBarStyle:'hiddenInset'}:{frame:false}),webPreferences:{sandbox:true,preload:path.join(__dirname,'guia-preload.js')}});
+    guiaWin.lang=l;guiaWin.setMenu(null);guiaWin.loadFile('guia.html',{query:q});guiaWin.once('ready-to-show',()=>guiaWin.show());guiaWin.on('closed',()=>{guiaWin=null});
+    const w=guiaWin,avisa=()=>w.webContents.send('guia-max',w.isMaximized());w.on('maximize',avisa);w.on('unmaximize',avisa)});
+  ipcMain.on('guia-janela',(e,a)=>{const w=guiaWin;if(!w||w.isDestroyed()||e.sender!==w.webContents)return;
+    if(a==='min')w.minimize();else if(a==='max')w.isMaximized()?w.unmaximize():w.maximize();else if(a==='fechar')w.close()});
   ipcMain.on('size',(_,o)=>size(o));
+  ipcMain.on('largo',(_,on)=>{on=!!on;if(on===largo)return;largo=on;if(aberto)size(true)}); // cresce para a esquerda, a borda direita fica no lugar
   // arrastar (ícone ou combinação fixada): guarda a distância do cursor ao canto da janela e acompanha o cursor
   const arrasto=new Map(),jan=e=>BrowserWindow.fromWebContents(e.sender);
   ipcMain.on('drag-start',e=>{const w=jan(e);if(!w)return;const c=screen.getCursorScreenPoint(),[x,y]=w.getPosition();arrasto.set(w,{x:c.x-x,y:c.y-y})});

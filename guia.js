@@ -1,0 +1,96 @@
+// Cartilha (botão i): páginas, textos PT/EN e o que cada número aponta nos prints.
+// "marcas" diz onde fica cada número: sel = seletor CSS na tela fotografada (o primeiro que achar) ou js = expressão que devolve o elemento.
+// scripts/gera-prints.js usa estas marcas para medir a posição e grava guia/marcas.js; os prints ficam em guia/<idioma>-<img>.webp
+(function (g) {
+  const PAGINAS = [
+    { id: 'comecar', titulo: { pt: 'Começando', en: 'Getting started' }, icone: true,
+      intro: { pt: 'O Slimedex fica por cima do jogo, como um ícone. <kbd>Ctrl</kbd>+<kbd>Tab</kbd> abre e fecha o painel de qualquer lugar, inclusive com o jogo na frente. Clicar no ícone também abre; <kbd>Esc</kbd> ou clicar fora fecha. Arraste o ícone para onde quiser: a posição é lembrada.',
+               en: 'Slimedex sits on top of the game as an icon. <kbd>Ctrl</kbd>+<kbd>Tab</kbd> opens and closes the panel from anywhere, even with the game in front. Clicking the icon also opens it; <kbd>Esc</kbd> or clicking outside closes it. Drag the icon anywhere: its position is remembered.' },
+      figs: [{ img: 'lista', marcas: [{ n: 1, sel: '#qi' }, { n: 2, sel: '#inf' }, { n: 3, sel: '#nv' }, { n: 4, sel: '#tsb' }, { n: 5, sel: '#mn' }, { n: 6, sel: '#x' }, { n: 7, sel: '#rst' }] }],
+      itens: {
+        pt: ['Busca: digite o nome, número, elemento ou local de um slime', 'Esta cartilha', 'Nova combinação: cadastre o que você descobriu', 'Testador de combinações: veja o que dois slimes podem virar', 'Seus dados, idioma e envio para a comunidade', 'Fechar o painel (o mesmo que <kbd>Esc</kbd>)', 'Rodapé: avisa quando há versão nova do app ou base nova da comunidade; o ⟳ confere na hora'],
+        en: ['Search: type a slime\'s name, number, element or location', 'This guide', 'New combination: add something you discovered', 'Combination tester: see what two slimes may turn into', 'Your data, language and sending to the community', 'Close the panel (same as <kbd>Esc</kbd>)', 'Footer: tells you when there is a new app version or new community data; ⟳ checks right away'] },
+      dica: { pt: 'Para voltar à tela anterior: tecla <kbd>V</kbd>, o botão "voltar" do mouse ou o link <b>← voltar</b>.', en: 'To go back to the previous screen: the <kbd>V</kbd> key, the mouse "back" button or the <b>← back</b> link.' } },
+
+    { id: 'buscar', titulo: { pt: 'Buscar', en: 'Search' },
+      intro: { pt: 'Digite qualquer parte do nome (em inglês ou português), o número da Slimepédia, um elemento ou um local. A lista filtra enquanto você digita.',
+               en: 'Type any part of the name (English or Portuguese), the Slimepedia number, an element or a location. The list filters as you type.' },
+      figs: [{ img: 'busca', marcas: [{ n: 1, sel: '#qi' }, { n: 2, sel: '#qx' }, { n: 3, sel: '.row.on' }] }],
+      itens: {
+        pt: ['O que você digitou', '<b>×</b> limpa a busca', '<kbd>↓</kbd> <kbd>↑</kbd> escolhem a linha e <kbd>Enter</kbd> abre a ficha (ou clique nela)'],
+        en: ['What you typed', '<b>×</b> clears the search', '<kbd>↓</kbd> <kbd>↑</kbd> pick a row and <kbd>Enter</kbd> opens its card (or click it)'] },
+      dica: { pt: 'Com uma ficha aberta, é só começar a digitar que a busca recomeça.', en: 'With a card open, just start typing to search again.' } },
+
+    { id: 'ficha', titulo: { pt: 'Ficha do slime', en: 'Slime card' },
+      intro: { pt: 'Tudo sobre um slime numa tela só: onde nasce, o que solta, como obter e onde ele é usado.',
+               en: 'Everything about a slime on one screen: where it spawns, what it drops, how to get it and where it is used.' },
+      figs: [{ img: 'ficha', marcas: [{ n: 1, sel: '.fh .fv' }, { n: 2, sel: '.fh .pe' }, { n: 3, sel: '#ptedit' }, { n: 4, sel: '[data-mapa]' }, { n: 5, sel: '.drs' }, { n: 6, sel: '.rc .pc' }, { n: 7, sel: '.rc .vt' }, { n: 8, sel: '.rc .ac' }] }],
+      itens: {
+        pt: ['<b>☆</b> fixa o slime na tela, por cima do jogo', 'Dia e noite: quando ele nasce. Clique para corrigir', 'Dê um nome em português (e o número, se faltar). A busca acha pelos dois', 'Onde nasce: clique num mapa para ver ou editar os slimes dele', 'Drops: os itens que ele solta', 'Chance da combinação. Clique para editar a sua', '👍 / 👎: diga se funciona; o número é o placar da comunidade', 'Ao passar o mouse: <b>✎</b> corrige a combinação e a lixeira apaga'],
+        en: ['<b>☆</b> pins the slime on screen, over the game', 'Day and night: when it spawns. Click to fix it', 'Give it a Portuguese name (and the number, if missing). Search finds both', 'Where it spawns: click a map to see or edit its slimes', 'Drops: the items it drops', 'Combination chance. Click to edit yours', '👍 / 👎: say whether it works; the number is the community score', 'On hover: <b>✎</b> fixes the combination and the bin deletes it'] },
+      dica: { pt: 'Mais embaixo, a seção <b>Elementos</b> (abre e fecha) mostra contra quem o ataque é forte ou fraco e de quem ele toma mais ou menos dano.', en: 'Further down, the <b>Elements</b> section (expandable) shows what its attack is strong or weak against and what hits it harder or softer.' } },
+
+    { id: 'combos', titulo: { pt: 'Combinações', en: 'Combinations' },
+      intro: { pt: '<b>A ordem dos slimes importa</b>: A + B e B + A são combinações diferentes, cada uma com sua chance. As listas mostram primeiro as que têm resultado, da maior para a menor chance; as sem chance vêm depois, e as <b>testadas sem resultado</b> ficam no fim, recolhidas.',
+               en: '<b>Slime order matters</b>: A + B and B + A are different combinations, each with its own chance. Lists show the ones with a result first, from highest to lowest chance; those without a chance come next, and <b>tested without result</b> go last, collapsed.' },
+      selos: true,
+      figs: [{ img: 'usado', marcas: [{ n: 1, js: "[...document.querySelectorAll('#bd h4')].find(h=>/usado|used/i.test(h.textContent))" }, { n: 2, sel: '#bd details.sec:not(#secel) summary' }] },
+             { img: 'form', marcas: [{ n: 3, sel: '#fr' }, { n: 4, sel: '#fa' }, { n: 5, sel: '#fmat' }, { n: 6, sel: '#fpc' }, { n: 7, sel: '#fs' }] }],
+      itens: {
+        pt: ['<b>Usado em</b>: combinações em que este slime é ingrediente', 'Testadas sem resultado: alguém fez e ainda não se sabe o que sai', 'Resultado: comece a digitar e escolha da lista', 'Slime 1 e slime 2, nessa ordem', 'Material, com sugestões em português e inglês', 'Nível e chance são opcionais', 'Salvar: aparece na ficha com o selo <b>meu</b>'],
+        en: ['<b>Used in</b>: combinations where this slime is an ingredient', 'Tested without result: someone tried it and the outcome is still unknown', 'Result: start typing and pick from the list', 'Slime 1 and slime 2, in that order', 'Material, with suggestions in Portuguese and English', 'Level and chance are optional', 'Save: shows up on the card with the <b>mine</b> badge'] },
+      dica: { pt: 'Uma combinação sua igual a uma da base vira uma linha só. Se não juntar sozinha, o <b>⇄</b> junta.', en: 'A combination of yours that matches one in the database becomes a single row. If it does not merge on its own, <b>⇄</b> merges it.' } },
+
+    { id: 'testador', titulo: { pt: 'Testador de combinações', en: 'Combination tester' },
+      intro: { pt: 'Escolha dois slimes e veja o que pode sair. O painel alarga: os campos ficam à esquerda e as possibilidades à direita.',
+               en: 'Pick two slimes and see what may come out. The panel widens: fields on the left, possibilities on the right.' },
+      figs: [{ img: 'testador', marcas: [{ n: 1, sel: '#ts1' }, { n: 2, sel: '#tsm' }, { n: 3, sel: '#tsres .tp' }, { n: 4, js: "document.querySelector('#tsres .tp .br')?.closest('.tp')" }, { n: 5, sel: '#tscp' }, { n: 6, sel: '#tssalva' }, { n: 7, sel: '.tm' }] }],
+      itens: {
+        pt: ['Slime 1 e slime 2 (a ordem importa)', 'Material (opcional): ajuda a acertar o resultado', '<b>Já conhecidas</b>: combinações que já existem para esse par, com a chance real', '<b>Estimativas</b>: os outros resultados possíveis, do mais provável para o menos provável, pelos elementos e espécies dos dois slimes. Clique numa para marcar como resultado', '<b>Compartilhar</b>: desligado, o teste fica só no seu computador', 'Salvar teste, com resultado ou sem ("sei que vira algo, mas não sei o quê")', 'Meus testes: clique para editar; a chave compartilha e a lixeira apaga'],
+        en: ['Slime 1 and slime 2 (order matters)', 'Material (optional): helps get the result right', '<b>Already known</b>: combinations that already exist for this pair, with the real chance', '<b>Estimates</b>: other possible results, from most to least likely, based on both slimes\' elements and species. Click one to set it as the result', '<b>Share</b>: when off, the test stays on your computer only', 'Save test, with or without a result ("I know it turns into something, but not what")', 'My tests: click to edit; the switch shares it and the bin deletes it'] },
+      dica: { pt: 'A estimativa é um palpite: nos testes, a certa ficou entre as 5 primeiras em 9 de cada 10 casos. Teste compartilhado sem resultado entra na base da comunidade com o selo <b>teste</b>. Na ficha, o botão <b>Testar combinação</b> já abre com o slime no campo 1.', en: 'The estimate is a guess: in tests, the right one was in the top 5 in 9 out of 10 cases. A shared test without a result joins the community database with the <b>test</b> badge. On a card, the <b>Test a combination</b> button opens with that slime in field 1.' } },
+
+    { id: 'fixar', titulo: { pt: 'Fixar na tela', en: 'Pin on screen' },
+      intro: { pt: 'O <b>☆</b> numa combinação (ou ao lado do nome do slime) vira uma janelinha que fica por cima do jogo, sem tirar o foco dele. Dá para fixar até 8.',
+               en: 'The <b>☆</b> on a combination (or next to the slime\'s name) becomes a small window that stays over the game without taking its focus. You can pin up to 8.' },
+      figs: [{ img: 'pin', marcas: [] }],
+      itens: {
+        pt: ['Arraste para onde quiser: a posição é lembrada', 'Clique abre a ficha no painel', '<b>×</b> esconde (continua fixada); <b>★</b> desfixa', 'Na tela inicial, a lista <b>Fixados</b> tem uma chave para mostrar ou esconder cada uma'],
+        en: ['Drag it anywhere: its position is remembered', 'Click opens the card in the panel', '<b>×</b> hides it (it stays pinned); <b>★</b> unpins', 'On the start screen, the <b>Pinned</b> list has a switch to show or hide each one'] },
+      lista: true },
+
+    { id: 'mapa', titulo: { pt: 'Slimes do mapa (Tab)', en: 'Map slimes (Tab)' },
+      intro: { pt: '<b>Beta, só no Windows.</b> Ligue em <b>⋯ → Slimes do mapa</b>. Ao apertar <kbd>Tab</kbd> no jogo (o mapa grande), aparece uma caixa com os slimes que nascem no mapa em que você está. <kbd>Tab</kbd> de novo ou <kbd>Esc</kbd> esconde.',
+               en: '<b>Beta, Windows only.</b> Turn it on in <b>⋯ → Map slimes</b>. When you press <kbd>Tab</kbd> in the game (the big map), a box shows the slimes that spawn on the map you are on. <kbd>Tab</kbd> again or <kbd>Esc</kbd> hides it.' },
+      figs: [{ img: 'mapa', marcas: [] }, { img: 'mapa-tela', marcas: [{ n: 1, sel: '.mchip .del' }, { n: 2, sel: '#mq' }] }],
+      itens: {
+        pt: ['<b>×</b> tira um slime que não nasce ali (inclusive os da base)', 'Busque e clique para marcar um slime que você viu nesse mapa'],
+        en: ['<b>×</b> removes a slime that does not spawn there (including the database ones)', 'Search and click to mark a slime you saw on this map'] },
+      dica: { pt: 'Fundo claro = dia, lilás = noite, os dois = dia e noite. Arraste a caixa para onde quiser. <b>Adicionar / editar</b> abre a lista do mapa no painel (a segunda imagem). O app lê só o nome do mapa, na hora do <kbd>Tab</kbd>, com o OCR do próprio Windows; nada é gravado nem enviado.', en: 'Light background = day, lilac = night, both = day and night. Drag the box anywhere. <b>Add / edit</b> opens the map list in the panel (the second image). The app only reads the map name, at the moment of <kbd>Tab</kbd>, using Windows\' own OCR; nothing is saved or sent.' } },
+
+    { id: 'dados', titulo: { pt: 'Seus dados e idioma', en: 'Your data and language' },
+      intro: { pt: 'Pelo botão <b>⋯</b>. O que você cadastra fica <b>só no seu computador</b>, separado do app, e não se perde ao atualizar.',
+               en: 'From the <b>⋯</b> button. What you add stays <b>on your computer only</b>, apart from the app, and is kept when you update.' },
+      figs: [{ img: 'meus', marcas: [{ n: 1, sel: '#env' }, { n: 2, sel: '#cpg' }, { n: 3, sel: '#imp' }, { n: 4, sel: '#exp' }, { n: 5, sel: '.lg' }, { n: 6, sel: '#mapat' }] }],
+      itens: {
+        pt: ['Enviar minhas descobertas para a comunidade', 'Compartilhar: liga ou desliga de uma vez todas as suas combinações e testes. Só as compartilhadas vão no envio', 'Importar CSV (formato da planilha da comunidade) ou um backup JSON', 'Exportar backup JSON ou suas combinações em CSV', 'Idioma: Português ou English', 'Liga ou desliga os slimes do mapa (Tab)'],
+        en: ['Send my discoveries to the community', 'Share: turns all your combinations and tests on or off at once. Only shared ones are sent', 'Import CSV (community spreadsheet format) or a JSON backup', 'Export a JSON backup or your combinations as CSV', 'Language: Português or English', 'Turns map slimes (Tab) on or off'] } },
+
+    { id: 'comunidade', titulo: { pt: 'Comunidade e atualizações', en: 'Community and updates' },
+      intro: { pt: 'Suas descobertas ajudam todo mundo. De hora em hora os envios são revisados e o que for aprovado entra na base de todos (selo <b>comunidade</b>); os 👎 tiram o que estiver errado.',
+               en: 'Your discoveries help everyone. Every hour submissions are reviewed and whatever is approved joins everyone\'s database (<b>community</b> badge); 👎 votes remove what is wrong.' },
+      figs: [{ img: 'envio', marcas: [{ n: 1, sel: '.chips' }, { n: 2, sel: '#envok' }] }],
+      itens: {
+        pt: ['O que vai no envio: combinações compartilhadas, chances, votos, nomes, números e mapas', 'Enviar. Nada pessoal é enviado, só um código aleatório deste computador'],
+        en: ['What is sent: shared combinations, chances, votes, names, numbers and maps', 'Send. Nothing personal is sent, only a random code for this computer'] },
+      dica: { pt: '<b>Atualizações:</b> o app confere sozinho de hora em hora. Quando há versão nova, o rodapé mostra o botão e o que mudou; no Windows ele baixa, confere e reinicia na versão nova. Base nova da comunidade: um clique reinicia já com as combinações novas.', en: '<b>Updates:</b> the app checks on its own every hour. When there is a new version, the footer shows a button and what changed; on Windows it downloads, verifies and restarts in the new version. New community data: one click restarts with the new combinations.' } }
+  ];
+  const TXT = {
+    pt: { titulo: 'Cartilha do Slimedex', ant: '← anterior', prox: 'próxima →', selos: 'Selos nas combinações', pagina: 'Página {a} de {b}', buscar: 'Buscar na cartilha', limpar: 'Limpar busca', nada: 'Nada encontrado.', min: 'Minimizar', maximizar: 'Maximizar', restaurar: 'Restaurar', fechar: 'Fechar', rodape: 'Slimedex v{v} · dados da World of Slime Wiki e da comunidade · código aberto em github.com/llll94/slimedex',
+      s_comunidade: ['comunidade', 'enviada pela comunidade e aprovada'], s_teste: ['teste', 'ninguém confirmou ainda (fez? dê 👍)'], s_contestada: ['contestada', 'muita gente disse que não funciona'], s_meu: ['meu', 'cadastrada ou editada por você'] },
+    en: { titulo: 'Slimedex guide', ant: '← previous', prox: 'next →', selos: 'Combination badges', pagina: 'Page {a} of {b}', buscar: 'Search the guide', limpar: 'Clear search', nada: 'Nothing found.', min: 'Minimize', maximizar: 'Maximize', restaurar: 'Restore', fechar: 'Close', rodape: 'Slimedex v{v} · data from the World of Slime Wiki and the community · open source at github.com/llll94/slimedex',
+      s_comunidade: ['community', 'sent by the community and approved'], s_teste: ['test', 'nobody confirmed it yet (did it? give it 👍)'], s_contestada: ['contested', 'many people said it does not work'], s_meu: ['mine', 'added or edited by you'] }
+  };
+  const api = { PAGINAS, TXT };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else g.GUIA = api;
+})(typeof window !== 'undefined' ? window : this);
