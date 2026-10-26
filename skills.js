@@ -14,7 +14,7 @@
     'blade lamina', 'ball bola', 'orb orbe esfera', 'cutter corte cortador cut', 'wave onda', 'vortex vortice redemoinho', 'pillar pilar coluna',
     'dome domo cupula', 'shot tiro disparo', 'rain chuva', 'drain dreno drenar', 'quake terremoto tremor', 'blizzard nevasca', 'tempest tempestade storm',
     'swing giro balanco', 'smash esmagar golpe', 'prison prisao', 'trap armadilha', 'crystal cristal', 'needle agulha espinho', 'boomerang bumerangue',
-    'dance danca', 'crescent crescente meia lua', 'bang explosao estouro', 'pulse pulso', 'discharge descarga', 'shock choque', 'step passo',
+    'dance danca', 'fan leque', 'fragment fragmento fragmentos estilhaco', 'crescent crescente meia lua', 'bang explosao estouro', 'pulse pulso', 'discharge descarga', 'shock choque', 'step passo',
     'dive mergulho diving mergulhar', 'fly voo voar', 'swim nadar nado', 'dig cavar', 'ride montaria montar', 'aura', 'cross cruz', 'sonic sonico',
     'boom estrondo', 'flash clarao', 'spread espalhar', 'slide deslize', 'scatter dispersar', 'volley saraivada rajada', 'breath sopro bafo',
     'upper uppercut gancho', 'drive impulso', 'burst rajada', 'bless bencao', 'energy energia', 'spike espeto', 'tunnel tunel', 'shatter despedacar',

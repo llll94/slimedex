@@ -2,6 +2,26 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.1.1",
+      "prints": ["cor", "meus"],
+      "pt": [
+        "Ícone novo, em estilo flat. Na primeira vez que abrir, você escolhe a cor: azul, vermelho, roxo, laranja ou verde. A chave “Cores para daltônicos” mostra outras 5 cores, que continuam diferentes entre si para quem é daltônico. A cor continua nas próximas atualizações",
+        "Skill nova na lista: Leque de Gelo (Ice Spread), de Gelo, que a wiki ainda não tem",
+        "No detalhe da skill, a recarga aparece com vírgula, como no jogo (ex.: 11,8s)",
+        "Ao passar o mouse no ícone da bandeja do Windows aparece a versão, e o menu dele ganhou um título com o ícone",
+        "Vassourinha nos títulos Recentes e Fixados: limpa os recentes ou desafixa todos (com \"Desfazer\")",
+        "Em ⋯, a chave \"Compartilhar minhas contribuições\" agora fica sempre lá e vale para o que você anotar depois: ligada, combinações, testes e skills novas já nascem compartilhadas"
+      ],
+      "en": [
+        "New flat-style icon. The first time you open it, you pick the color: blue, red, purple, orange or green. The “Colorblind-friendly colors” switch shows 5 other colors that stay distinct for colorblind people. The color stays the same in future updates",
+        "New skill in the list: Ice Spread (Leque de Gelo), Ice element, not on the wiki yet",
+        "In the skill details, cooldown shows like in the game",
+        "Hovering the tray icon shows the version, and its menu got a title with the icon",
+        "Broom on the Recent and Pinned titles: clears the recent list or unpins everything (with \"Undo\")",
+        "In ⋯, the \"Share my contributions\" switch is always there and applies to what you note next: when on, new combinations, tests and skills are shared from the start"
+      ]
+    },
+    {
       "v": "2.1.0",
       "prints": ["sk-ficha", "sk-form", "sk-lista", "sk-detalhe"],
       "pt": [

@@ -1,0 +1,19 @@
+{
+  "_sobre": "Skills que existem no jogo mas não estão na World of Slime Wiki. scripts/importa-skills.js junta estas com as da wiki. Use a chave que a wiki usaria (nome em inglês sem espaço, ex.: IceSpread): se a wiki passar a ter a skill, vale a dela e o nome PT (nm) daqui continua. ic sem / no começo = ícone que vem junto com o app (icones/skills/).",
+  "skills": [
+    {
+      "k": "IceSpread",
+      "en": "Ice Spread",
+      "nm": "Leque de Gelo",
+      "pw": "Leque de Gelo",
+      "el": "Gelo",
+      "ki": "attack",
+      "ic": "icones/skills/leque-de-gelo.png",
+      "mp": 44,
+      "cd": 11.8,
+      "ds": "Dispara fragmentos de gelo em várias direções de uma só vez, causando 9 de dano mágico.",
+      "de": "",
+      "fonte": "print do jogo enviado pelo Lucas (2026-10-26)"
+    }
+  ]
+}

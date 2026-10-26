@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),largo:o
   meus:{ler:()=>ipcRenderer.invoke('meus-ler'),salvar:d=>ipcRenderer.invoke('meus-salvar',d),
     exportar:d=>ipcRenderer.invoke('meus-exportar',d),exportarCsv:t=>ipcRenderer.invoke('meus-exportar-csv',t),
     importar:()=>ipcRenderer.invoke('meus-importar'),enviar:p=>ipcRenderer.invoke('enviar',p)},
-  comunidade:()=>ipcRenderer.invoke('comunidade'),idioma:l=>ipcRenderer.send('idioma',l),versao:()=>ipcRenderer.invoke('versao'),
+  comunidade:()=>ipcRenderer.invoke('comunidade'),idioma:l=>ipcRenderer.send('idioma',l),versao:()=>ipcRenderer.invoke('versao'),cor:()=>ipcRenderer.invoke('cor'),escolheCor:c=>ipcRenderer.send('cor',c),gamer:on=>ipcRenderer.send('gamer',on),dalt:on=>ipcRenderer.send('dalt',on),
   pasta:()=>ipcRenderer.invoke('pasta'),abrirPasta:()=>ipcRenderer.send('abrir-pasta'),plataforma:process.platform,reiniciar:()=>ipcRenderer.send('reiniciar'),
   versaoNova:()=>ipcRenderer.invoke('versao-nova'),baixarAtualizacao:n=>ipcRenderer.invoke('baixar-atualizacao',n),instalarAtualizacao:()=>ipcRenderer.send('instalar-atualizacao'),
   foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p)),

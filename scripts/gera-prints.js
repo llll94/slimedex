@@ -28,6 +28,7 @@ const TELAS = {
   'sk-form': "skillForm({s:'SL_Bass_WaterGround'});SKF.q='barreira';SKF.k='Aqua_Barrier';SKF.lv='26';skillForm()",
   'sk-lista': "SKT={q:'',el:'Água'};skillsTela();stq.blur()",
   'sk-detalhe': "skillDet('Aqua_Barrier')",
+  cor: 'telaCor()',
   meus: 'meus()',
   envio: 'envio()'
 };
@@ -60,6 +61,7 @@ async function foto(c, arq, clip) {
 (async () => {
   const dados = fs.mkdtempSync(path.join(os.tmpdir(), 'slimedex-prints-'));
   fs.writeFileSync(path.join(dados, 'meus-dados.json'), JSON.stringify(EXEMPLO));
+  fs.writeFileSync(path.join(dados, 'aparencia.json'), JSON.stringify({ cor: 'azul' })); // cor já escolhida: o app não abre pedindo a cor
   fs.mkdirSync(SAIDA, { recursive: true });
   const app = spawn(require('electron'), [RAIZ, `--remote-debugging-port=${PORTA}`, '--force-device-scale-factor=2'],
     { env: { ...process.env, SLIMEDEX_DADOS: dados, SLIMEDEX_RELEASE_URL: 'http://127.0.0.1:1/', SLIMEDEX_NOVIDADES_URL: 'http://127.0.0.1:1/' }, stdio: 'ignore' });

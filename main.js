@@ -100,7 +100,16 @@ function criaMapa(){
 function mostraMapa(d){criaMapa();
   mapaWin.dados=d;if(MAC&&!mapaWin.isVisible())mapaWin.setContentSize(440,360);if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pin-dados',d)}
 
-function menuBandeja(l){if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:l==='en'?'Restart':'Reiniciar',click:reinicia},{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
+// cor do ícone (a pessoa escolhe na 1ª vez que o app abre, ou no easter egg; d-* = cores para daltônicos), a chave de daltônico e o gamer mode: ficam na pasta de dados, então passam pelas atualizações
+const CORES=['azul','vermelho','roxo','laranja','verde','d-azul','d-amarelo','d-vermelhao','d-violeta','d-ciano'],APAR=()=>path.join(app.getPath('userData'),'aparencia.json');
+let apar={};try{apar=JSON.parse(fs.readFileSync(APAR(),'utf8'))||{}}catch{}
+let cor=CORES.includes(apar.cor)?apar.cor:null;
+const gravaApar=()=>{try{fs.writeFileSync(APAR(),JSON.stringify(apar))}catch{}};
+const iconeCor=grande=>nativeImage.createFromPath(path.join(__dirname,'icones','app',(cor||'azul')+(grande?'-256':'')+'.png')); // o .png pequeno puxa o @2x sozinho
+// menu da bandeja: título com o ícone (cinza, como no Discord), reiniciar e sair
+let idiomaMenu='pt';
+function menuBandeja(l){if(l)idiomaMenu=l;l=idiomaMenu;if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:'Slimedex',icon:iconeCor(),enabled:false},{type:'separator'},
+  {label:l==='en'?'Restart':'Reiniciar',click:reinicia},{type:'separator'},{label:l==='en'?'Quit Slimedex':'Sair do Slimedex',click:()=>app.quit()}]))}
 // No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE)
 function reinicia(){salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)}
 app.whenReady().then(()=>{
@@ -112,8 +121,8 @@ app.whenReady().then(()=>{
   win.on('blur',()=>{if(aberto&&!dialogo)win.webContents.send('fechar')}); // clicou fora: recolhe para o ícone
   // botão "voltar" do mouse: no Windows ele chega como comando de app (não como clique), mesmo sem foco
   win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
-  tray=new Tray(nativeImage.createFromPath(path.join(__dirname,'icon.png')).resize({width:16}));
-  tray.setToolTip('Slimedex (Ctrl+Tab)');menuBandeja('pt');
+  tray=new Tray(iconeCor());
+  tray.setToolTip(`Slimedex ${app.getVersion()} (Ctrl+Tab)`);menuBandeja('pt');
   ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
   ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
@@ -136,12 +145,18 @@ app.whenReady().then(()=>{
   ipcMain.on('reiniciar',reinicia);
   // cartilha (botão i): janela com barra de título própria (sem a moldura do sistema; no Mac fica o semáforo); se já está aberta, só traz para a frente (troca o idioma se mudou)
   let guiaWin=null;
-  ipcMain.on('guia',(_,l)=>{l=l==='en'?'en':'pt';const q={lang:l,v:app.getVersion(),p:process.platform};
-    if(guiaWin&&!guiaWin.isDestroyed()){if(guiaWin.lang!==l){guiaWin.lang=l;guiaWin.loadFile('guia.html',{query:q})}guiaWin.show();guiaWin.focus();return}
-    guiaWin=new BrowserWindow({width:1040,height:720,minWidth:760,minHeight:520,backgroundColor:'#14171a',icon:path.join(__dirname,'icon.png'),show:false,
+  ipcMain.on('guia',(_,l)=>{l=l==='en'?'en':'pt';const q={lang:l,v:app.getVersion(),p:process.platform,cor:cor||'azul'};
+    if(guiaWin&&!guiaWin.isDestroyed()){if(guiaWin.lang!==l||guiaWin.cor!==q.cor){guiaWin.lang=l;guiaWin.cor=q.cor;guiaWin.loadFile('guia.html',{query:q})}guiaWin.show();guiaWin.focus();return}
+    guiaWin=new BrowserWindow({width:1040,height:720,minWidth:760,minHeight:520,backgroundColor:'#14171a',icon:iconeCor(true),show:false,
       ...(MAC?{titleBarStyle:'hiddenInset'}:{frame:false}),webPreferences:{sandbox:true,preload:path.join(__dirname,'guia-preload.js')}});
-    guiaWin.lang=l;guiaWin.setMenu(null);guiaWin.loadFile('guia.html',{query:q});guiaWin.once('ready-to-show',()=>guiaWin.show());guiaWin.on('closed',()=>{guiaWin=null});
+    guiaWin.lang=l;guiaWin.cor=q.cor;guiaWin.setMenu(null);guiaWin.loadFile('guia.html',{query:q});guiaWin.once('ready-to-show',()=>guiaWin.show());guiaWin.on('closed',()=>{guiaWin=null});
     const w=guiaWin,avisa=()=>w.webContents.send('guia-max',w.isMaximized());w.on('maximize',avisa);w.on('unmaximize',avisa)});
+  // cor escolhida: grava e troca o ícone da bandeja, do menu e da cartilha na hora
+  ipcMain.handle('cor',()=>({cor:cor||'azul',escolhida:!!cor,gamer:apar.gamer===true,dalt:apar.dalt===true}));
+  ipcMain.on('dalt',(_,on)=>{apar.dalt=!!on;gravaApar()});
+  ipcMain.on('gamer',(_,on)=>{apar.gamer=!!on;gravaApar()});
+  ipcMain.on('cor',(_,c)=>{if(!CORES.includes(c))return;cor=apar.cor=c;gravaApar();
+    if(tray){tray.setImage(iconeCor());menuBandeja()}if(guiaWin&&!guiaWin.isDestroyed())guiaWin.setIcon(iconeCor(true))});
   ipcMain.on('guia-janela',(e,a)=>{const w=guiaWin;if(!w||w.isDestroyed()||e.sender!==w.webContents)return;
     if(a==='min')w.minimize();else if(a==='max')w.isMaximized()?w.unmaximize():w.maximize();else if(a==='fechar')w.close()});
   ipcMain.on('size',(_,o)=>size(o));

@@ -3,6 +3,7 @@
 // Uso: node scripts/importa-skills.js [bundle.js já baixado]
 //  - D.skills: {k, en, pw (PT da wiki, só para a busca), el, ki, ic, mp, cd, ds, de}
 //  - s.sk de cada slime: ids das skills que a wiki lista para ele (sem nível)
+//  - skills-extra.json: skills do jogo que a wiki não tem (entram depois das da wiki; mesma chave = vale a da wiki)
 const fs = require('fs'), path = require('path'), os = require('os');
 const RAIZ = path.join(__dirname, '..'), WIKI = 'https://world-of-slime-wiki.vercel.app';
 const EL = { water: 'Água', ice: 'Gelo', dark: 'Sombrio', steel: 'Metal', fire: 'Fogo', power: 'Poder', electric: 'Elétrico', light: 'Luz', grass: 'Grama', ground: 'Terra', wind: 'Vento', magic: 'Magia', poison: 'Veneno' };
@@ -33,8 +34,13 @@ async function bundle() {
     skills.push({ k: campo(o, 'id'), en: bonito(campo(o, 'nameEn')), pw: campo(o, 'name'), el, ki: campo(o, 'kind'), ic: campo(o, 'icon'),
       mp: num(o, 'mp'), cd: num(o, 'cooldown'), ds: campo(o, 'description'), de: campo(o, 'descriptionEn') });
   }
+  const ids0 = new Set(skills.map(s => s.k));
+  if (skills.length < 100 || ids0.size !== skills.length) throw new Error('lista estranha: ' + skills.length + ' skills, ' + ids0.size + ' ids');
+  const todas = JSON.parse(fs.readFileSync(path.join(RAIZ, 'skills-extra.json'), 'utf8')).skills;
+  for (const e of todas) { const w = skills.find(s => s.k === e.k); if (w && e.nm) w.nm = e.nm } // a wiki passou a ter: fica o nome PT do jogo
+  const extra = todas.filter(s => !ids0.has(s.k)).map(({ fonte, ...s }) => s);
+  skills.push(...extra);
   const ids = new Set(skills.map(s => s.k));
-  if (skills.length < 100 || ids.size !== skills.length) throw new Error('lista estranha: ' + skills.length + ' skills, ' + ids.size + ' ids');
   // skills de cada slime: key:`SL_...` ... skills:[{id:`X`,...}]
   const porSlime = {};
   for (const m of t.matchAll(/key:`(SL_[^`]+)`[\s\S]{0,4000}?skills:\[([^\]]*)\]/g))
@@ -50,5 +56,5 @@ async function bundle() {
   fs.writeFileSync(path.join(RAIZ, 'data.json'), j);
   fs.writeFileSync(path.join(RAIZ, 'data.js'), 'window.D=' + j + ';\n');
   const pe = {}; skills.forEach(s => pe[s.el] = (pe[s.el] || 0) + 1);
-  console.log(`${skills.length} skills · ${com} slimes com skill`); console.log(pe);
+  console.log(`${skills.length} skills (${extra.length} de skills-extra.json) · ${com} slimes com skill`); console.log(pe);
 })().catch(e => { console.error(e.message); process.exit(1) });

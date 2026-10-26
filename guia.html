@@ -65,7 +65,8 @@ button.pri{background:#3a6fd8}button.pri:hover{background:#4a7fe8}button:disable
 <script src="guia/marcas.js"></script>
 <script>
 const q=new URLSearchParams(location.search),L=q.get('lang')==='en'?'en':'pt',V=q.get('v')||'',T=GUIA.TXT[L],P=GUIA.PAGINAS,M=(window.MARCAS||{})[L]||{}; // posições medidas em cada idioma
-document.documentElement.lang=L=='pt'?'pt-BR':'en';document.title=T.titulo;tt.textContent=T.titulo;ft.textContent=T.rodape.replace('{v}',V);bq.placeholder=T.buscar;bqx.title=T.limpar;
+const ICO=/^[a-z]+$/.test(q.get('cor')||'')?'icones/app/'+q.get('cor')+'.svg':'icon.svg'; // a cor do ícone que a pessoa escolheu
+document.querySelectorAll('img[src="icon.svg"]').forEach(i=>i.src=ICO);document.documentElement.lang=L=='pt'?'pt-BR':'en';document.title=T.titulo;tt.textContent=T.titulo;ft.textContent=T.rodape.replace('{v}',V);bq.placeholder=T.buscar;bqx.title=T.limpar;
 // moldura própria: minimizar, maximizar/restaurar e fechar (via guia-preload.js); no Mac ficam os botões do sistema
 if(q.get('p')==='darwin')document.body.classList.add('mac');
 const J=window.janela||{min(){},max(){},fechar(){close()},onMax(){}};
@@ -101,7 +102,7 @@ function mostra(i){atual=i;const p=P[i];try{localStorage.setItem('guia-pagina',p
  ix.querySelectorAll('a').forEach(a=>a.classList.toggle('on',+a.dataset.i===i));
  const nums=p.figs.flatMap(f=>f.marcas||[]).map(x=>x.n),it=p.itens[L];
  mn.innerHTML=`<h1>${esc(p.titulo[L])}</h1><div class="pg">${T.pagina.replace('{a}',i+1).replace('{b}',P.length)}</div>
- ${p.icone?`<div class="icone"><img src="icon.svg" alt=""></div>`:''}<p>${p.intro[L]}</p>
+ ${p.icone?`<div class="icone"><img src="${ICO}" alt=""></div>`:''}<p>${p.intro[L]}</p>
  <div class="figs">${p.figs.map(fig).join('')}</div>
  ${p.lista||!nums.length?`<ul class="lg">${it.map(x=>`<li><span>${x}</span></li>`).join('')}</ul>`:`<ol class="lg">${it.map((x,j)=>`<li><b class="n">${nums[j]??j+1}</b><span>${x}</span></li>`).join('')}</ol>`}
  ${p.selos?`<h3 style="font-size:14px;margin:14px 0 6px">${T.selos}</h3><div class="selos">${[['s_comunidade','#1d3346','#8fd0ff'],['s_teste','#3a3220','#ffd479'],['s_contestada','#3d2226','#ff9a9a'],['s_meu','#2b3440','#8fb8ff']].map(([k,b,c])=>`<span class="selo" style="background:${b};color:${c}">${esc(T[k][0])}</span><span>${esc(T[k][1])}</span>`).join('')}</div>`:''}
