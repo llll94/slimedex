@@ -1,7 +1,17 @@
 {
- "gerado": "2026-10-24T00:45:41.577Z",
- "pessoas": 4,
+ "gerado": "2026-10-27T01:11:42.492Z",
+ "pessoas": 5,
  "combos": [
+  {
+   "id": "c:SL_Bass_WaterGround+SL_Embers_MagicIce>SL_Carp_WaterMagic",
+   "r": "SL_Carp_WaterMagic",
+   "a": "SL_Bass_WaterGround",
+   "b": "SL_Embers_MagicIce",
+   "m": "Membrana Fina de Dwarf (Dwarf's Thin Membrane)",
+   "l": "31",
+   "ch": 7,
+   "n": 1
+  },
   {
    "id": "c:SL_Bass_WaterGround+SL_SlimeSM_Water>SL_Turtle_Water",
    "r": "SL_Turtle_Water",
@@ -63,6 +73,16 @@
    "n": 1
   },
   {
+   "id": "c:SL_Cauldron_MagicSteel+SL_LightningBug_GroundElectric>SL_Ladyf_Electric",
+   "r": "SL_Ladyf_Electric",
+   "a": "SL_Cauldron_MagicSteel",
+   "b": "SL_LightningBug_GroundElectric",
+   "m": "Asa de Inseto de Ladyf (Elétrico) (Ladyf's Insect Wing (Elec",
+   "l": "31",
+   "ch": 4.7,
+   "n": 1
+  },
+  {
    "id": "c:SL_ElecChicken_WindFire+SL_Wisp_Light>SL_Bushtit_WindLight",
    "r": "SL_Bushtit_WindLight",
    "a": "SL_ElecChicken_WindFire",
@@ -70,6 +90,16 @@
    "m": "",
    "l": "22",
    "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Mandrake_Grass+SL_Frog_WaterPoison>SL_SeedOcto_GrassWater",
+   "r": "SL_SeedOcto_GrassWater",
+   "a": "SL_Mandrake_Grass",
+   "b": "SL_Frog_WaterPoison",
+   "m": "Tentáculo de Beholder (Beholder's Tentacle)",
+   "l": "13",
+   "ch": null,
    "n": 1
   },
   {
@@ -83,13 +113,13 @@
    "n": 1
   },
   {
-   "id": "c:SL_Rat_PoisonGround+SL_Dwarf_MagicDark>SL_Rat_PoisonDark",
-   "r": "SL_Rat_PoisonDark",
+   "id": "c:SL_Rat_PoisonGround+SL_Honet_WindPoison>SL_Bat_WindPoison",
+   "r": "SL_Bat_WindPoison",
    "a": "SL_Rat_PoisonGround",
-   "b": "SL_Dwarf_MagicDark",
-   "m": "",
-   "l": "19",
-   "ch": 100,
+   "b": "SL_Honet_WindPoison",
+   "m": "Asa Demoníaca de Infespor (Infespor's Devil Wing)",
+   "l": "25",
+   "ch": 14,
    "n": 1
   },
   {
@@ -113,6 +143,16 @@
    "n": 1
   },
   {
+   "id": "c:SL_Tricky_Ice+SL_Embers_MagicFire>SL_Embers_MagicIce",
+   "r": "SL_Embers_MagicIce",
+   "a": "SL_Tricky_Ice",
+   "b": "SL_Embers_MagicFire",
+   "m": "",
+   "l": "16",
+   "ch": 50,
+   "n": 1
+  },
+  {
    "id": "c:SL_Tricky_Light+SL_Honet_WindElectric>SL_Bushtit_WindLight",
    "r": "SL_Bushtit_WindLight",
    "a": "SL_Tricky_Light",
@@ -124,6 +164,10 @@
   }
  ],
  "pc": {
+  "SL_Bass_WaterGround|SL_Beholder_DarkMagic|SL_Carp_WaterMagic|Wicked's Thin Membrane": {
+   "ch": 7,
+   "n": 2
+  },
   "SL_Bass_Water|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
    "ch": 100,
    "n": 1
@@ -152,6 +196,14 @@
    "ch": 10,
    "n": 2
   },
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Shade_DarkWater|Slick's Vent": {
+   "ch": 49.2,
+   "n": 1
+  },
+  "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Lizard_Poison|": {
+   "ch": 29.6,
+   "n": 1
+  },
   "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide": {
    "ch": 29.6,
    "n": 1
@@ -163,18 +215,32 @@
   "SL_Lizard_Ground|SL_Lizard_Poison|SL_Rat_PoisonGround|Tweety's Hide": {
    "ch": 35.6,
    "n": 1
+  },
+  "SL_Rat_PoisonGround|SL_Dwarf_MagicDark|SL_Rat_PoisonDark|": {
+   "ch": 100,
+   "n": 1
+  },
+  "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
+   "ch": 40,
+   "n": 1
   }
  },
  "pt": {
   "SL_Bass_WaterGround": "Bass de Lama",
+  "SL_Bat_WindDark": "Morcegudo",
+  "SL_Bat_WindPoison": "Morcegudo Venenoso",
   "SL_Crow_WindDark": "Crow",
+  "SL_Dwarf_MagicDark": "Maléfico",
+  "SL_Eel_WaterElectric": "Enguia Elétrica",
   "SL_Eel_WaterPower": "Enguia",
+  "SL_Embers_MagicFire": "Chaminha",
   "SL_Ghost_Magic": "Spooky",
   "SL_HermitCrab_WaterPower": "Sora",
   "SL_HermitCrab_WaterSteel": "Sora de Aço",
   "SL_Honet_Wind": "Vespete",
   "SL_Honet_WindElectric": "Vespete Elétrica",
-  "SL_Honet_WindPoison": "Vespete Venenosa"
+  "SL_Honet_WindPoison": "Vespete Venenosa",
+  "SL_Wisp_LightElectric": "Wisp Elétrico"
  },
  "votos": {
   "SL_Bass_Water|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
@@ -187,7 +253,19 @@
   },
   "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Eel_WaterPower|Duto de Escape": {
    "u": 0,
-   "d": 1
+   "d": 2
+  },
+  "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Shade_DarkWater|Slick's Vent": {
+   "u": 1,
+   "d": 0
+  },
+  "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
+   "u": 1,
+   "d": 0
+  },
+  "c:SL_Bat_WindDark+SL_Embers_MagicIce>SL_Beholder_DarkMagic": {
+   "u": 1,
+   "d": 0
   }
  },
  "num": {
@@ -206,6 +284,9 @@
    "SL_Bat_WindDark",
    "SL_Bat_WindPoison"
   ],
+  "Caverna 9": [
+   "SL_SlimeSM_Water"
+  ],
   "Entrada Norte de Noecheon": [
    "SL_ElecChicken_WindElectric",
    "SL_Honet_WindElectric"
@@ -216,11 +297,29 @@
   "Margem das Ondas Brancas": [
    "SL_Bass_Water"
   ],
+  "Monte Noecheon 1": [
+   "SL_Dandelion_GrassWind",
+   "SL_Lizard_Electric",
+   "SL_Slime_Grass"
+  ],
+  "Monte Noecheon 2": [
+   "SL_Lizard_Electric",
+   "SL_Slime_Grass"
+  ],
   "Monte Noecheon 3": [
    "-SL_Honet_Wind"
   ],
   "Monte Noecheon 7": [
    "SL_Honet_WindElectric"
+  ],
+  "Sopé de Penhasco": [
+   "SL_Nepenthes_Grass",
+   "SL_Nepenthes_GrassDark",
+   "SL_Nepenthes_GrassPoison",
+   "SL_SlimeL_Grass"
+  ],
+  "Trilha do Monte Noecheon 1": [
+   "SL_Dandelion_GrassWind"
   ],
   "Trilha dos Fundos de Noecheon 2": [
    "SL_Bushtit_WindLight",
@@ -229,11 +328,87 @@
    "SL_SlimeSM_Grass"
   ]
  },
- "per": {},
+ "per": {
+  "SL_Nepenthes_GrassDark": "noite"
+ },
  "conf": [
   "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide"
  ],
  "apagadas": [
   "SL_HermitCrab_WaterSteel|SL_Sword_SteelDark|SL_Eel_WaterPower|Duto de Escape"
- ]
+ ],
+ "sk": {
+  "SL_Bass_WaterGround": {
+   "AquaStep": {
+    "l": 28,
+    "n": 1
+   },
+   "Aqua_Barrier": {
+    "l": 26,
+    "n": 2
+   },
+   "Water_Beam": {
+    "l": 31,
+    "n": 1
+   },
+   "Water_Breath": {
+    "l": 28,
+    "n": 1
+   }
+  },
+  "SL_Bat_WindDark": {
+   "DrainDark": {
+    "l": 28,
+    "n": 1
+   },
+   "StormVortex": {
+    "l": 28,
+    "n": 1
+   }
+  },
+  "SL_Bat_WindPoison": {
+   "VenomStep": {
+    "l": 30,
+    "n": 1
+   }
+  },
+  "SL_ElecChicken_WindElectric": {
+   "ElectricOrb": {
+    "l": null,
+    "n": 1
+   },
+   "SonicBoom": {
+    "l": null,
+    "n": 1
+   },
+   "WindBlade": {
+    "l": null,
+    "n": 1
+   }
+  },
+  "SL_Mandrake_Grass": {
+   "GrassNeedle": {
+    "l": 12,
+    "n": 1
+   },
+   "LeafBlade": {
+    "l": 19,
+    "n": 1
+   },
+   "LeafBoomerang": {
+    "l": 16,
+    "n": 1
+   }
+  },
+  "SL_Tricky_Ice": {
+   "IceSpread": {
+    "l": 11,
+    "n": 1
+   }
+  }
+ },
+ "skn": {
+  "Aqua_Barrier": "Barreira Aquática"
+ },
+ "skc": []
 }
