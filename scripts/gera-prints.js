@@ -76,12 +76,14 @@ async function foto(c, arq, clip) {
       const M = MARCAS[L] = { _tam: {} };
       for (const f of figs) {
         if (f.img === 'pin' || f.img === 'mapa') continue;
-        const tela = '{' + (f.img === 'busca' ? '' : "qi.value='';limpaX();") + TELAS[f.img] + '}'; // bloco: as variáveis de uma tela não esbarram nas da outra
+        const tela = '{if(pn.hidden)open();' + (f.img === 'busca' ? '' : "qi.value='';limpaX();") + TELAS[f.img] + '}'; // bloco: as variáveis de uma tela não esbarram nas da outra; painel fechado (clique fora) reabre
         await ov.js(tela); await espera(f.img === 'testador' ? 700 : 300);
         const alto = ALTO[f.img];
         if (alto) { const [w, h] = await ov.js('[innerWidth,innerHeight+bd.scrollHeight-bd.clientHeight]');
           await ov.cmd('Emulation.setDeviceMetricsOverride', { width: w, height: Math.min(alto === 'auto' ? h : alto, 1000), deviceScaleFactor: 2, mobile: false }); await espera(300); await ov.js(tela); await espera(300) }
         await ov.js(PRONTO); await espera(200);
+        // na 2.1.1 o painel fechou no meio e todos os prints saíram só com o ícone: agora para em vez de gravar errado
+        if (await ov.js('pn.hidden')) throw new Error(`o painel fechou antes do print ${L}-${f.img} (clicaram fora?): rode de novo sem mexer no mouse`);
         M[f.img] = await ov.js(MEDE(f.marcas || []));
         M._tam[f.img] = await ov.js('[innerWidth,innerHeight]');
         await foto(ov, path.join(SAIDA, `${L}-${f.img}.webp`));

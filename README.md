@@ -2,7 +2,7 @@
 
 # Slimedex
 
-[![VirusTotal 1/55](https://img.shields.io/badge/VirusTotal-1%2F55_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/0c3d39253530817b00f46ffd5f037281db68f6412a16c0454537c7e0eee0c475/detection)
+[![VirusTotal 1/63](https://img.shields.io/badge/VirusTotal-1%2F63_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/bd0de955077d3b6acd512b9680d00a3d3c83da93e94cc1baad7c3b3f6cb3170d/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
 Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
@@ -127,7 +127,10 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
-| 2.1.1 (Windows) | `BD0DE955077D3B6ACD512B9680D00A3D3C83DA93E94CC1BAAD7C3B3F6CB3170D` | em análise |
+| 2.1.2 (Windows) | `FA6FB74F8E18D507D77B81D34EABD5E591247CFFE7AB0845A040A1902D5F6E1B` | em análise |
+| 2.1.1 (Windows) | `BD0DE955077D3B6ACD512B9680D00A3D3C83DA93E94CC1BAAD7C3B3F6CB3170D` | [**1/63** — ver análise](https://www.virustotal.com/gui/file/bd0de955077d3b6acd512b9680d00a3d3c83da93e94cc1baad7c3b3f6cb3170d/detection) |
+| 2.1.1 (Mac, chip Apple) | `3A433137326A62B8AC716E1CB838CB6744B789DAACAE8D4E2438103C0088EF41` | — |
+| 2.1.1 (Mac, Intel) | `16721B8FEE7F991475E290AB591A2F9E131ABAFC56EEE29817E388502CD399CC` | — |
 | 2.1.0 (Windows) | `0C3D39253530817B00F46FFD5F037281DB68F6412A16C0454537C7E0EEE0C475` | [**1/55** — ver análise](https://www.virustotal.com/gui/file/0c3d39253530817b00f46ffd5f037281db68f6412a16c0454537c7e0eee0c475/detection) |
 | 2.1.0 (Mac, chip Apple) | `1EC92305A0F0191712205181D83F34A45D1240739A33C4834AB3D86FA4CAA2DE` | — |
 | 2.1.0 (Mac, Intel) | `D4418138E06024E32FC2B52D05BCF9B5D0D7C14BE8969CE7CF983F088A010C35` | — |

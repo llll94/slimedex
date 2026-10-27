@@ -2,6 +2,16 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.1.2",
+      "prints": ["cor", "meus", "sk-ficha", "sk-lista"],
+      "pt": [
+        "Cartilha: os prints das telas voltaram (na 2.1.1 várias páginas mostravam só o ícone)"
+      ],
+      "en": [
+        "Guide: the screen pictures are back (in 2.1.1 several pages showed only the icon)"
+      ]
+    },
+    {
       "v": "2.1.1",
       "prints": ["cor", "meus"],
       "pt": [
