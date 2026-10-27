@@ -1,5 +1,5 @@
 {
- "_como_usar": "O merge diário ignora o que estiver aqui. autores: id do envio (autor.txt). combos: id da combinação da comunidade (c:SL_A+SL_B>SL_R) ou id da base (para chance). pt: SL_Slime (qualquer nome) ou SL_Slime=Nome. num: SL_Slime. loc: 'Mapa=SL_Slime' (um slime num mapa) ou 'Mapa' (o mapa todo). per: SL_Slime (ignora o dia/noite enviado). apagar: id de uma combinação que alguém pediu para apagar (ignora o pedido).",
+ "_como_usar": "O merge diário ignora o que estiver aqui. autores: id do envio (autor.txt). combos: id da combinação da comunidade (c:SL_A+SL_B>SL_R) ou id da base (para chance). pt: SL_Slime (qualquer nome) ou SL_Slime=Nome. num: SL_Slime. loc: 'Mapa=SL_Slime' (um slime num mapa) ou 'Mapa' (o mapa todo). per: SL_Slime (ignora o dia/noite enviado). apagar: id de uma combinação que alguém pediu para apagar (ignora o pedido). mapa_certo: {'nome lido errado': 'nome certo'} (junta os dois; o que foi marcado no errado vale para o certo).",
  "autores": [],
  "combos": [],
  "pt": [],
@@ -14,5 +14,8 @@
  "apagar": [
   "SL_Cattle_PowerLight|SL_Tricky_Power|SL_Minotauros_Power|Chifre",
   "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide"
- ]
+ ],
+ "mapa_certo": {
+  "Sopé de Penhasco": "Sopé do Penhasco Negro"
+ }
 }

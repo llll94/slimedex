@@ -70,6 +70,8 @@ const SKILLS = new Map((D.skills || []).map(s => [s.k, s]));
 const ELEMENTOS = new Set(['Água', 'Gelo', 'Sombrio', 'Metal', 'Fogo', 'Poder', 'Elétrico', 'Luz', 'Grama', 'Terra', 'Vento', 'Magia', 'Veneno']);
 const BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'), BQ_APAGAR = bloq('apagar'); // apagar: pedido de apagar ignorado (id da combinação) // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
 const MAPAS = new Map((D.mapas || []).map(m => [m.pt, new Set(m.sl)]));
+// mapa_certo (bloqueios.json): nome lido errado/cortado pelo app -> nome certo; o que foi marcado no errado passa para o certo
+const MAPA_CERTO = BQ.mapa_certo && typeof BQ.mapa_certo === 'object' && !Array.isArray(BQ.mapa_certo) ? BQ.mapa_certo : {};
 
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
@@ -164,7 +166,8 @@ async function lerEnvios() {
       const m = nomes.get(k) || nomes.set(k, new Map()).get(k), nn = norm(nome);
       (m.get(nn) || m.set(nn, { nome, quem: new Set() }).get(nn)).quem.add(autor);
     }
-    for (const [mapa, ks] of Object.entries(p.loc && typeof p.loc === 'object' ? p.loc : {})) {
+    for (let [mapa, ks] of Object.entries(p.loc && typeof p.loc === 'object' ? p.loc : {})) {
+      if (typeof MAPA_CERTO[mapa] === 'string') mapa = MAPA_CERTO[mapa];
       // mapa fora da lista também entra (nome lido da tela pelo app), mas a aprovação automática manda para revisão
       if (typeof mapa !== 'string' || mapa.length > 80 || !/^[\p{L}\d][\p{L}\d' -]*$/u.test(mapa) || BQ_LOC.has(mapa) || !Array.isArray(ks)) continue;
       // 'SL_x' = visto aqui; '-SL_x' = não nasce aqui (só faz sentido para o que a base tem nesse mapa)
