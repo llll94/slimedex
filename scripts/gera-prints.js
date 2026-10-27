@@ -2,7 +2,7 @@
 // tela em PT e EN (2×) e mede onde cai cada número das marcas de guia.js.
 //   node scripts/gera-prints.js      -> grava guia/<idioma>-<img>.webp e guia/marcas.js
 // O painel aparece na tela por alguns segundos; não clique fora dele enquanto roda (clicar fora fecha o painel).
-const { spawn } = require('child_process'), path = require('path'), fs = require('fs'), os = require('os');
+const { spawn, spawnSync } = require('child_process'), path = require('path'), fs = require('fs'), os = require('os');
 const RAIZ = path.join(__dirname, '..'), SAIDA = path.join(RAIZ, 'guia'), PORTA = 9351;
 const G = require('../guia.js');
 const espera = ms => new Promise(r => setTimeout(r, ms));
@@ -64,7 +64,7 @@ async function foto(c, arq, clip) {
   fs.writeFileSync(path.join(dados, 'aparencia.json'), JSON.stringify({ cor: 'azul' })); // cor já escolhida: o app não abre pedindo a cor
   fs.mkdirSync(SAIDA, { recursive: true });
   const app = spawn(require('electron'), [RAIZ, `--remote-debugging-port=${PORTA}`, '--force-device-scale-factor=2'],
-    { env: { ...process.env, SLIMEDEX_DADOS: dados, SLIMEDEX_RELEASE_URL: 'http://127.0.0.1:1/', SLIMEDEX_NOVIDADES_URL: 'http://127.0.0.1:1/' }, stdio: 'ignore' });
+    { env: { ...process.env, SLIMEDEX_DADOS: dados, SLIMEDEX_SEM_ABERTURA: '1', SLIMEDEX_RELEASE_URL: 'http://127.0.0.1:1/', SLIMEDEX_NOVIDADES_URL: 'http://127.0.0.1:1/' }, stdio: 'ignore' });
   const MARCAS = {};
   try {
     const ov = await cdp(await alvo(/overlay\.html/));
@@ -75,7 +75,7 @@ async function foto(c, arq, clip) {
       await ov.js(`idioma('${L}');list()`); await espera(300);
       const M = MARCAS[L] = { _tam: {} };
       for (const f of figs) {
-        if (f.img === 'pin' || f.img === 'mapa') continue;
+        if (['pin', 'mapa', 'mapa-qual', 'abertura'].includes(f.img)) continue; // fotografadas à parte (janelinhas e abertura)
         const tela = '{if(pn.hidden)open();' + (f.img === 'busca' ? '' : "qi.value='';limpaX();") + TELAS[f.img] + '}'; // bloco: as variáveis de uma tela não esbarram nas da outra; painel fechado (clique fora) reabre
         await ov.js(tela); await espera(f.img === 'testador' ? 700 : 300);
         const alto = ALTO[f.img];
@@ -102,10 +102,18 @@ async function foto(c, arq, clip) {
       await ov.js(`mostraMapa({branco:'${MAPA}',azul:'',ms:40})`); await espera(1500);
       const mp = await cdp(await alvo(/mapa\.html/)); await mp.js(PRONTO); await espera(300);
       const rm = await mp.js(`(()=>{const r=document.getElementById('p').getBoundingClientRect();return{x:r.left,y:r.top,width:r.width,height:r.height}})()`);
-      await foto(mp, path.join(SAIDA, `${L}-mapa.webp`), rm); M._tam.mapa = [Math.round(rm.width), Math.round(rm.height)]; mp.fecha();
+      await foto(mp, path.join(SAIDA, `${L}-mapa.webp`), rm); M._tam.mapa = [Math.round(rm.width), Math.round(rm.height)];
+      // "Qual é este mapa?": leitura que o app não reconhece com certeza
+      await ov.js(`mostraMapa({branco:'L arus',azul:'',ms:40})`); await espera(1000); await mp.js(PRONTO);
+      const rq = await mp.js(`(()=>{const r=document.getElementById('p').getBoundingClientRect();return{x:r.left,y:r.top,width:r.width,height:r.height}})()`);
+      await foto(mp, path.join(SAIDA, `${L}-mapa-qual.webp`), rq); M._tam['mapa-qual'] = [Math.round(rq.width), Math.round(rq.height)]; mp.fecha();
       await ov.js('ov.mapa.esconder()'); console.log(`${L}-mapa`);
     }
     await ov.js(`idioma('pt')`); ov.fecha();
+    // tela de abertura: fotografada à parte, numa janela própria (o app aqui roda sem ela)
+    const fa = spawnSync(require('electron'), [path.join(__dirname, 'foto-abertura.js'), SAIDA], { stdio: 'inherit' });
+    if (fa.status) throw new Error('a foto da abertura falhou');
+    for (const L of ['pt', 'en']) MARCAS[L]._tam.abertura = [300, 340];
     fs.writeFileSync(path.join(SAIDA, 'marcas.js'), '// gerado por scripts/gera-prints.js: posição (% do print) de cada número da cartilha, por idioma\nwindow.MARCAS=' + JSON.stringify(MARCAS) + ';\n');
     console.log('ok: guia/marcas.js');
   } finally { app.kill(); await espera(1500); try { fs.rmSync(dados, { recursive: true, force: true }) } catch {} } // espera o app soltar a pasta

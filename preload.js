@@ -8,10 +8,10 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),largo:o
   comunidade:()=>ipcRenderer.invoke('comunidade'),idioma:l=>ipcRenderer.send('idioma',l),versao:()=>ipcRenderer.invoke('versao'),cor:()=>ipcRenderer.invoke('cor'),escolheCor:c=>ipcRenderer.send('cor',c),gamer:on=>ipcRenderer.send('gamer',on),dalt:on=>ipcRenderer.send('dalt',on),
   pasta:()=>ipcRenderer.invoke('pasta'),abrirPasta:()=>ipcRenderer.send('abrir-pasta'),plataforma:process.platform,reiniciar:()=>ipcRenderer.send('reiniciar'),
   versaoNova:()=>ipcRenderer.invoke('versao-nova'),baixarAtualizacao:n=>ipcRenderer.invoke('baixar-atualizacao',n),instalarAtualizacao:()=>ipcRenderer.send('instalar-atualizacao'),
-  foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p)),
+  foiAtualizado:()=>ipcRenderer.invoke('foi-atualizado'),pronto:()=>ipcRenderer.send('pronto'),onAbrirInicio:cb=>ipcRenderer.on('abrir-inicio',()=>cb()),novidades:()=>ipcRenderer.invoke('novidades'),onProgresso:cb=>ipcRenderer.on('progresso',(_,p)=>cb(p)),
   // combinações fixadas na tela: fav = lado do painel, pin = a janelinha de cada uma
   fav:{sync:l=>ipcRenderer.send('fav-sync',l),onRemovido:cb=>ipcRenderer.on('fav-removido',(_,id)=>cb(id)),onAbrir:cb=>ipcRenderer.on('abrir-ficha',(_,k)=>cb(k)),onOculto:cb=>ipcRenderer.on('fav-oculto',(_,id)=>cb(id))},
   // slimes do mapa (Tab): liga o leitor de tela e mostra/esconde a janelinha; a janelinha usa a mesma ponte 'pin'
   mapa:{ligar:on=>ipcRenderer.send('mapa-ligar',on),preparar:f=>ipcRenderer.send('mapa-preparar',f),mostrar:d=>ipcRenderer.send('mapa-mostrar',d),esconder:()=>ipcRenderer.send('mapa-esconder'),
-    onEvento:cb=>ipcRenderer.on('mapa-evento',(_,e)=>cb(e)),onFechado:cb=>ipcRenderer.on('mapa-fechado',()=>cb())},
-  pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),onFotos:cb=>ipcRenderer.on('pre-fotos',(_,f)=>cb(f)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),ocultar:()=>ipcRenderer.send('pin-ocultar'),abrir:k=>ipcRenderer.send('pin-abrir',k)}});
+    onEvento:cb=>ipcRenderer.on('mapa-evento',(_,e)=>cb(e)),onFechado:cb=>ipcRenderer.on('mapa-fechado',()=>cb()),onEscolha:cb=>ipcRenderer.on('mapa-escolha',(_,n)=>cb(n))},
+  pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),onEntra:cb=>ipcRenderer.on('mapa-entra',()=>cb()),onSai:cb=>ipcRenderer.on('mapa-sai',()=>cb()),onFotos:cb=>ipcRenderer.on('pre-fotos',(_,f)=>cb(f)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),ocultar:()=>ipcRenderer.send('pin-ocultar'),abrir:k=>ipcRenderer.send('pin-abrir',k),escolhe:n=>ipcRenderer.send('mapa-escolha',n)}});

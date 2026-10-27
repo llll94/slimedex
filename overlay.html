@@ -235,7 +235,8 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
  const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
   :`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
- if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map(s=>row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto)
+ const nd=ALL.findIndex(s=>s.n==null); // os sem # ficam no fim (ordena), com título próprio
+ if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
  else{const w=norm(q).split(/\s+/),nq=norm(q);
   if(/^gamer ?mode$/.test(nq)){bd.innerHTML=`<div class="row mini" data-gamer="1"><i class="gm0"></i><div><b>Gamer Mode</b></div></div>`;bd.scrollTop=0;return} // easter egg
   // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
@@ -544,12 +545,12 @@ function envio(){semBusca();cur=null;sel=-1;marca({t:'envio'});
  const comp=M.combos.filter(c=>c.cp!==false),p={pt:M.pt,pc:M.pc,combos:[...comp.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
  const skp=[],usadas=new Set();for(const sl in M.sk||{})for(const k in M.sk[sl]){const v=M.sk[sl][k];if(v&&v.cp===true&&K[sl]){skp.push({s:sl,k,l:Number.isInteger(v.l)?v.l:null});usadas.add(k)}}
  const skc=(M.skc||[]).filter(c=>usadas.has(c.k)).map(({k,nm,el})=>({k,nm,el})),nsn=Object.keys(M.skn||{}).length;
- if(skp.length)p.sk=skp;if(nsn)p.skn=M.skn;if(skc.length)p.skc=skc;
+ if(skp.length)p.sk=skp;if(nsn)p.skn=M.skn;if(skc.length)p.skc=skc;const mp=Object.keys(M.mapap||{}).length;if(mp)p.mapap=M.mapap;
  const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=comp.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
- const vazio=!(n+c+k+v+u+lo+pe+ap+skp.length+nsn),igual=sig===ult;
+ const vazio=!(n+c+k+v+u+lo+pe+ap+skp.length+nsn+mp),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga'],[skp.length,'u_skill'],[nsn,'u_sknome']])}
+ ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga'],[skp.length,'u_skill'],[nsn,'u_sknome'],[mp,'u_mapap']])}
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -563,7 +564,7 @@ const chips=l=>{const c=l.filter(([n])=>n>0).map(([n,k])=>{const [s,p]=t(k).spli
 function semBusca(){qi.value='';limpaX()} // a busca não tem a ver com esta tela
 function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
- ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado'],[Object.values(M.sk||{}).reduce((s,o)=>s+Object.keys(o).length,0),'u_skill'],[Object.keys(M.skn||{}).length,'u_sknome']])||`<p class="mu">${t('my_vazio')}</p>`}
+ ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado'],[Object.values(M.sk||{}).reduce((s,o)=>s+Object.keys(o).length,0),'u_skill'],[Object.keys(M.skn||{}).length,'u_sknome'],[Object.keys(M.mapap||{}).length,'u_mapap']])||`<p class="mu">${t('my_vazio')}</p>`}
  <p class="mu">${t('my_where_curto')} <span class="lk" id="pasta">${t('abrir_pasta')}</span></p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
  ${(()=>{const an=Object.values(M.sk||{}).flatMap(o=>Object.values(o)),n=M.combos.length+an.length,on=M.combos.filter(c=>c.cp!==false).length+an.filter(a=>a.cp===true).length;return`<h4>${t('tst_cp_geral')}</h4><p class="mu">${t('tst_cp_geral_tip')}</p><div class="tgl"><span class="sw${M.cpp===true?' on':''}" id="cpg"><i></i></span><span>${t(M.cpp===true?'ligado':'desligado')}</span>${n?`<span class="mu">${on} / ${n}</span>`:''}</div>`})()}
@@ -664,7 +665,9 @@ ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
 ov.onVoltar(()=>{if(!pn.hidden)voltar()});
 // ---- slimes do mapa (Tab) · beta: o leitor manda o texto lido abaixo do minimapa; aqui ele vira um mapa da base ----
-const MAPA_OK=ov.plataforma==='win32';let mapaOn=false,mapaAberto=false,mapaStatus='';try{mapaOn=MAPA_OK&&localStorage.getItem('mapa-tab')==='1'}catch{}
+const MAPA_OK=ov.plataforma==='win32';let mapaOn=false,mapaAberto=false,mapaStatus='';
+// o jogo ignora o Tab enquanto o mapa dele anima (medido em vídeo: aceita o próximo ~0,52 s depois); aqui também, senão a janelinha sai do ritmo
+const TAB_TRAVA=520;let tabEm=0;try{mapaOn=MAPA_OK&&localStorage.getItem('mapa-tab')==='1'}catch{}
 // o OCR confunde letras parecidas: compara sem acento/espaço e com o/c/e, 1/l/i e rn/m 'achatados'; o número no fim tem que bater
 const planoM=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9|]/g,'').replace(/[ceo0]/g,'o').replace(/[il1|]/g,'i').replace(/rn/g,'m');
 const numFim=s=>((s||'').match(/(\d+)\s*$/)||[])[1]||'';
@@ -674,6 +677,7 @@ const nomesMapas=()=>[...new Set([...(D.mapas||[]).map(m=>m.pt),...Object.keys((
 function corrigeNome(lido,regiao){const v=new Map();for(const n of [...nomesMapas(),regiao||''])for(const w of n.split(/\s+/))if(w&&!/\d/.test(w))v.set(planoM(w),w); // só palavras, sem números
  const ws=(lido||'').replace(/([A-Za-zÀ-ÿ])(\d+)\b/g,'$1 $2').replace(/\s+/g,' ').trim().split(' ').filter(Boolean),out=[]; // "Ncecheon2" = "Ncecheon 2"
  for(let i=0;i<ws.length;i++){const w=ws[i];if(/^\d+$/.test(w)){out.push(w);continue}
+  if(/^[A-Z]$/.test(w)&&/^[a-zà-ÿ]{2}/.test(ws[i+1]||'')){ws[i+1]=w+ws[i+1];continue} // letra maiúscula solta antes de palavra minúscula: "L arus" = "Larus"
   if(i+1<ws.length&&v.has(planoM(w+ws[i+1]))){out.push(v.get(planoM(w+ws[++i])));continue} // "L arus" = "Larus"
   const p=planoM(w);if(v.has(p)){out.push(v.get(p));continue}
   if(/[a-z][lI|]$/.test(w)&&v.has(planoM(w.slice(0,-1)))){out.push(v.get(planoM(w.slice(0,-1)))+' 1');continue} // "Ncecheonl" = "Noecheon 1"
@@ -686,17 +690,29 @@ function achaMapa(lido){const L=(lido||'').trim();if(L.length<3)return null;let 
   const a=planoM(nc?nome.replace(/\s*\d+\s*$/,''):nome),b=planoM(nc?L.replace(/\s*(\d+|[lIi|])\s*$/,''):L),dist=levM(a,b)/Math.max(a.length,b.length,1);
   if(!melhor||dist<melhor.dist)melhor={m,dist}}
  return melhor&&melhor.dist<=.2?melhor.m:null}
-function mostraMapa(e,lendo){mapaUlt=e;const m=achaMapa(e.branco),tx={fechar:t('pin_x'),dica:t('mapa_dica'),dia:t('pe_leg_dia'),noite:t('pe_leg_noite'),lendo:t('mapa_lendo')},novo=!m&&corrigeNome(e.branco,e.azul); // a região (linha azul) o OCR lê bem: as palavras dela também corrigem
+// apelido aprendido (meu ou da comunidade): o texto que o OCR leu, normalizado → nome certo do mapa
+const apelidoMapa=lido=>{const p=planoM(lido);return p&&((M.mapap||{})[p]||((CM&&CM.mapap)||{})[p])||null};
+// os 3 mapas mais parecidos com o que foi lido (em PT ou EN); nome cortado no fim ("Sopé de Penhasco") conta como bem parecido
+function maisPerto(lido){const b=planoM(lido),v=new Map();
+ for(const n of nomesMapas()){const m=mapaPorPt(n);for(const nome of [n,m&&m.en].filter(Boolean)){const a=planoM(nome);let d=levM(a,b)/Math.max(a.length,b.length,1);if(b.length>=6&&a.startsWith(b))d=Math.min(d,.05);if(!v.has(n)||d<v.get(n))v.set(n,d)}}
+ return[...v].sort((x,y)=>x[1]-y[1]).slice(0,3).map(x=>x[0])}
+function mostraMapa(e,lendo){mapaUlt=e;const ap=apelidoMapa(e.branco),m=ap?(mapaPorPt(ap)||{pt:ap,en:'',sl:[]}):achaMapa(e.branco),tx={fechar:t('pin_x'),dica:t('mapa_dica'),dia:t('pe_leg_dia'),noite:t('pe_leg_noite'),lendo:t('mapa_lendo')};
  if(!lendo){mapaStatus=t('mapa_ultimo',{m:m?(LANG==='en'&&m.en?m.en:m.pt):'? "'+(e.branco||'')+'"',ms:e.ms|0});if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
- ov.mapa.mostrar(m?{lendo,titulo:LANG==='en'&&m.en?m.en:m.pt,sub:e.azul||'',msg:slimesDoMapa(m.pt).todos.length?'':t('mapa_vazio'),tx,
-  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))}
-  :{lendo,titulo:novo,sub:e.azul||'',msg:slimesDoMapa(novo).todos.length?'':t('mapa_novo'),tx,add:{txt:t('mapa_add'),id:'mapa:'+novo},
-   slimes:slimesDoMapa(novo).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))})}
+ // não achou com segurança: pergunta (os 3 mais perto + "é um mapa novo", com o nome corrigido); a resposta vira apelido
+ if(!m){const ops=maisPerto(e.branco),novo=corrigeNome(e.branco,e.azul);
+  return ov.mapa.mostrar({lendo,titulo:t('mapa_qual'),sub:t('mapa_lido',{t:(e.branco||'').trim()}),tx,slimes:[],msg:'',
+   escolhas:[...ops.map(n=>({txt:nomeMapa(n),v:n})),...(ops.includes(novo)?[]:[{txt:t('mapa_e_novo',{m:novo}),v:novo,novo:true}])]})}
+ ov.mapa.mostrar({lendo,titulo:LANG==='en'&&m.en?m.en:m.pt,sub:corrigeNome(e.azul,e.branco),msg:slimesDoMapa(m.pt).todos.length?'':t(mapaPorPt(m.pt)?'mapa_vazio':'mapa_novo'),tx,
+  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))})}
+// escolheu na janelinha: o texto lido passa a ser apelido desse mapa (vai no envio; com 2 pessoas iguais vale para todos)
+ov.mapa.onEscolha(n=>{if(typeof n!='string'||!mapaUlt)return;n=n.replace(/\s+/g,' ').trim().slice(0,80);const p=planoM(mapaUlt.branco);if(!n||!p)return;
+ M.mapap=M.mapap||{};M.mapap[p]=n;salva();mostraMapa(mapaUlt)});
 ov.mapa.onEvento(e=>{if(!mapaOn||!e)return;
  if(e.ev==='pronto'){mapaStatus=t('mapa_pronto');if(vista&&vista.t==='meus'&&!pn.hidden)meus();
   ov.mapa.preparar([...new Set([...(D.mapas||[]).flatMap(m=>m.sl),...Object.values((CM&&CM.loc)||{}).flat(),...Object.values(M.loc||{}).flat()])].map(k=>K[k]&&K[k].im&&BASE+K[k].im).filter(Boolean))}
  // Tab: abre na hora (último mapa, apagado, "lendo…"); Tab de novo fecha. A leitura chega logo depois e completa
- else if(e.ev==='tab-ini'){if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return}mapaAberto=true;
+ else if(e.ev==='tab-ini'){const a=Date.now();if(a-tabEm<TAB_TRAVA)return;tabEm=a;
+  if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return}mapaAberto=true;
   if(mapaUlt)mostraMapa(mapaUlt,true);else ov.mapa.mostrar({lendo:true,titulo:t('mapa_lendo'),sub:'',slimes:[],msg:'',tx:{fechar:t('pin_x'),dica:t('mapa_dica'),lendo:t('mapa_lendo')}})}
  else if(e.ev==='erro'){mapaStatus=t('mapa_erro',{m:e.msg||''});if(vista&&vista.t==='meus'&&!pn.hidden)meus()}
  else if(e.ev==='esc'){if(!pn.hidden||Date.now()-fechouEm<600)return; // foi o Esc que fechou o painel (o leitor vê a tecla uns ms depois)
@@ -730,6 +746,7 @@ function telaMapa(n){semBusca();cur=null;sel=-1;marca({t:'mapa',m:n});const s=sl
  <h4>${t('mapa_add_h')}</h4><p class="mu">${t('mapa_add_tip')}</p><input id="mq" placeholder="${esc(t('search_ph'))}" value="${esc(q)}" style="width:100%;margin:4px 0"><div id="mres">${resultadosMapa(n,q)}</div>`;
  bd.scrollTop=0;mq.oninput=()=>{mres.innerHTML=resultadosMapa(n,mq.value)};
  if(novo)mnok.onclick=()=>{const nn=mn.value.replace(/\s+/g,' ').trim().slice(0,80);if(!nn||nn===n)return;M.loc=M.loc||{};
+  for(const a in M.mapap||{})if(M.mapap[a]===n)M.mapap[a]=nn;
   const l=new Set([...(M.loc[nn]||[]),...(M.loc[n]||[])]);delete M.loc[n];if(l.size)M.loc[nn]=[...l];salva().then(()=>{telaMapa(nn);if(mapaAberto&&mapaUlt)mostraMapa({...mapaUlt,branco:nn})})}}
 function marcaMapa(n,k){if(!K[k])return;M.loc=M.loc||{};const s=slimesDoMapa(n),l=new Set(M.loc[n]||[]),fixo=s.base.has(k)||s.com.has(k),vis=s.todos.includes(k);
  l.delete(k);l.delete('-'+k);
@@ -759,21 +776,31 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
-ov.cor().then(r=>{DALT=r.dalt||r.cor.startsWith('d-');poeCor(r.cor);GAMER=r.gamer;poeGamer();if(!r.escolhida){open();telaCor()}}).catch(()=>{});
+let CORPEND=false; // 1ª vez: falta escolher a cor
+const pCor=ov.cor().then(r=>{DALT=r.dalt||r.cor.startsWith('d-');poeCor(r.cor);GAMER=r.gamer;poeGamer();CORPEND=!r.escolhida;if(CORPEND&&!r.abertura){CORPEND=false;open();telaCor()}}).catch(()=>{});
+// fim da abertura: abre o painel na escolha de cor (1ª vez), na tela de atualização (versão nova) ou na lista
+ov.onAbrirInicio(()=>verificaVersao().then(()=>{open();if(CORPEND){CORPEND=false;telaCor()}else if(NOVA)novidadesTela()}));
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
-ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
-ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
+const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
+const pCom=ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
+Promise.all([pCor,pMeus.catch(()=>{}),pCom]).then(()=>ov.pronto()); // a abertura espera isto para sair
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
-function verificaVersao(){return ov.versaoNova().then(r=>{if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
+let LIMITE=0; // GitHub sem login: 60 perguntas por hora; estourou = hora em que libera
+function verificaVersao(){return ov.versaoNova().then(r=>{LIMITE=(r&&r.limite)||0;if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
 function verificaComunidade(){ultimaChecagem=Date.now();return Promise.all([verificaVersao(),ov.comunidade().then(d=>{
  if(!d||typeof d!='object'||!d.gerado||(CM&&d.gerado===CM.gerado))return; // nada novo
  CMnova=d;avisa()}).catch(()=>{})])}
 // refresh no rodapé: confere agora; nada novo = avisa "tudo em dia" por uns segundos
-let chkVolta=0;chk.onclick=async()=>{if(chk.classList.contains('gira'))return;chk.classList.add('gira');
+// todo clique vale; a cada 10 cliques em 10 min avisa do limite do GitHub, e se o limite estourou diz a hora em que libera
+let chkVolta=0,chkCl=[];
+function aviso(txt,ms){rst.hidden=false;avb.hidden=avc.hidden=true;rst.textContent=txt;clearTimeout(chkVolta);chkVolta=setTimeout(()=>NOVA||CMnova?avisa():estaticos(),ms)}
+chk.onclick=async()=>{const a=Date.now();chkCl=chkCl.filter(x=>a-x<600e3);chkCl.push(a);const rapido=chkCl.length%10===0;
+ if(rapido)aviso(t('chk_rapido'),7000);if(chk.classList.contains('gira'))return;chk.classList.add('gira');
  await Promise.all([verificaComunidade(),new Promise(r=>setTimeout(r,700))]);chk.classList.remove('gira'); // gira pelo menos um pouco: dá para ver que conferiu
- if(NOVA||CMnova)return;rst.hidden=false;rst.textContent=t('chk_ok');clearTimeout(chkVolta);chkVolta=setTimeout(estaticos,3500)};
+ if(LIMITE>Date.now())return aviso(t('chk_limite',{h:new Date(LIMITE).toLocaleTimeString(LANG==='en'?'en-US':'pt-BR',{hour:'2-digit',minute:'2-digit'})}),7000);
+ if(rapido||NOVA||CMnova)return;aviso(t('chk_ok'),3500)};
 avb.onclick=()=>novidadesTela(); // versão nova: mostra o que mudou e pede confirmação
 avc.onclick=()=>{avc.disabled=true;ov.reiniciar()}; // base nova: reinicia com as combinações novas
 // ---- novidades da versão (para quem joga): todas as versões entre a atual e a nova ----

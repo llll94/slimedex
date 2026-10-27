@@ -5,6 +5,7 @@ const ICON=[64,64],PANEL=[360,480],HOTKEY='Control+Tab'; // 360px: combinação 
 const LARGO=680; // tela do testador: campos à esquerda, possibilidades à direita
 const MAC=process.platform==='darwin';
 if(process.env.SLIMEDEX_DADOS)app.setPath('userData',process.env.SLIMEDEX_DADOS); // só para teste: pasta de dados separada
+const SEM_ABERTURA=!!process.env.SLIMEDEX_SEM_ABERTURA; // só para teste/prints: pula a tela de abertura
 let win,tray,aberto=false,dialogo=false,largo=false; // dialogo: janela de importar/exportar aberta; largo: painel na largura do testador
 function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?[largo?LARGO:PANEL[0],PANEL[1]]:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
@@ -37,11 +38,14 @@ ipcMain.handle('enviar',async(_,payload)=>{
   catch{return{ok:false,erro:'sem conexão com a internet'}}});
 // base da comunidade (gerada pelo merge diário no GitHub): baixa a mais nova; sem internet usa a última baixada ou a que vem no app
 const COMUNIDADE='https://raw.githubusercontent.com/llll94/slimedex/main/comunidade.json';
-ipcMain.handle('comunidade',async()=>{const cache=path.join(app.getPath('userData'),'comunidade.json');
+async function baixaComunidade(){const cache=path.join(app.getPath('userData'),'comunidade.json');
   try{const r=await fetch(COMUNIDADE,{signal:AbortSignal.timeout(6000)});
     if(r.ok){const t=await r.text(),d=JSON.parse(t);if(d&&typeof d=='object'){fs.writeFileSync(cache,t);return d}}}catch{}
   for(const f of [cache,path.join(__dirname,'comunidade.json')]){try{return JSON.parse(fs.readFileSync(f,'utf8'))}catch{}}
-  return null});
+  return null}
+// a abertura já baixa a base: a primeira pergunta do painel recebe essa mesma (não baixa duas vezes)
+let baseAbertura=null;
+ipcMain.handle('comunidade',()=>{const p=baseAbertura;baseAbertura=null;return p||baixaComunidade()});
 // devolve o texto cru e a extensão; quem decide como ler (JSON ou CSV) é a interface
 ipcMain.handle('meus-importar',async()=>{const r=await comDialogo(()=>dialog.showOpenDialog(win,{properties:['openFile'],filters:[{name:'Meus dados ou planilha',extensions:['json','csv']}]}));
   if(r.canceled||!r.filePaths[0])return null;const f=r.filePaths[0];return{ext:path.extname(f).slice(1).toLowerCase(),texto:fs.readFileSync(f,'utf8').replace(/^﻿/,'')}});
@@ -65,7 +69,7 @@ const pinDe=s=>[...pins].find(([,p])=>!p.w.isDestroyed()&&p.w.webContents===s);
 // slimes do mapa (Tab) · beta: o leitor de tela é um processo à parte (só Windows, só com a chave ligada no ⋯)
 // que manda o texto lido abaixo do minimapa; o painel acha o mapa e pede a janelinha com os slimes (arrastável)
 const MAPA_POS=()=>path.join(app.getPath('userData'),'mapa-pos.json');
-let leitor=null,mapaWin=null,mapaVisivel=false;
+let leitor=null,mapaWin=null,mapaVisivel=false,mapaSai=0; // mapaSai: conta os "esconder" (só o último esconde de fato)
 const ehMapa=s=>mapaWin&&!mapaWin.isDestroyed()&&mapaWin.webContents===s;
 // leitor nativo (leitor-tela.exe, compilado no build; fica fora do pacote: app.asar.unpacked)
 const LEITOR_EXE=()=>path.join(__dirname,'leitor-tela.exe').replace('app.asar'+path.sep,'app.asar.unpacked'+path.sep);
@@ -109,13 +113,14 @@ const iconeCor=grande=>nativeImage.createFromPath(path.join(__dirname,'icones','
 // menu da bandeja: título com o ícone (cinza, como no Discord), reiniciar e sair
 let idiomaMenu='pt';
 function menuBandeja(l){if(l)idiomaMenu=l;l=idiomaMenu;if(tray)tray.setContextMenu(Menu.buildFromTemplate([{label:'Slimedex',icon:iconeCor(),enabled:false},{type:'separator'},
-  {label:l==='en'?'Restart':'Reiniciar',click:reinicia},{type:'separator'},{label:l==='en'?'Quit Slimedex':'Sair do Slimedex',click:()=>app.quit()}]))}
+  {label:l==='en'?'Restart':'Reiniciar',click:reinicia},{type:'separator'},{label:l==='en'?'Quit':'Sair',click:()=>app.quit()}]))}
 // No .exe portátil o app roda de uma cópia temporária; reabre o .exe original (PORTABLE_EXECUTABLE_FILE)
 function reinicia(){salva();const exe=process.env.PORTABLE_EXECUTABLE_FILE;app.relaunch(exe?{execPath:exe,args:[]}:undefined);app.exit(0)}
 app.whenReady().then(()=>{
   if(MAC&&app.dock)app.dock.hide(); // Mac: overlay fica fora do Dock (só ícone na barra de menu)
+  if(!SEM_ABERTURA)baseAbertura=baixaComunidade();
   const wa=screen.getPrimaryDisplay().workArea,p=carrega()||{x:wa.x+wa.width-ICON[0]-48,y:wa.y+506}; // padrão: 48px da borda direita, 506px do topo
-  win=new BrowserWindow({width:ICON[0],height:ICON[1],x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,webPreferences:{preload:path.join(__dirname,'preload.js')}});
+  win=new BrowserWindow({width:ICON[0],height:ICON[1],x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,show:SEM_ABERTURA,webPreferences:{preload:path.join(__dirname,'preload.js')}}); // com a abertura, aparece só no fim dela
   win.setAlwaysOnTop(true,'screen-saver');win.loadFile('overlay.html');
   if(MAC){win.setVisibleOnAllWorkspaces(true,{visibleOnFullScreen:true});win.setFullScreenable(false)} // Mac: aparece sobre o jogo em tela cheia
   win.on('blur',()=>{if(aberto&&!dialogo)win.webContents.send('fechar')}); // clicou fora: recolhe para o ícone
@@ -130,7 +135,11 @@ app.whenReady().then(()=>{
   // reiniciar (base nova da comunidade): salva a posição, fecha e abre de novo.
   // nova versão no GitHub: verifica; no .exe portátil baixa, confere o SHA-256 e reinicia na nova; no Mac/dev abre a página
   const RELEASES=process.env.SLIMEDEX_RELEASE_URL||'https://api.github.com/repos/llll94/slimedex/releases/latest';
-  ipcMain.handle('versao-nova',async()=>{try{return await atz.verificar(RELEASES,app.getVersion(),process.platform)}catch{return null}});
+  // a resposta vale 1 min (sem login o GitHub só deixa 60 perguntas por hora); se o limite estourou, vale até a hora em que libera
+  let ultVersao={em:0,r:null,p:null};
+  const versaoNova=()=>{const a=Date.now(),u=ultVersao;if(u.p&&(a-u.em<60e3||(u.r&&u.r.limite>a)))return u.p;
+    const p=atz.verificar(RELEASES,app.getVersion(),process.platform).catch(()=>null);ultVersao={em:a,r:null,p};p.then(r=>{if(ultVersao.p===p)ultVersao.r=r});return p};
+  ipcMain.handle('versao-nova',versaoNova);
   let baixado=null; // .exe novo já baixado e conferido, esperando o reinício
   ipcMain.handle('baixar-atualizacao',async(_,nova)=>{const exe=process.env.PORTABLE_EXECUTABLE_FILE;
     if(process.platform!=='win32'||!exe||!nova||!nova.arquivo){const p=nova&&/^https:\/\/github\.com\/llll94\/slimedex\//.test(nova.pagina||'')?nova.pagina:'https://github.com/llll94/slimedex/releases/latest';shell.openExternal(p);return{aberto:true}}
@@ -152,7 +161,7 @@ app.whenReady().then(()=>{
     guiaWin.lang=l;guiaWin.cor=q.cor;guiaWin.setMenu(null);guiaWin.loadFile('guia.html',{query:q});guiaWin.once('ready-to-show',()=>guiaWin.show());guiaWin.on('closed',()=>{guiaWin=null});
     const w=guiaWin,avisa=()=>w.webContents.send('guia-max',w.isMaximized());w.on('maximize',avisa);w.on('unmaximize',avisa)});
   // cor escolhida: grava e troca o ícone da bandeja, do menu e da cartilha na hora
-  ipcMain.handle('cor',()=>({cor:cor||'azul',escolhida:!!cor,gamer:apar.gamer===true,dalt:apar.dalt===true}));
+  ipcMain.handle('cor',()=>({cor:cor||'azul',escolhida:!!cor,gamer:apar.gamer===true,dalt:apar.dalt===true,abertura:!SEM_ABERTURA}));
   ipcMain.on('dalt',(_,on)=>{apar.dalt=!!on;gravaApar()});
   ipcMain.on('gamer',(_,on)=>{apar.gamer=!!on;gravaApar()});
   ipcMain.on('cor',(_,c)=>{if(!CORES.includes(c))return;cor=apar.cor=c;gravaApar();
@@ -176,20 +185,37 @@ app.whenReady().then(()=>{
     if(cw!==nw||ch!==nh)x.setContentSize(nw,nh); // mesmo tamanho: não redesenha (piscava)
     if(x.isVisible()||(m&&!mapaVisivel))return; // a do mapa só aparece se o painel ainda quer (Tab pode ter fechado antes)
     if(!m)return x.showInactive();
-    x.setOpacity(0);x.showInactive();setTimeout(()=>{if(!x.isDestroyed())x.setOpacity(1)},16)}); // um quadro invisível: não aparece resto do desenho anterior
+    x.webContents.send('mapa-entra');x.setOpacity(0);x.showInactive();setTimeout(()=>{if(!x.isDestroyed())x.setOpacity(1)},16)}); // um quadro invisível: não aparece resto do desenho anterior
   ipcMain.on('pin-fechar',e=>{if(ehMapa(e.sender)){mapaVisivel=false;mapaWin.hide();win.webContents.send('mapa-fechado');return}const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-removido',p[0])});
   ipcMain.on('pin-ocultar',e=>{const p=pinDe(e.sender);if(!p)return;pins.delete(p[0]);p[1].w.close();win.webContents.send('fav-oculto',p[0])}); // × : some, mas continua fixado
   ipcMain.on('pin-abrir',(e,k)=>{if(!pinDe(e.sender)&&!ehMapa(e.sender)||typeof k!='string'||k.length>200)return;win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente();win.webContents.send('abrir-ficha',k)});
   // atalho global: abre o painel já com foco na busca; se já estiver aberto e em foco, fecha
   if(!globalShortcut.register(HOTKEY,()=>{const f=win.isFocused();if(!f){win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente()}win.webContents.send('toggle',f)}))
     console.error(`Não consegui registrar o atalho ${HOTKEY} (outro programa já usa)`);
+  if(!SEM_ABERTURA)abertura(versaoNova);
 });
+// abertura (igual ao Discord): "Procurando atualizações…" confere versão nova e base da comunidade (no máx. 8 s);
+// "Iniciando…" espera o painel ler os dados e montar a lista; no fim some e abre o painel
+function abertura(versaoNova){const espera=ms=>new Promise(r=>setTimeout(r,Math.max(0,ms))),ate=(p,ms)=>Promise.race([p,espera(ms)]);
+  const base=baseAbertura,montou=new Promise(r=>ipcMain.once('pronto',r));
+  const sp=new BrowserWindow({width:300,height:340,center:true,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,show:false,hasShadow:false,
+    webPreferences:{preload:path.join(__dirname,'splash-preload.js')}});
+  const fase=f=>{if(!sp.isDestroyed())sp.webContents.send('fase',f)};
+  (async()=>{try{
+    const carregou=new Promise(r=>sp.once('ready-to-show',r));sp.loadFile('splash.html');await ate(carregou,3000);if(!sp.isDestroyed())sp.show();
+    let t=Date.now();await ate(Promise.all([versaoNova(),base]),8000);await espera(1000-(Date.now()-t)); // fica pelo menos 1 s: dá para ler
+    fase('iniciando');t=Date.now();await ate(montou,8000);await espera(800-(Date.now()-t));
+    fase('pronto');await espera(500);fase('sai');await espera(350);
+  }finally{if(!sp.isDestroyed())sp.close();win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente();win.webContents.send('abrir-inicio')}})()}
 app.on('will-quit',()=>{globalShortcut.unregisterAll();ligaLeitor(false)});
 ipcMain.on('mapa-ligar',(_,on)=>ligaLeitor(!!on));
-ipcMain.on('mapa-mostrar',(_,d)=>{if(!d||typeof d!='object')return;mapaVisivel=true;mostraMapa(d)});
+ipcMain.on('mapa-escolha',(e,n)=>{if(ehMapa(e.sender)&&typeof n=='string'&&n.length<=80)win.webContents.send('mapa-escolha',n)}); // "Qual é este mapa?": a resposta vai para o painel
+ipcMain.on('mapa-mostrar',(_,d)=>{if(!d||typeof d!='object')return;mapaVisivel=true;mapaSai++;mostraMapa(d)});
 // ao ligar: cria a janelinha escondida e já carrega as fotos dos slimes dos mapas (o primeiro Tab não espera a internet)
 ipcMain.on('mapa-preparar',(_,fotos)=>{if(!Array.isArray(fotos))return;criaMapa();mapaWin.fotos=fotos.filter(u=>typeof u=='string'&&u.startsWith('https://')).slice(0,400);
   if(!mapaWin.webContents.isLoading())mapaWin.webContents.send('pre-fotos',mapaWin.fotos)});
-ipcMain.on('mapa-esconder',()=>{mapaVisivel=false;if(mapaWin&&!mapaWin.isDestroyed())mapaWin.hide()});
+// some aos poucos como o mapa do jogo (450 ms) e só então esconde a janela; se voltou a mostrar nesse meio-tempo, fica
+ipcMain.on('mapa-esconder',()=>{mapaVisivel=false;if(!mapaWin||mapaWin.isDestroyed())return;if(!mapaWin.isVisible())return mapaWin.hide();
+  const n=++mapaSai,w=mapaWin;w.webContents.send('mapa-sai');setTimeout(()=>{if(n===mapaSai&&!mapaVisivel&&!w.isDestroyed())w.hide()},460)});
 // aberto pela atualização: apaga o .exe da versão anterior (o atualizador só aceita um Slimedex portátil na mesma pasta)
 {const i=process.argv.indexOf('--remover-antigo');if(i>=0)atz.removerAntigo(process.argv[i+1],process.env.PORTABLE_EXECUTABLE_FILE)}

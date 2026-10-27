@@ -14,7 +14,7 @@ Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à m
 1. Baixe na aba [Releases](../../releases):
    - **Windows:** `Slimedex-x.y.z-portable.exe` — é só executar, não precisa instalar;
    - **macOS:** `Slimedex-x.y.z-mac-arm64.dmg` (Mac com chip Apple, M1 em diante) ou `Slimedex-x.y.z-mac-x64.dmg` (Mac Intel) — abra o .dmg e arraste o Slimedex para Aplicativos.
-2. Um ícone de livro aparece no canto da tela, sempre por cima das outras janelas.
+2. Ao abrir, uma tela procura atualizações (versão nova do app e base nova da comunidade) e depois abre o painel; se saiu versão nova, ele abre direto na tela de atualizar. Fechando o painel, fica o ícone no canto da tela, sempre por cima das outras janelas.
 
 | Ação | Como |
 |---|---|
@@ -71,9 +71,9 @@ As **skills do jogo** (lista da [World of Slime Wiki](https://world-of-slime-wik
 
 ### Slimes do mapa (Tab) · beta, só Windows
 
-Ligado em **⋯ → Slimes do mapa**, ao apertar **Tab** no jogo (o mapa ampliado) aparece uma janelinha com as fotos dos slimes que nascem no mapa em que você está — fundo off-white = dia, lilás = noite, os dois = dia e noite. Arraste para onde quiser; **Tab** de novo ou **Esc** no jogo esconde. **Adicionar / editar** abre a lista do mapa no painel: marque os slimes que você viu ou tire os que não nascem ali (inclusive os da base).
+Ligado em **⋯ → Slimes do mapa**, ao apertar **Tab** no jogo (o mapa ampliado) aparece uma janelinha com as fotos dos slimes que nascem no mapa em que você está — fundo off-white = dia, lilás = noite, os dois = dia e noite. Arraste para onde quiser; **Tab** de novo ou **Esc** no jogo esconde. A janelinha aparece e some no ritmo do mapa do jogo: como o jogo, ela ignora o Tab enquanto o mapa ainda está abrindo ou fechando (~0,5 s), então não sai de sincronia mesmo apertando Tab várias vezes rápido. **Adicionar / editar** abre a lista do mapa no painel: marque os slimes que você viu ou tire os que não nascem ali (inclusive os da base).
 
-Como ele sabe o mapa: um processo pequeno ([`leitor-tela.ps1`](leitor-tela.ps1)) olha se o Tab foi apertado — **sem segurar a tecla**, o jogo recebe normalmente; Tab com Ctrl, Alt ou Windows é ignorado — e, só nesse momento, recorta o bloco abaixo do minimapa (região e nome do mapa) e lê com o **OCR do próprio Windows**. O texto lido é cruzado com a lista de mapas conhecidos. Nada é gravado nem enviado. Desligado, não roda nada.
+Como ele sabe o mapa: um processo pequeno ([`leitor-tela.ps1`](leitor-tela.ps1)) olha se o Tab foi apertado — **sem segurar a tecla**, o jogo recebe normalmente; Tab com Ctrl, Alt ou Windows é ignorado — e, só nesse momento, recorta o bloco abaixo do minimapa (região e nome do mapa) e lê com o **OCR do próprio Windows**. O texto lido é cruzado com a lista de mapas conhecidos, aceitando os erros comuns do OCR. Quando o app não tem certeza, a janelinha pergunta **Qual é este mapa?** com os 3 mais parecidos e a opção **É um mapa novo**; a resposta vira um apelido (o texto lido → o mapa) e da próxima vez ele já reconhece. Nada é gravado; só esses apelidos vão no envio para a comunidade, e um apelido passa a valer para todo mundo quando 2 pessoas respondem igual. Desligado, não roda nada.
 
 ### Seus dados e idioma (botão ⋯)
 
@@ -127,6 +127,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.2.0 (Windows) | `8FE7CBCF60767241D6A6AD99AF9168F8CF7F66A6731DC1F8A7D6596FC98652A1` | em análise |
 | 2.1.2 (Windows) | `FA6FB74F8E18D507D77B81D34EABD5E591247CFFE7AB0845A040A1902D5F6E1B` | [**1/64** — ver análise](https://www.virustotal.com/gui/file/fa6fb74f8e18d507d77b81d34eabd5e591247cffe7ab0845a040a1902d5f6e1b/detection) |
 | 2.1.2 (Mac, chip Apple) | `BE0ED16CBFA37EDCEA708684CBD63F617B533E2DAEE36395F1628682E5A907EA` | — |
 | 2.1.2 (Mac, Intel) | `D9939C7424D0EFCBCFE812D9FF76097BA5CBFCADA50E0AA8241095B719CF941A` | — |
@@ -176,7 +177,7 @@ Os hashes dos `.dmg` de Mac ficam no arquivo `SHA256-mac.txt` gerado junto pelo 
 Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o arquivo se chamava Slimepedia-…
 ```
 
-O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
+O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
 
 ## Rodar a partir do código
 

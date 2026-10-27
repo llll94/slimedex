@@ -65,7 +65,7 @@ button.pri{background:#3a6fd8}button.pri:hover{background:#4a7fe8}button:disable
 <script src="guia/marcas.js"></script>
 <script>
 const q=new URLSearchParams(location.search),L=q.get('lang')==='en'?'en':'pt',V=q.get('v')||'',T=GUIA.TXT[L],P=GUIA.PAGINAS,M=(window.MARCAS||{})[L]||{}; // posições medidas em cada idioma
-const ICO=/^[a-z]+$/.test(q.get('cor')||'')?'icones/app/'+q.get('cor')+'.svg':'icon.svg'; // a cor do ícone que a pessoa escolheu
+const ICO=/^[a-z-]+$/.test(q.get('cor')||'')?'icones/app/'+q.get('cor')+'.svg':'icon.svg'; // a cor do ícone que a pessoa escolheu
 document.querySelectorAll('img[src="icon.svg"]').forEach(i=>i.src=ICO);document.documentElement.lang=L=='pt'?'pt-BR':'en';document.title=T.titulo;tt.textContent=T.titulo;ft.textContent=T.rodape.replace('{v}',V);bq.placeholder=T.buscar;bqx.title=T.limpar;
 // moldura própria: minimizar, maximizar/restaurar e fechar (via guia-preload.js); no Mac ficam os botões do sistema
 if(q.get('p')==='darwin')document.body.classList.add('mac');

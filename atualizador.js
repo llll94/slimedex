@@ -17,7 +17,11 @@ function compara(a, b) {
 // consulta o último release; devolve null se não houver versão mais nova
 async function verificar(url, atual, plataforma) {
   const r = await fetch(url, { headers: { 'User-Agent': 'Slimedex', Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(8000) });
-  if (!r.ok) return null;
+  if (!r.ok) { // sem login o GitHub só deixa 60 perguntas por hora: devolve a hora em que libera de novo
+    const s = +r.headers.get('x-ratelimit-reset');
+    if ((r.status === 403 || r.status === 429) && r.headers.get('x-ratelimit-remaining') === '0' && s) return { limite: s * 1000 };
+    return null;
+  }
   const rel = await r.json();
   if (!rel || rel.draft || rel.prerelease) return null;
   const versao = String(rel.tag_name || '').replace(/^v/, '');

@@ -2,6 +2,26 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.2.0",
+      "prints": ["abertura", "mapa-qual"],
+      "pt": [
+        "Tela de abertura nova: o Slimedex procura atualizações e já traz a base nova da comunidade, depois abre o painel. Se tiver versão nova, abre direto na tela de atualizar",
+        "Slimes do mapa (Tab): quando o app não tem certeza do nome lido, a caixa pergunta “Qual é este mapa?” com os mais parecidos. Sua resposta é lembrada, e quando 2 pessoas respondem igual vale para todo mundo",
+        "Slimes do mapa (Tab): a caixa acompanha o ritmo do mapa do jogo, aparecendo e sumindo junto com ele, mesmo apertando Tab várias vezes rápido",
+        "Botão ⟳ do rodapé: avisa quando você clica muitas vezes seguidas e, se o GitHub pedir uma pausa (60 conferências por hora), mostra a hora em que dá para conferir de novo",
+        "Na lista do Ctrl+Tab, os slimes ainda sem número (não descobertos) ficam no fim, num grupo próprio: “Não descobertos”",
+        "Menu do ícone na bandeja do Windows: “Sair do Slimedex” virou só “Sair”"
+      ],
+      "en": [
+        "New startup screen: Slimedex checks for updates and already brings the new community data, then opens the panel. If there is a new version, it opens straight on the update screen",
+        "Map slimes (Tab): when the app is not sure about the name it read, the box asks “Which map is this?” with the closest ones. Your answer is remembered, and when 2 people answer the same it counts for everyone",
+        "Map slimes (Tab): the box keeps pace with the game map, appearing and fading with it, even when you press Tab several times quickly",
+        "Footer ⟳ button: warns you when you click many times in a row and, if GitHub asks for a break (60 checks per hour), shows when you can check again",
+        "In the Ctrl+Tab list, slimes without a number yet (undiscovered) are at the end, in their own group: “Undiscovered”",
+        "Windows tray icon menu: “Quit Slimedex” is now just “Quit”"
+      ]
+    },
+    {
       "v": "2.1.2",
       "prints": ["cor", "meus", "sk-ficha", "sk-lista"],
       "pt": [

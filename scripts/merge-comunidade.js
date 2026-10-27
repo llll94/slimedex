@@ -12,6 +12,8 @@
 //   - número do slime (só para slimes sem número na base): o mais enviado; número que já é de outro slime é descartado
 //   - votos 👍/👎 viram placar; combinação da comunidade muito negativada (CONTESTADA) é descartada
 //   - slime visto num mapa (loc): entra se >= MIN_PESSOAS pessoas marcaram; só mapas da lista (D.mapas) e só o que a base ainda não tem
+//   - apelido de mapa (mapap: texto lido pelo OCR → mapa escolhido em "Qual é este mapa?"): entra com >= MIN_APELIDO pessoas;
+//     para mapa fora da lista → revisão; bloqueios.json mapa_certo vira apelido sempre
 //   - dia/noite (per): o mais marcado por slime (dia | noite | ambos), só quando difere da base; trocar um já aprovado → revisão
 //   - combinação "teste" da base (veio da planilha, ts) fica confirmada (conf) quando alguém a manda ou dá 👍 nela
 //   - teste sem resultado (r: null, vem do testador com "Compartilhar" ligado): vira testada da comunidade (id 'c:A+B>?', selo teste);
@@ -35,6 +37,7 @@
 const fs = require('fs'), path = require('path');
 
 const MIN_PESSOAS = 1; // 1 = a descoberta de uma pessoa já entra (a revisão do PR e os votos 👎 seguram erros)
+const MIN_APELIDO = 2; // apelido de mapa (texto lido pelo OCR → mapa): só com 2 pessoas diferentes
 const TESTE = '00000000-0000-0000-0000-000000000000'; // autor dos envios de teste
 const contestada = v => v && v.d >= 3 && v.d >= 2 * v.u; // mesma regra do app
 
@@ -71,6 +74,8 @@ const ELEMENTOS = new Set(['Água', 'Gelo', 'Sombrio', 'Metal', 'Fogo', 'Poder',
 const BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'), BQ_APAGAR = bloq('apagar'); // apagar: pedido de apagar ignorado (id da combinação) // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
 const MAPAS = new Map((D.mapas || []).map(m => [m.pt, new Set(m.sl)]));
 // mapa_certo (bloqueios.json): nome lido errado/cortado pelo app -> nome certo; o que foi marcado no errado passa para o certo
+// mesmo jeito do app (overlay.html planoM) de comparar o que o OCR leu: sem acento/espaço, o/c/e, 1/l/i e rn/m iguais
+const planoM = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9|]/g, '').replace(/[ceo0]/g, 'o').replace(/[il1|]/g, 'i').replace(/rn/g, 'm');
 const MAPA_CERTO = BQ.mapa_certo && typeof BQ.mapa_certo === 'object' && !Array.isArray(BQ.mapa_certo) ? BQ.mapa_certo : {};
 
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
@@ -133,6 +138,7 @@ async function lerEnvios() {
   const pedidosApagar = new Map(); // id da combinação (base: a|b|r|m, comunidade: c:...) -> Set(autores)
   const testadas = new Map(); // par A+B -> { a, b, quem:Set, m:[] } (testes sem resultado compartilhados)
   const skAnot = new Map();  // 'slime>skill' -> { s, k, quem:Set, l:[] }
+  const apelidos = new Map(); // texto lido (planoM) -> Map(nome do mapa -> Set de autores)
   const skNomes = new Map(); // skill -> Map(nome normalizado -> { nome, quem:Set })
   const skCad = new Map();   // 'u:...' -> { nm:[], el:[] } (skills cadastradas)
   for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
@@ -175,6 +181,11 @@ async function lerEnvios() {
         if (!SLIMES.has(k) || (tira ? !naBase : naBase) || BQ_LOC.has(mapa + '=' + k)) continue;
         const m = vistos.get(mapa) || vistos.set(mapa, new Map()).get(mapa), c = tira ? '-' + k : k; (m.get(c) || m.set(c, new Set()).get(c)).add(autor) }
     }
+    // apelidos de mapa: o que o OCR leu → mapa que a pessoa escolheu na janelinha ("Qual é este mapa?")
+    for (const [lido, nome] of Object.entries(p.mapap && typeof p.mapap === 'object' ? p.mapap : {})) {
+      if (!/^[a-z0-9|]{3,80}$/.test(lido) || typeof nome !== 'string' || nome.length > 80 || !/^[\p{L}\d][\p{L}\d' -]*$/u.test(nome)) continue;
+      const certo = typeof MAPA_CERTO[nome] === 'string' ? MAPA_CERTO[nome] : nome, m = apelidos.get(lido) || apelidos.set(lido, new Map()).get(lido);
+      (m.get(certo) || m.set(certo, new Set()).get(certo)).add(autor) }
     for (const [k, v] of Object.entries(p.per && typeof p.per === 'object' ? p.per : {})) {
       if (!SLIMES.has(k) || !['dia', 'noite', 'ambos'].includes(v) || bloq('per').has(k)) continue;
       const m = periodos.get(k) || periodos.set(k, new Map()).get(k); (m.get(v) || m.set(v, new Set()).get(v)).add(autor);
@@ -240,9 +251,14 @@ async function lerEnvios() {
   const idsBase = new Set(D.combos.map(cidBase)), idsCom = new Set(combos.map(c => c.id));
   const apag = [...pedidosApagar].filter(([id, q]) => q.size >= MIN_PESSOAS && !BQ_APAGAR.has(id) && (idsBase.has(id) || idsCom.has(id))).map(([id]) => id);
   const apagadas = apag.filter(id => idsBase.has(id)).sort();
-  const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas, sk, skn, skc };
+  // apelidos: o mapa mais escolhido para cada texto lido, com >= MIN_APELIDO pessoas (um clique errado de uma pessoa não muda o mapa de todos); os de bloqueios.json (mapa_certo) valem sempre
+  const mp = {};
+  for (const [lido, m] of apelidos) { const [nome, q] = [...m].sort((a, b) => b[1].size - a[1].size || (a[0] < b[0] ? -1 : 1))[0]; if (q.size >= MIN_APELIDO && !BQ_LOC.has(nome)) mp[lido] = nome }
+  for (const [errado, certo] of Object.entries(MAPA_CERTO)) if (typeof certo === 'string' && planoM(errado).length >= 3) mp[planoM(errado)] = certo;
+  const mapap = Object.fromEntries(Object.keys(mp).sort().map(k => [k, mp[k]]));
+  const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas, sk, skn, skc, mapap };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [], apagadas: a.apagadas || [], sk: a.sk || {}, skn: a.skn || {}, skc: a.skc || [] } } catch {}
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [], apagadas: a.apagadas || [], sk: a.sk || {}, skn: a.skn || {}, skc: a.skc || [], mapap: a.mapap || {} } } catch {}
   const mudou = JSON.stringify(antes) !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
@@ -358,6 +374,8 @@ function verifica(antes, agora, nm) {
     else if (!/^\p{L}[\p{L} '-]{1,39}$/u.test(v)) barrados.push(`nome PT da skill ${en} — "${v}" tem caracteres fora do padrão`);
   }
   removidos += Object.keys(antes.skn).filter(k => !(k in agora.skn)).length;
+  // apelido para um mapa da base entra sozinho; para um nome fora da lista (mapa novo lido da tela), revisão
+  for (const [l, v] of Object.entries(agora.mapap)) { if (antes.mapap[l] === v) continue; novidades++; if (!MAPAS.has(v)) barrados.push(`apelido de mapa "${l}" → "${v}": mapa fora da lista, confira`) }
   for (const [k, v] of Object.entries(agora.per)) { const o = antes.per[k]; if (o === v) continue; novidades++; if (o) barrados.push(`dia/noite de ${nm(k)} trocaria de ${o} para ${v}`) }
   for (const n of ['pc', 'pt', 'num', 'per']) removidos += Object.keys(antes[n]).filter(k => !(k in agora[n])).length;
   if (removidos > 3) barrados.push(`${removidos} itens já aprovados sairiam de uma vez`);

@@ -1,0 +1,54 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:transparent;font:600 14px system-ui,sans-serif;color:#e8eaed;user-select:none}
+#sp{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#181c21;border:1px solid #2d333a;border-radius:14px;-webkit-app-region:drag;transition:opacity .35s,transform .35s}
+#sp.sai{opacity:0;transform:scale(.94)}
+svg{width:116px;height:116px;margin-top:-10px}
+/* reticências: os três pontos ocupam sempre o lugar, então o texto não anda */
+#msg{position:relative;white-space:nowrap}#pts{position:absolute;left:100%}#pts i{font-style:normal;visibility:hidden}
+/* bolinha correndo no vinco da barra: direita → esquerda, pisca, some; esquerda → direita, pisca, some */
+#bola{opacity:0}.checando #bola{animation:corre 2s linear infinite}
+@keyframes corre{0%{transform:translate(186px,196px);opacity:1}36%{transform:translate(118px,196px);opacity:1}38%{opacity:0}41%{opacity:0}43%{opacity:1}46%{opacity:1}48%{opacity:0}
+ 50%{transform:translate(118px,196px);opacity:0}51%{opacity:1}86%{transform:translate(186px,196px);opacity:1}88%{opacity:0}91%{opacity:0}93%{opacity:1}96%{opacity:1}98%{opacity:0}100%{transform:translate(186px,196px);opacity:0}}
+/* luzinhas ao lado da lente: "ligar" = o miolo branco some e a luz fica toda na cor do vinco */
+.led{transition:opacity .15s}.led.on{opacity:0}.led.pisca{animation:pisca .5s steps(1) infinite}
+@keyframes pisca{50%{opacity:0}}
+/* só na prévia (aberto direto no navegador): fundo de mesa e janela do tamanho real */
+.demo{background:#3a3f45!important;display:flex;align-items:center;justify-content:center}.demo #sp{width:300px;height:340px;flex:none}
+</style></head><body>
+<div id="sp" class="checando">
+<svg viewBox="0 0 256 256" aria-hidden="true">
+<defs><mask id="m"><rect x="40" y="16" width="176" height="224" rx="28" fill="#fff"/>
+<path d="M76 16v224" stroke="#000" stroke-width="9"/>
+<path d="M76 126h52l22-24h70" fill="none" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
+<circle cx="116" cy="70" r="38.5" fill="#000"/><circle cx="116" cy="70" r="29.5" fill="#fff"/><circle cx="116" cy="70" r="20" fill="#000"/>
+<circle cx="164" cy="50" r="12" fill="#000"/><circle cx="186" cy="50" r="12" fill="#000"/>
+<path d="M118 196h68" stroke="#000" stroke-width="10" stroke-linecap="round"/>
+<path d="M150 157l19 13-19 13z" fill="#000"/></mask></defs>
+<rect width="256" height="256" fill="#fff" mask="url(#m)"/>
+<circle cx="107" cy="61" r="7" fill="#fff"/>
+<circle id="led1" class="led" cx="164" cy="50" r="6.5" fill="#fff"/><circle id="led2" class="led" cx="186" cy="50" r="6.5" fill="#fff"/>
+<circle id="bola" r="3.6" fill="#fff"/>
+</svg>
+<div id="msg"><span id="txt"></span><span id="pts"><i>.</i><i>.</i><i>.</i></span></div>
+</div>
+<script>
+const FOTO=new URLSearchParams(location.search).get('foto'); // só para o print da cartilha (scripts/foto-abertura.js): parada, no idioma pedido
+const EN=FOTO?FOTO==='en':(()=>{try{return localStorage.getItem('lang')==='en'}catch{return false}})();
+const T={checando:EN?'Checking for updates':'Procurando atualizações',iniciando:EN?'Starting':'Iniciando'};
+// . → .. → ... → .
+let n=0;const pinga=()=>{n=n%3+1;[...pts.children].forEach((p,i)=>p.style.visibility=i<n?'visible':'hidden')};pinga();const pi=setInterval(pinga,400);
+function fase(f){
+  if(f==='checando'){sp.className='checando';txt.textContent=T.checando;led1.className.baseVal='led';led2.className.baseVal='led'}
+  else if(f==='iniciando'){sp.className='';txt.textContent=T.iniciando;led1.className.baseVal='led on';led2.className.baseVal='led pisca'}
+  else if(f==='pronto'){led2.className.baseVal='led on'}
+  else if(f==='sai'){sp.classList.add('sai')}}
+fase('checando');
+if(window.abertura)abertura.onFase(fase);
+else if(FOTO){fase('iniciando');led2.className.baseVal='led';clearInterval(pi);[...pts.children].forEach(p=>p.style.visibility='visible')}
+// prévia sem o app (aberto direto no navegador): repete a sequência com tempos de exemplo
+else{document.body.className='demo';
+  const ciclo=()=>{sp.classList.remove('sai');fase('checando');
+    setTimeout(()=>fase('iniciando'),4000);setTimeout(()=>fase('pronto'),6000);setTimeout(()=>fase('sai'),6500);setTimeout(ciclo,7800)};
+  ciclo()}
+</script></body></html>
