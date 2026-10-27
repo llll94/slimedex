@@ -68,7 +68,7 @@ const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'),
 const TESTE_IDX = new Map(D.combos.filter(c => c.ts && c.r).map(c => [par(c.a, c.b, c.r), c]));
 const SKILLS = new Map((D.skills || []).map(s => [s.k, s]));
 const ELEMENTOS = new Set(['Água', 'Gelo', 'Sombrio', 'Metal', 'Fogo', 'Poder', 'Elétrico', 'Luz', 'Grama', 'Terra', 'Vento', 'Magia', 'Veneno']);
-const BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'); // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
+const BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'), BQ_APAGAR = bloq('apagar'); // apagar: pedido de apagar ignorado (id da combinação) // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
 const MAPAS = new Map((D.mapas || []).map(m => [m.pt, new Set(m.sl)]));
 
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
@@ -235,7 +235,7 @@ async function lerEnvios() {
     .filter(([, t]) => t.quem.size >= MIN_PESSOAS).sort().map(([k, t]) => [k, t.nome]));
   // apagar: só ids que existem (base do repositório ou combinação da comunidade); as da comunidade saem da lista
   const idsBase = new Set(D.combos.map(cidBase)), idsCom = new Set(combos.map(c => c.id));
-  const apag = [...pedidosApagar].filter(([id, q]) => q.size >= MIN_PESSOAS && (idsBase.has(id) || idsCom.has(id))).map(([id]) => id);
+  const apag = [...pedidosApagar].filter(([id, q]) => q.size >= MIN_PESSOAS && !BQ_APAGAR.has(id) && (idsBase.has(id) || idsCom.has(id))).map(([id]) => id);
   const apagadas = apag.filter(id => idsBase.has(id)).sort();
   const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas, sk, skn, skc };
   const arq = path.join(RAIZ, 'comunidade.json');

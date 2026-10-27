@@ -1,9 +1,18 @@
 {
- "_como_usar": "O merge diário ignora o que estiver aqui. autores: id do envio (autor.txt). combos: id da combinação da comunidade (c:SL_A+SL_B>SL_R) ou id da base (para chance). pt: SL_Slime (qualquer nome) ou SL_Slime=Nome. num: SL_Slime. loc: 'Mapa=SL_Slime' (um slime num mapa) ou 'Mapa' (o mapa todo). per: SL_Slime (ignora o dia/noite enviado).",
+ "_como_usar": "O merge diário ignora o que estiver aqui. autores: id do envio (autor.txt). combos: id da combinação da comunidade (c:SL_A+SL_B>SL_R) ou id da base (para chance). pt: SL_Slime (qualquer nome) ou SL_Slime=Nome. num: SL_Slime. loc: 'Mapa=SL_Slime' (um slime num mapa) ou 'Mapa' (o mapa todo). per: SL_Slime (ignora o dia/noite enviado). apagar: id de uma combinação que alguém pediu para apagar (ignora o pedido).",
  "autores": [],
  "combos": [],
  "pt": [],
  "num": [],
- "loc": [],
- "per": []
+ "loc": [
+  "Caxjer na 9",
+  "Tr il ha dos Fundos de",
+  "Entrada da Praia dos",
+  "Trilha de Monte"
+ ],
+ "per": [],
+ "apagar": [
+  "SL_Cattle_PowerLight|SL_Tricky_Power|SL_Minotauros_Power|Chifre",
+  "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide"
+ ]
 }
