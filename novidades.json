@@ -2,6 +2,16 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.3.1",
+      "prints": [],
+      "pt": [
+        "Corrigido: em alguns computadores a 2.3.0 mostrava “A JavaScript error occurred in the main process” logo ao abrir"
+      ],
+      "en": [
+        "Fixed: on some computers 2.3.0 showed “A JavaScript error occurred in the main process” right when opening"
+      ]
+    },
+    {
       "v": "2.3.0",
       "prints": [
         "enc",

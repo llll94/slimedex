@@ -224,7 +224,8 @@ function ligaBau(on){ligaTeclas(on);
   bauIco.setAlwaysOnTop(true,'screen-saver');bauIco.setIgnoreMouseEvents(true,{forward:true});bauIco.loadFile('bau-ico.html')} // só o ícone e o botão pegam o mouse
 // quem pega o mouse no ícone: ele manda os retângulos clicáveis (ícone e o botão Capturar quando aparece) e o main confere a posição
 // do cursor a cada 50 ms (o "forward" do Windows às vezes para de avisar)
-setInterval(()=>{const c=screen.getCursorScreenPoint();for(const w of [bauIco]){if(!vivo(w)||!w.isVisible())continue;const b=w.getBounds();
+setInterval(()=>{if(!vivo(bauIco)||!bauIco.isVisible())return; // o ícone só existe depois do app 'ready': antes disso o 'screen' não pode ser usado (2.3.0 travava ao abrir em PCs mais lentos)
+  const c=screen.getCursorScreenPoint();for(const w of [bauIco]){if(!vivo(w)||!w.isVisible())continue;const b=w.getBounds();
   const dentro=(w.alvos||[]).some(([x,y,l,a])=>c.x>=b.x+x&&c.x<b.x+x+l&&c.y>=b.y+y&&c.y<b.y+y+a);
   if(dentro!==w.pega){w.pega=dentro;w.setIgnoreMouseEvents(!dentro,{forward:true});w.webContents.send('bau-dentro',dentro)}}},50);
 // abrir/fechar o baú = abrir o painel na tela do baú / fechar o painel
