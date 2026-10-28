@@ -109,6 +109,22 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 .tm img,.tm>i{width:28px;height:28px;object-fit:contain;flex:none}.tm .sw{margin-left:0}.tm .del svg{width:14px;height:14px;fill:currentColor;pointer-events:none}
 /* skills: linha com ícone, nome, pílula do elemento e nível */
 #skb{display:flex;align-items:center;padding:0 2px}#skb svg{width:17px;height:17px;fill:currentColor}
+/* identificar e enciclopédia: símbolos do jogo, cartas 5 por linha (claras como as do jogo), menu do slime */
+#enb{display:flex;align-items:center;padding:0 2px;color:#7fd0f5}#enb:hover{color:#c6ecff}#enb svg{width:18px;height:18px}
+.sti{display:inline-flex;width:16px;height:16px;vertical-align:-3px;flex:none}.sti svg{width:100%;height:100%}.row b .sti{margin-left:5px}
+.stb{display:inline-flex;width:20px;height:20px;vertical-align:-4px;margin-left:4px;cursor:pointer;border-radius:50%}.stb svg{width:100%;height:100%}.stb:hover{box-shadow:0 0 0 2px #6aa8ff}
+.chips.stc{gap:5px}.stc .chip{display:inline-flex;align-items:center;gap:3px;cursor:pointer;padding:3px 8px;border-radius:12px}.stc .chip svg{width:18px;height:18px}.stc .chip:not(.on){opacity:.75}.stc .chip:not(.on):hover{opacity:1}
+.enc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0 8px}
+.ec{position:relative;aspect-ratio:192/220;border-radius:10px;background:#D7EDFF;display:flex;flex-direction:column;align-items:center;cursor:pointer;overflow:hidden}
+.ec b{font:800 11px system-ui;color:#173448;margin-top:3px;letter-spacing:.5px}.ec img{width:86%;flex:1;min-height:0;object-fit:contain}
+.ec.s1 img{filter:grayscale(1)}.ec.s3{background:#FFEDF4}
+.ec .q{flex:1;display:flex;align-items:center;font:900 30px system-ui;color:#9fb6cf}.ec.vazio{cursor:default;opacity:.5}
+.enc.bau{grid-template-columns:repeat(4,1fr);gap:8px}.ec.vaga{background:#2a3139;cursor:default}.bauh{display:flex;align-items:center;gap:8px}.bauh svg{width:26px;height:26px;flex:none}
+.ec .sti{position:absolute;right:3px;bottom:3px;width:14px;height:14px}
+.ec:not(.vazio):hover,.ec.on{box-shadow:inset 0 0 0 2px #3a6fd8}
+.stm{position:fixed;z-index:50;background:#1b2026;border:1px solid #3a414a;border-radius:10px;padding:4px;min-width:170px;box-shadow:0 6px 18px #000a}
+.stm .it{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;white-space:nowrap}.stm .it.on{background:#2b3440}
+.stm .it .sti{width:18px;height:18px}.stm .it.op{padding-left:20px}.stm .it.atual::after{content:'✓';margin-left:auto;color:#7fe0a8}.stm .sb{margin-left:auto}
 .sk{display:flex;align-items:center;gap:7px;padding:3px 4px;border-radius:8px;cursor:pointer}.sk:hover{background:#232930}.sk.on{background:#2b3440;box-shadow:inset 0 0 0 1px #6aa8ff}
 .sk>img,.sk>i{width:30px;height:30px;object-fit:contain;flex:none}.sk .nm{flex:1;min-width:0}.sk:hover .ac{opacity:1}.sk .mu{display:flex;flex-wrap:wrap;align-items:center;gap:3px}
 .si0{display:inline-flex;align-items:center;justify-content:center;border:2px solid;border-radius:50%;font-style:normal;font-weight:700;font-size:13px;box-sizing:border-box}
@@ -120,7 +136,7 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 .skesc{display:flex;align-items:center;gap:6px;min-height:30px}.skesc img,.skesc>i{width:26px;height:26px;object-fit:contain}
 </style></head><body>
 <div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="enb"><svg viewBox="0 0 24 24"><path d="M6 2.8h11.2c1 0 1.8.8 1.8 1.8v14.6c0 1-.8 1.8-1.8 1.8H6.8A2.3 2.3 0 0 1 4.5 18.7V4.3C4.5 3.5 5.2 2.8 6 2.8z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.6 17.6c.3-.9 1.1-1.4 2.1-1.4H19" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 19.6v3l1.3-1 1.3 1v-3z" fill="currentColor"/><path d="M12.4 5.4c-2.1 2.6-3.4 4.3-3.4 6.1a3.4 3.4 0 0 0 6.8 0c0-1.8-1.3-3.5-3.4-6.1z" fill="currentColor"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="i18n.js"></script>
@@ -150,7 +166,7 @@ let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let CA=[]; // combinações da base/comunidade apagadas (por você ou aprovado pela comunidade)
-let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{}},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{},st:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resultado (A + B e B + A são combinações diferentes)
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -198,18 +214,84 @@ function chave(v){v=(v||'').trim();if(LBL[v])return LBL[v];const n=norm(v);if(!n
 const REC='recentes';let rec=[];try{rec=(JSON.parse(localStorage.getItem(REC))||[]).filter(k=>K[k])}catch{}
 function lembra(k){rec=[k,...rec.filter(x=>x!==k)].slice(0,3);try{localStorage.setItem(REC,JSON.stringify(rec))}catch{}}
 let sel=-1,cur=null; // linha destacada pelo teclado; ficha aberta
-function row(s,mini){const a=alt(s);return`<div class="row${mini?' mini':''}" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${a?esc(a)+' · ':''}${esc(s.el.map(elN).join(' / '))}</div></div></div>`}
+function row(s,mini){const a=alt(s);return`<div class="row${mini?' mini':''}" data-k="${esc(s.k)}">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}${stI(stDe(s.k))}</b><div class="mu">${a?esc(a)+' · ':''}${esc(s.el.map(elN).join(' / '))}</div></div></div>`}
 const voltarLk=()=>`<span class="lk" id="bk" title="${esc(t('back_title'))}">${t('back')}</span>`;
+// ---- identificar: 0 não descoberto · 1 descoberto · 2 capturado · 3 vínculo (M.st: só neste PC, não vai no envio) ----
+// símbolos desenhados a partir dos do jogo (cores tiradas dos prints)
+const ST_IC=['<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#3a414a"/><path d="M9.2 9.4a2.9 2.9 0 1 1 4.2 2.6c-.9.4-1.4 1-1.4 1.9v.4" fill="none" stroke="#c9d1d9" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.7" r="1.4" fill="#c9d1d9"/></svg>',
+ '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#F96156"/><rect x="10.4" y="4.8" width="3.2" height="9.2" rx="1.6" fill="#FDEFB7"/><circle cx="12" cy="17.7" r="1.8" fill="#FDEFB7"/></svg>',
+ '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#31FFB7"/><path d="M3.8 12c2.2-3.6 5-5.4 8.2-5.4s6 1.8 8.2 5.4c-2.2 3.6-5 5.4-8.2 5.4S6 15.6 3.8 12z" fill="#117152"/><circle cx="12" cy="12" r="3.3" fill="#31FFB7"/><circle cx="12" cy="12" r="1.6" fill="#117152"/></svg>',
+ '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#6351B3"/><path d="M12 19.2s-6.8-4.1-6.8-8.8A3.7 3.7 0 0 1 12 8.3a3.7 3.7 0 0 1 6.8 2.1c0 4.7-6.8 8.8-6.8 8.8z" fill="#FB75A7"/><ellipse cx="8.9" cy="10.5" rx="1.3" ry=".9" fill="#FF9BBF"/></svg>'];
+const IR_IC='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#2b3440"/><path d="M10 7l5 5-5 5" fill="none" stroke="#c9d1d9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const stDe=k=>(M.st||{})[k]|0,stI=v=>v?`<span class="sti" title="${esc(t('st_'+v))}">${ST_IC[v]}</span>`:'';
+// filtros liga/desliga (conjunto vazio = todos): um da enciclopédia e um da lista do Ctrl+Tab
+let ENCF=new Set(),LSTF=new Set();
+const stChips=(f,ctx)=>`<div class="chips stc">${[0,1,2,3].map(v=>`<span class="chip${f.has(v)?' on':''}" data-stf="${ctx}:${v}" title="${esc(t('st_f'+v))}">${ST_IC[v]}</span>`).join('')}</div>`; // nenhum ligado = todos
+function stFiltro(ctx,v){const f=ctx=='enc'?ENCF:LSTF;if(f.has(v))f.delete(v);else f.add(v);if(ctx=='enc')enciclopedia(true);else list()}
+// ---- enciclopédia: só os slimes com número, 5 por linha; número sem slime conhecido = "?" sem clique ----
+let ENC={sel:-1};
+// ---- baú: o que estava no baú do jogo na última captura (bau.json, lido pelo Capturar do ícone do baú) ----
+// mesmas cartas da enciclopédia, com o nível no lugar do número; clicar abre a ficha
+const BAU_IC='<svg viewBox="4 5 56 55"><rect x="11" y="24" width="42" height="5.5" fill="#26496E"/><path d="M11.5 25 L14.3 11.5 L23 18.8 H41 L49.7 11.5 L52.5 25 Z" fill="#A3E8FF" stroke="#A3E8FF" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 21.6 L15.9 15.3 L22.6 20.6 H41.4 L48.1 15.3 L50 21.6 Z" fill="#63BCED"/><rect x="9" y="28.5" width="46" height="26" rx="7" fill="#A3E8FF"/><rect x="11" y="30.3" width="42" height="19.2" rx="5.5" fill="#63BCED"/><rect x="26" y="22.5" width="12" height="13" rx="3.5" fill="#26496E"/><rect x="29.4" y="26" width="5.2" height="5.6" rx="1.5" fill="#52C698"/></svg>';
+const haQuanto=ts=>{const s=(Date.now()-ts)/1000,f=new Intl.RelativeTimeFormat(LANG==='pt'?'pt-BR':'en',{numeric:'auto'});
+ return s<60?f.format(-Math.round(s),'second'):s<3600?f.format(-Math.round(s/60),'minute'):s<86400?f.format(-Math.round(s/3600),'hour'):f.format(-Math.round(s/86400),'day')};
+async function bauTela(){semBusca();qi.blur();cur=null;sel=-1;marca({t:'bau'});const d=await ov.bau.ler().catch(()=>null);if(!vista||vista.t!=='bau')return;
+ const v=d&&Array.isArray(d.v)?d.v:null,n=v?v.filter(Boolean).length:0;
+ bd.innerHTML=`${voltarLk()}<h4 class="bauh">${BAU_IC}${t('bau_h2')}</h4>`+(v?`<p class="mu" style="margin:2px 0 6px">${esc(t('bau_quando',{n,s:v.length,t:haQuanto(d.ts)}))}</p>
+  <div class="enc bau">${v.map(c=>c&&K[c.k]?`<div class="ec" data-bk="${esc(c.k)}" title="${esc(rot(K[c.k])+(c.d?' · '+t('bau_talvez'):''))}"><b>${c.lv?'LV'+c.lv:'LV ?'}</b>${K[c.k].im?`<img alt="" src="${BASE}${esc(K[c.k].im)}">`:'<span class="q">?</span>'}</div>`:'<div class="ec vaga"></div>').join('')}</div>`
+  :`<p class="mu">${t('bau_vazio')}</p>`)}
+function enciclopedia(keep){const top=bd.scrollTop;semBusca();qi.blur();cur=null;sel=-1;marca({t:'enc'});
+ const porN={};S.forEach(s=>{if(s.n!=null&&!BOSS.has(s.k)&&!(s.n in porN))porN[s.n]=s});const ns=Object.keys(porN).map(Number),max=ns.length?Math.max(...ns):0,conta=[0,0,0,0];
+ ns.forEach(n=>conta[stDe(porN[n].k)]++);
+ let h='';for(let n=1;n<=max;n++){const s=porN[n],v=s?stDe(s.k):0,num=String(n).padStart(3,'0');if(ENCF.size&&!ENCF.has(v))continue;
+  h+=s?`<div class="ec s${v}" data-ec="${esc(s.k)}" title="${esc(v?rot(s):'#'+n)}"><b>${num}</b>${v&&s.im?`<img alt="" src="${BASE}${s.im}">`:'<span class="q">?</span>'}${stI(v)}</div>`
+   :`<div class="ec vazio"><b>${num}</b><span class="q">?</span></div>`}
+ bd.innerHTML=`${voltarLk()}<h4>${t('enc_h')}</h4><p class="mu" style="margin:2px 0">${t('enc_conta',{d:conta[1],c:conta[2],v:conta[3],n:ns.length})}</p>${stChips(ENCF,'enc')}${h?`<div class="enc">${h}</div>`:`<p class="mu">${t('enc_vazio')}</p>`}`;
+ bd.scrollTop=keep?top:0;if(keep&&ENC.sel>=0)encMarca(ENC.sel,true);else ENC.sel=-1}
+function encMarca(i,semRolar){const c=[...bd.querySelectorAll('.ec')];if(!c.length)return;ENC.sel=Math.max(0,Math.min(i,c.length-1));c.forEach((e,j)=>e.classList.toggle('on',j==ENC.sel));if(!semRolar)c[ENC.sel].scrollIntoView({block:'nearest'})}
+// setas andam na grade (↑↓ = uma linha de 5), Enter abre o menu do slime marcado
+function encTecla(e){const d={ArrowLeft:-1,ArrowRight:1,ArrowUp:-5,ArrowDown:5}[e.key];
+ if(d){e.preventDefault();encMarca(ENC.sel<0?0:ENC.sel+d);return true}
+ if(e.key=='Enter'&&ENC.sel>=0){const c=bd.querySelectorAll('.ec')[ENC.sel];if(c&&c.dataset.ec){e.preventDefault();stMenu(c.dataset.ec,c,false)}return true}
+ return false}
+// ---- menu do slime: "Ir até o slime" e "Identificar" (abre as opções ao passar o mouse, ao chegar nele com a seta ou ao clicar) ----
+let STM=null;
+function fechaStm(){if(STM){STM.m.remove();STM=null}}
+const stItens=()=>[...(STM.soId?[]:[{a:'ir'},{a:'id'}]),...(STM.sub?[0,1,2,3].map(v=>({a:'st',v})):[])];
+function stMenu(k,ancora,soId){fechaStm();const m=document.createElement('div');m.className='stm';document.body.append(m);STM={k,m,soId,sub:!!soId,i:soId?stDe(k):0};stDesenha();
+ const r=ancora.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;let y=r.bottom+4;if(y+h>innerHeight-6)y=Math.max(6,r.top-h-4);
+ m.style.left=Math.max(6,Math.min(r.left,innerWidth-w-6))+'px';m.style.top=y+'px';
+ m.onmousemove=e=>{const it=e.target.closest('.it');if(!it||!STM)return;const i=+it.dataset.i,o=stItens()[i];if(i===STM.i&&!(o.a=='id'&&!STM.sub))return;STM.i=i;if(o.a=='id')STM.sub=true;stDesenha()};
+ m.onclick=e=>{const it=e.target.closest('.it');if(it)stAtiva(+it.dataset.i)}}
+function stDesenha(){const l=stItens(),atual=stDe(STM.k);
+ STM.m.innerHTML=l.map((o,i)=>`<div class="it${i===STM.i?' on':''}${o.a=='st'?' op'+(o.v===atual?' atual':''):''}" data-i="${i}">`+
+  (o.a=='ir'?`<span class="sti">${IR_IC}</span>${t('st_ir')}`:o.a=='id'?`<span class="sti">${ST_IC[atual]}</span>${t('st_identificar')}<span class="mu sb">${STM.sub?'▾':'▸'}</span>`:`<span class="sti">${ST_IC[o.v]}</span>${t('st_'+o.v)}`)+'</div>').join('');
+ const r=STM.m.getBoundingClientRect();if(r.bottom>innerHeight-6)STM.m.style.top=Math.max(6,innerHeight-6-r.height)+'px'}
+function stAtiva(i){const o=stItens()[i];if(!o)return;const k=STM.k;
+ if(o.a=='ir'){fechaStm();return ficha(k)}
+ if(o.a=='id'){STM.sub=true;STM.i=2+stDe(k);return stDesenha()} // abre e já para na opção atual
+ M.st=M.st||{};if(o.v)M.st[k]=o.v;else delete M.st[k];fechaStm();salva();
+ const v=vista&&vista.t;if(v=='enc')enciclopedia(true);else if(v=='ficha')ficha(k,true);else if(v=='lista'){const top=bd.scrollTop,q=qi.value;list();qi.value=q;bd.scrollTop=top}}
+function stTecla(e){const l=stItens(),o=l[STM.i];
+ if(e.key=='ArrowDown'){STM.i=Math.min(STM.i+1,l.length-1);if(l[STM.i].a=='id')STM.sub=true}
+ else if(e.key=='ArrowUp')STM.i=Math.max(STM.i-1,0);
+ else if(e.key=='ArrowRight'&&o&&o.a=='id')return e.preventDefault(),stAtiva(STM.i),true;
+ else if(e.key=='ArrowLeft'&&STM.sub&&!STM.soId){STM.sub=false;STM.i=1}
+ else if(e.key=='Enter'||e.key==' ')return e.preventDefault(),stAtiva(STM.i),true;
+ else if(e.key=='Escape'){e.preventDefault();e.stopImmediatePropagation();fechaStm();return true}
+ else return false;
+ e.preventDefault();stDesenha();return true}
+addEventListener('mousedown',e=>{if(STM&&!STM.m.contains(e.target))fechaStm()},true); // clicar fora fecha o menu
 // ---- histórico de navegação: cada tela registra onde está; voltar() refaz a anterior ----
 let vista=null,hist=[],voltando=false;
 function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  if(!voltando&&vista&&!igual&&!(vista.t=='lista'&&v.t=='lista')){hist.push(vista);if(hist.length>50)hist.shift()} // digitar na busca não empilha
- vista=v;ov.largo(v.t=='testador')} // só o testador usa o painel largo
+ vista=v;fechaStm();ov.largo(v.t=='testador');ov.bau.vista(v.t=='bau')} // só o testador usa o painel largo
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else if(v.t=='enc')enciclopedia();else if(v.t=='bau')bauTela();else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
-function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer()}finally{voltando=false}}
+function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else if(v.t=='enc')enciclopedia(true);else if(v.t=='bau')bauTela()}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
 // ---- vassourinha: limpa os recentes ou desafixa tudo (com "desfazer" no rodapé) ----
 const VASS='<svg viewBox="0 0 24 24"><path d="M16 11h-1V3c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2v8H8c-2.76 0-5 2.24-5 5v7h18v-7c0-2.76-2.24-5-5-5zm3 10h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-2v-3c0-.55-.45-1-1-1s-1 .45-1 1v3H9v-3c0-.55-.45-1-1-1s-1 .45-1 1v3H5v-5c0-1.65 1.35-3 3-3h8c1.65 0 3 1.35 3 3v5z"/></svg>';
@@ -235,12 +317,14 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
  const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
   :`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
  const bo=ALL.findIndex(s=>grupo(s)===1),nd=ALL.findIndex(s=>grupo(s)===2); // boss e os sem # ficam no fim (ordena), cada um com título próprio
- if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===bo?`<h4>${t('boss')}</h4>`:i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
+ const ch=stChips(LSTF,'lst'),fl=s=>!LSTF.size||LSTF.has(stDe(s.k));
+ if(!q&&LSTF.size)bd.innerHTML=ch+(ALL.filter(fl).map(s=>row(s,true)).join('')||`<p class="mu">${t('enc_vazio')}</p>`);
+ else if(!q)bd.innerHTML=ch+(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===bo?`<h4>${t('boss')}</h4>`:i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
  else{const w=norm(q).split(/\s+/),nq=norm(q);
   if(/^gamer ?mode$/.test(nq)){bd.innerHTML=`<div class="row mini" data-gamer="1"><i class="gm0"></i><div><b>Gamer Mode</b></div></div>`;bd.scrollTop=0;return} // easter egg
   // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
   const nota=s=>{const ns=[dn(s),s.nm,...s.al].filter(Boolean).map(norm);return ns.some(n=>n.startsWith(nq))?0:ns.some(n=>n.split(' ').some(p=>p.startsWith(nq)))?1:ns.some(n=>n.includes(nq))?2:3};
-  bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2],true)).join('')||`<p class="mu">${t('nothing')}</p>`}
+  bd.innerHTML=ch+(ALL.filter(s=>fl(s)&&w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2],true)).join('')||`<p class="mu">${t('nothing')}</p>`)}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
 // ☆ fixar na tela: M.fav guarda o id e uma cópia do que a janelinha mostra (vale mesmo se a combinação sumir da base)
@@ -288,7 +372,7 @@ function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys
    <div class="el-l"><span class="mu" title="${esc(t('atk_title',{e:elN(e)}))}">${t('attack')}</span>${ch(fo,'g')}${ch(fr,'r')}${fo.length+fr.length?'':`<span class="mu">${t('neutral')}</span>`}</div>
    <div class="el-l"><span class="mu" title="${esc(t('def_title'))}">${t('defense')}</span>${ch(mais,'r')}${ch(menos,'g')}${mais.length+menos.length?'':`<span class="mu">${t('neutral')}</span>`}</div></div>`}).join('')+'</details>'}
 function ficha(k,keep){const s=K[k],m=made[k]||[],u=(used[k]||[]).slice().sort((x,y)=>(x.a!==k)-(y.a!==k)),top /* usado em: primeiro onde ele é o principal, depois secundário (cada grupo segue o ordemC, por %) */=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
- bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b> ${fvS(k)}${peIco(k)}
+ bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><span class="stb" data-stk="${esc(k)}" title="${esc(t('st_identificar')+' · '+t('st_'+stDe(k)))}">${ST_IC[stDe(k)]}</span> ${fvS(k)}${peIco(k)}
  ${a?`<div class="mu">${esc(a)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.map(elN).join(' / '))}</div>
  <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>${peSel===k?peEscolha(k):''}
  <h4>${t('where')}</h4>${(()=>{const l=lugares(k);return l.length?l.map(n=>`<span class="lk" data-mapa="${esc(n)}">${esc(nomeMapa(n))}</span>`).join(' · '):`<span class="mu">${t('no_loc')}</span>`})()}
@@ -583,11 +667,13 @@ function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.k
  <div class="bt" style="justify-content:flex-start;flex-wrap:wrap;margin-top:8px"><button class="btn" id="exp">${t('export_json')}</button><button class="btn" id="expc">${t('export_csv')}</button></div>
  <p class="mu">${t('csv_tip')}</p>
  <h4>${t('lang')}</h4><div class="lg"><button class="btn${LANG=='pt'?' on':''}" data-lang="pt">Português</button><button class="btn${LANG=='en'?' on':''}" data-lang="en">English</button></div>
+ ${MAPA_OK?`<h4>${t('bau_h')}</h4><p class="mu">${t('bau_tip')}</p><div class="tgl"><span class="sw${bauOn?' on':''}" id="baut"><i></i></span><span>${t(bauOn?'ligado':'desligado')}</span></div>`:''}
  ${MAPA_OK?`<h4>${t('mapa_h')}</h4><p class="mu">${t('mapa_tip')}</p><div class="tgl"><span class="sw${mapaOn?' on':''}" id="mapat" title="${esc(t(mapaOn?'mapa_on':'mapa_off'))}"><i></i></span><span>${t(mapaOn?'ligado':'desligado')}</span></div>${mapaOn&&mapaStatus?`<p class="mu">${esc(mapaStatus)}</p>`:''}`:''}
  ${msg?`<p class="ok">${esc(msg)}</p>`:''}`;
  nv2.onclick=()=>formCombo(null);env.onclick=envio;
  cpg.onclick=()=>{const an=Object.values(M.sk||{}).flatMap(o=>Object.values(o));M.cpp=M.cpp!==true;M.combos.forEach(c=>c.cp=M.cpp);an.forEach(a=>a.cp=M.cpp);if(!TST.ed)TST.cp=M.cpp;salva().then(()=>meus())}; // liga/desliga todas e vira o padrão das novas
 pasta.onclick=()=>ov.abrirPasta();
+ const bt=document.getElementById('baut');if(bt)bt.onclick=()=>{bauOn=!bauOn;try{localStorage.setItem('bau',bauOn?'1':'0')}catch{}ov.bau.ligar(bauOn);meus()};
  const mt=document.getElementById('mapat');if(mt)mt.onclick=()=>{mapaOn=!mapaOn;try{localStorage.setItem('mapa-tab',mapaOn?'1':'0')}catch{}
   mapaStatus=mapaOn?t('mapa_iniciando'):'';mapaAberto=false;ov.mapa.ligar(mapaOn);meus()};
  exp.onclick=async()=>{if(await ov.meus.exportar(M))meus(t('msg_backup'))};
@@ -602,13 +688,14 @@ pasta.onclick=()=>ov.abrirPasta();
   if(d.sk&&typeof d.sk=='object'){M.sk=M.sk||{};for(const sl in d.sk)if(K[sl]&&d.sk[sl]&&typeof d.sk[sl]=='object')M.sk[sl]={...(M.sk[sl]||{}),...d.sk[sl]}}
   if(d.skn&&typeof d.skn=='object')M.skn={...(M.skn||{}),...d.skn};
   if(d.skd&&typeof d.skd=='object'&&!Array.isArray(d.skd))M.skd={...(M.skd||{}),...d.skd};
+  if(d.st&&typeof d.st=='object'&&!Array.isArray(d.st))for(const k in d.st)if(K[k]&&[1,2,3].includes(d.st[k]))(M.st=M.st||{})[k]=d.st[k];
   if(typeof d.cpp=='boolean')M.cpp=d.cpp;
   if(Array.isArray(d.skc)){M.skc=Array.isArray(M.skc)?M.skc:[];d.skc.forEach(c=>{if(c&&typeof c.k=='string'&&!M.skc.some(x=>x.k===c.k))M.skc.push(c)})}
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
 let VERSAO='',PASTA='';
 // textos fixos do topo (mudam com o idioma)
 function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');chk.title=t('chk_title');qx.title=t('clear');
- inf.title=t('info_tip');tsb.title=t('tst_title');skb.title=t('sk_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+ inf.title=t('info_tip');tsb.title=t('tst_title');skb.title=t('sk_title');enb.title=t('enc_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
@@ -620,8 +707,8 @@ function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hi
  if(vista&&(vista.t=='form'||vista.t=='ficha'||vista.t=='skform')&&campo&&bd.contains(campo)){campo.focus();return}
  qi.value='';hist=[];vista=null;list();qi.focus()}
 let fechouEm=0; // quando o painel fechou (o Esc que fecha o painel não fecha os slimes do mapa)
-function close(){fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false);ov.largo(false)}
-x.onclick=close;tsb.onclick=()=>testador();skb.onclick=()=>skillsTela();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
+function close(){fechaStm();fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false);ov.largo(false)}
+x.onclick=close;tsb.onclick=()=>testador();skb.onclick=()=>skillsTela();enb.onclick=()=>enciclopedia();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
  if(e.key=='ArrowDown'){e.preventDefault();mark(sel+1)}
@@ -630,6 +717,10 @@ qi.onkeydown=e=>{
  else if(e.key=='Escape')close()};
 bd.onclick=e=>{const t=e.target;
  if(t.id=='bk')return voltar();
+ const sf=t.closest('[data-stf]');if(sf){const [c,v]=sf.dataset.stf.split(':');return stFiltro(c,+v)} // filtro de identificar (enciclopédia ou lista)
+ const bk=t.closest('[data-bk]');if(bk&&K[bk.dataset.bk])return ficha(bk.dataset.bk); // carta do baú
+ const ec=t.closest('[data-ec]');if(ec){encMarca([...bd.querySelectorAll('.ec')].indexOf(ec),true);return stMenu(ec.dataset.ec,ec,false)}
+ const sk=t.closest('[data-stk]');if(sk)return stMenu(sk.dataset.stk,sk,true);
  if(t.closest('#dlt')){DALT=!DALT;ov.dalt(DALT);return vista&&vista.t=='cor'?telaCor():gamer()}
  const cr=t.closest('[data-cor]');if(cr){const primeira=vista&&vista.t=='cor';poeCor(cr.dataset.cor);ov.escolheCor(COR);if(primeira){qi.value='';hist=[];list();qi.focus()}else gamer();return}
  if(t.closest('[data-gamer]'))return gamer();
@@ -768,6 +859,10 @@ function marcaMapa(n,k){if(!K[k])return;M.loc=M.loc||{};const s=slimesDoMapa(n),
  const q=mq.value,foco=document.activeElement===mq;salva().then(()=>{telaMapa(n);mq.value=q;mres.innerHTML=resultadosMapa(n,q);if(foco)mq.focus();
   if(mapaAberto&&mapaUlt)mostraMapa(mapaUlt)})}
 if(mapaOn){mapaStatus=t('mapa_iniciando');ov.mapa.ligar(true)}
+let bauOn=MAPA_OK;try{bauOn=MAPA_OK&&localStorage.getItem('bau')!=='0'}catch{} // baú: ligado por padrão (só Windows)
+if(bauOn)ov.bau.ligar(true);
+ov.bau.onAbrir(()=>{if(pn.hidden)open();bauTela()});
+ov.bau.onAtualizado(()=>{if(vista&&vista.t=='bau')bauTela()});
 // ---- dia / noite: vale o seu (M.per), depois o da comunidade (CM.per), depois o da base (s.pe, da wiki) ----
 const IC={sol:'<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>',lua:'<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>',nao:'<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>',esp:'<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'};
 let peSel=null; // ficha com a escolha de dia/noite aberta
@@ -783,8 +878,11 @@ ov.fav.onAbrir(k=>{if(typeof k=='string'&&k.startsWith('mapa:')){if(pn.hidden)op
 if(ov.plataforma==='darwin')addEventListener('mouseup',e=>{if(e.button===3&&!pn.hidden){e.preventDefault();voltar()}}); // no Mac chega como clique
 // teclado fora de campos de texto: V = voltar, Esc = fechar, outra letra = começa a buscar
 addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)return;const t=e.target;
+ if(STM&&stTecla(e))return;
  if(t.tagName=='INPUT'||t.tagName=='TEXTAREA'||t.isContentEditable)return;
- if(e.key=='v'||e.key=='V'){e.preventDefault();voltar()}
+ if(vista&&vista.t=='enc'&&encTecla(e))return;
+ if((e.key=='x'||e.key=='X')&&bauOn){e.preventDefault();if(vista&&vista.t=='bau')close();else bauTela()} // abre/fecha o baú
+ else if(e.key=='v'||e.key=='V'){e.preventDefault();if(vista&&vista.t=='bau')close();else voltar()} // no baú, fecha; senão volta
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
 estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
@@ -794,7 +892,7 @@ const pCor=ov.cor().then(r=>{DALT=r.dalt||r.cor.startsWith('d-');poeCor(r.cor);G
 ov.onAbrirInicio(()=>verificaVersao().then(()=>{open();if(CORPEND){CORPEND=false;telaCor()}else if(NOVA)novidadesTela()}));
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
-const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{},...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
+const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{},st:{},...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
 const pCom=ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 Promise.all([pCor,pMeus.catch(()=>{}),pCom]).then(()=>ov.pronto()); // a abertura espera isto para sair
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----

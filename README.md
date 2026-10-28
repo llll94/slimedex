@@ -71,6 +71,14 @@ As **skills do jogo** (lista da [World of Slime Wiki](https://world-of-slime-wik
 - **✎ Escrever descrição** — no detalhe da skill, troque o texto pelo que o jogo diz (até 300 letras). A sua aparece com o selo **meu**; vai no envio e, como é texto livre, toda descrição nova passa pela revisão antes de valer para todos.
 - **Compartilhar** — igual às combinações: cada anotação tem sua chave (começa como a chave geral de **⋯**) e a chave geral vale para tudo. Quando várias pessoas anotam níveis diferentes, a comunidade mostra o que mais gente mandou.
 
+### Enciclopédia e Identificar (botão do livro no topo)
+
+Todos os slimes com número, 5 por linha, mostrando o que **você** já fez no jogo: **não descoberto** (carta com o número e "?"), **descoberto** (foto em preto e branco), **capturado** (foto colorida) e **vínculo** (foto com fundo rosa). Os filtros no topo ligam e desligam (nenhum ligado mostra todos). Clique num slime para **Ir até o slime** ou **Identificar** (passando o mouse, descendo a seta ou clicando). O símbolo aparece também na lista do Ctrl+Tab (com os mesmos filtros) e na ficha, ao lado do nome. Fica só no seu computador.
+
+### Baú · beta, só Windows
+
+Um ícone de baú na tela (arrastável) guarda o que está no seu **baú do jogo**, para consultar longe dele. Com o baú do jogo aberto, passe o mouse no ícone e clique em **Capturar**: o Slimedex lê a tela, reconhece cada slime pelo desenho (comparando com as imagens da wiki) e o nível, e conta num balão de fala o que achou. Clicar no ícone (ou apertar **X**) abre o baú no painel, com o nível de cada slime; **V** fecha. A foto da tela não é guardada nem enviada: só a lista de slimes e níveis. Liga e desliga em **⋯ → Baú**.
+
 ### Slimes do mapa (Tab) · beta, só Windows
 
 Ligado em **⋯ → Slimes do mapa**, ao apertar **Tab** no jogo (o mapa ampliado) aparece uma janelinha com as fotos dos slimes que nascem no mapa em que você está — fundo off-white = dia, lilás = noite, os dois = dia e noite. Arraste para onde quiser; **Tab** de novo ou **Esc** no jogo esconde. A janelinha aparece e some no ritmo do mapa do jogo: como o jogo, ela ignora o Tab enquanto o mapa ainda está abrindo ou fechando (~0,5 s), então não sai de sincronia mesmo apertando Tab várias vezes rápido. **Adicionar / editar** abre a lista do mapa no painel: marque os slimes que você viu ou tire os que não nascem ali (inclusive os da base).
@@ -128,6 +136,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.3.0 (Windows) | `62D8066CF67057B5D3CBD3D9B4629B0BFD0C845A3CF421AAC23B9282A028288F` | em análise |
 | 2.2.1 (Windows) | `7F740746D94A437762A4E0DFFEDE4D69A6882C1308485E9265A60B91EF09698A` | [**1/63** — ver análise](https://www.virustotal.com/gui/file/7f740746d94a437762a4e0dffede4d69a6882c1308485e9265a60b91ef09698a/detection) |
 | 2.2.1 (Mac, chip Apple) | `627C2686DB188DB7C10202D61A86E805113B4595B0CB13577B8E66D8F3A3C684` | — |
 | 2.2.1 (Mac, Intel) | `35EB2DB3DCA0C1B3ADC3332E7446EE6BE8AD163E59673E903058DA2993836721` | — |
@@ -183,7 +192,7 @@ Os hashes dos `.dmg` de Mac ficam no arquivo `SHA256-mac.txt` gerado junto pelo 
 Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o arquivo se chamava Slimepedia-…
 ```
 
-O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
+O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab; com o Baú ligado, observa só as teclas X e V e o botão do mouse, e fotografa a tela apenas quando você clica em Capturar, sem guardar a foto) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
 
 ## Rodar a partir do código
 

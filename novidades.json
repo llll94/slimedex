@@ -2,6 +2,25 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.3.0",
+      "prints": [
+        "enc",
+        "bau"
+      ],
+      "pt": [
+        "Enciclopédia (botão do livro no topo): todos os slimes com número, mostrando o que você já descobriu, capturou e vinculou no jogo, com filtros",
+        "Identificar: marque cada slime como não descoberto, descoberto, capturado ou vínculo, com os símbolos do jogo. O símbolo aparece também na lista do Ctrl+Tab (com filtro) e na ficha",
+        "Baú (beta, só Windows): com o baú do jogo aberto, passe o mouse no ícone de baú e clique em Capturar. O Slimedex lê os slimes e os níveis e conta num balão o que achou",
+        "Clique no ícone do baú (ou aperte X) para ver no Slimedex o que está no seu baú, mesmo longe dele. V fecha"
+      ],
+      "en": [
+        "Encyclopedia (book button at the top): every numbered slime, showing what you have discovered, captured and bonded in the game, with filters",
+        "Identify: mark each slime as undiscovered, discovered, captured or bond, with the game symbols. The symbol also shows in the Ctrl+Tab list (with a filter) and on the card",
+        "Chest (beta, Windows only): with the in-game chest open, hover the chest icon and click Capture. Slimedex reads the slimes and their levels and tells you in a speech bubble what it found",
+        "Click the chest icon (or press X) to see in Slimedex what is in your chest, even when you are away from it. V closes it"
+      ]
+    },
+    {
       "v": "2.2.1",
       "prints": [
         "tst-nc",

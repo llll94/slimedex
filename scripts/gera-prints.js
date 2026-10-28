@@ -12,7 +12,11 @@ const EXEMPLO = { pt: {}, pc: {}, votos: {}, num: {}, fav: [], loc: {}, per: {},
   sk: { SL_Bass_WaterGround: { Aqua_Barrier: { l: 26, cp: true, ts: 1 } } }, skn: { Aqua_Barrier: 'Barreira Aquática' }, skc: [], combos: [
   { id: 't1', r: 'SL_Starfish_WaterFire', a: 'SL_Slime_Water', b: 'SL_Slime_Fire', m: '', l: '13', ch: 30, nt: [], tst: 1, cp: true },
   { id: 't2', r: null, a: 'SL_Kobold_Steel', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, cp: false },
-  { id: 't3', r: null, a: 'SL_Slime_Water', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, nc: 1, cp: true }] }; // 🚫 não combina
+  { id: 't3', r: null, a: 'SL_Slime_Water', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, nc: 1, cp: true }], // 🚫 não combina
+  // identificar (enciclopédia): capturado, descoberto, vínculo…
+  st: { SL_Slime_Water: 2, SL_Slime_Grass: 1, SL_Slime_Fire: 3, SL_SlimeSM_Water: 2, SL_SlimeSM_Fire: 1, SL_SlimeM_Grass: 2, SL_SlimeL_Grass: 3, SL_Tricky_Wind: 2, SL_Tricky_Power: 1 } };
+// baú de exemplo (o do print do Lucas): 12 slimes com nível e 4 vagas vazias
+const BAU_EX = { ts: Date.now() - 5 * 60e3, g: { x: 252, y: 158 }, v: [['SL_Lizard_Ground', 12], ['SL_Tricky_Power', 8], ['SL_Eel_WaterPower', 10], ['SL_Tricky_Wind', 2], ['SL_Bass_Water', 4], ['SL_Mandrake_Grass', 7], ['SL_Mandrake_Grass', 7], ['SL_HermitCrab_WaterSteel', 8], ['SL_Slime_Fire', 10], ['SL_HermitCrab_WaterPower', 7], ['SL_Shade_DarkWater', 13], ['SL_Shade_DarkWater', 13], 0, 0, 0, 0].map(c => c ? { k: c[0], lv: c[1] } : 0) };
 const MAPA = 'Clareira Esquecida';
 const VESPETE = 'SL_Honet_WindElectric';
 
@@ -25,6 +29,9 @@ const TELAS = {
   form: `formCombo('${VESPETE}')`,
   testador: "TST={a:rot(K.SL_Kobold_Steel),b:rot(K.SL_HermitCrab_WaterPower),m:'',r:rot(K.SL_Mercury_SteelPower),l:'19',ch:'',cp:false,ed:null,msg:'',mais:false};testador()",
   'tst-nc': "TST={a:rot(K.SL_Slime_Water),b:rot(K.SL_Slime_Grass),m:'',r:'',l:'',ch:'',cp:true,ed:null,msg:'',mais:false};testador()",
+  enc: "ENCF.clear();enciclopedia()",
+  'enc-menu': "ENCF.clear();enciclopedia();const c=document.querySelector('.ec.s2');stMenu(c.dataset.ec,c,false);STM.sub=true;STM.i=1;stDesenha()",
+  bau: 'bauTela()',
   'mapa-tela': `telaMapa('${MAPA}')`,
   'sk-ficha': "ficha('SL_Bass_WaterGround');secsk.open=true",
   'sk-form': "skillForm({s:'SL_Bass_WaterGround'});SKF.q='barreira';SKF.k='Aqua_Barrier';SKF.lv='26';skillForm()",
@@ -63,6 +70,7 @@ async function foto(c, arq, clip) {
 (async () => {
   const dados = fs.mkdtempSync(path.join(os.tmpdir(), 'slimedex-prints-'));
   fs.writeFileSync(path.join(dados, 'meus-dados.json'), JSON.stringify(EXEMPLO));
+  fs.writeFileSync(path.join(dados, 'bau.json'), JSON.stringify(BAU_EX));
   fs.writeFileSync(path.join(dados, 'aparencia.json'), JSON.stringify({ cor: 'azul' })); // cor já escolhida: o app não abre pedindo a cor
   fs.mkdirSync(SAIDA, { recursive: true });
   const app = spawn(require('electron'), [RAIZ, `--remote-debugging-port=${PORTA}`, '--force-device-scale-factor=2'],

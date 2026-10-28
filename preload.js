@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('ov',{size:o=>ipcRenderer.send('size',o),largo:o
   // combinações fixadas na tela: fav = lado do painel, pin = a janelinha de cada uma
   fav:{sync:l=>ipcRenderer.send('fav-sync',l),onRemovido:cb=>ipcRenderer.on('fav-removido',(_,id)=>cb(id)),onAbrir:cb=>ipcRenderer.on('abrir-ficha',(_,k)=>cb(k)),onOculto:cb=>ipcRenderer.on('fav-oculto',(_,id)=>cb(id))},
   // slimes do mapa (Tab): liga o leitor de tela e mostra/esconde a janelinha; a janelinha usa a mesma ponte 'pin'
+  bau:{ligar:on=>ipcRenderer.send('bau-ligar',on),ler:()=>ipcRenderer.invoke('bau-ler'),vista:on=>ipcRenderer.send('bau-vista',on),onAbrir:cb=>ipcRenderer.on('abrir-bau',()=>cb()),onAtualizado:cb=>ipcRenderer.on('bau-atualizado',()=>cb())},
   mapa:{ligar:on=>ipcRenderer.send('mapa-ligar',on),preparar:f=>ipcRenderer.send('mapa-preparar',f),mostrar:d=>ipcRenderer.send('mapa-mostrar',d),esconder:()=>ipcRenderer.send('mapa-esconder'),
     onEvento:cb=>ipcRenderer.on('mapa-evento',(_,e)=>cb(e)),onFechado:cb=>ipcRenderer.on('mapa-fechado',()=>cb()),onEscolha:cb=>ipcRenderer.on('mapa-escolha',(_,n)=>cb(n))},
   pin:{onDados:cb=>ipcRenderer.on('pin-dados',(_,d)=>cb(d)),onEntra:cb=>ipcRenderer.on('mapa-entra',()=>cb()),onSai:cb=>ipcRenderer.on('mapa-sai',()=>cb()),onFotos:cb=>ipcRenderer.on('pre-fotos',(_,f)=>cb(f)),tamanho:(w,h)=>ipcRenderer.send('pin-tamanho',w,h),fechar:()=>ipcRenderer.send('pin-fechar'),ocultar:()=>ipcRenderer.send('pin-ocultar'),abrir:k=>ipcRenderer.send('pin-abrir',k),escolhe:n=>ipcRenderer.send('mapa-escolha',n)}});

@@ -91,6 +91,51 @@ static class LeitorTela {
     }
     return 0;
   }
+  // baú: atalhos com o jogo em primeiro plano — X abre/fecha o baú, V fecha. Só olha essas 2 teclas (sem segurar: o jogo
+  // continua recebendo); com Ctrl, Alt ou a tecla Windows não conta; no próprio Slimedex quem cuida é o painel.
+  // Também avisa quando o botão esquerdo do mouse é apertado (sem posição: o Slimedex confere onde está o cursor), para
+  // fechar o baú com um clique fora dele
+  static int Teclas(string[] args) {
+    int pai = 0; for (int i = 0; i + 1 < args.Length; i++) if (args[i] == "-pai") int.TryParse(args[i + 1], out pai);
+    Console.OutputEncoding = new UTF8Encoding(false);
+    bool x = false, v = false, m = false; int volta = 0;
+    while (true) {
+      Thread.Sleep(25);
+      if (pai != 0 && ++volta % 80 == 0) { try { Process.GetProcessById(pai); } catch { return 0; } } // o Slimedex fechou
+      bool ax = Apertada(0x58), av = Apertada(0x56), mod = Apertada(0x11) || Apertada(0x12) || Apertada(0x5B) || Apertada(0x5C);
+      if (((ax && !x) || (av && !v)) && !mod) {
+        string nome = NomeDe(Janela()[4]);
+        if (nome.IndexOf("slime", StringComparison.OrdinalIgnoreCase) >= 0 && !Meus.Contains(nome)) Manda("{\"ev\":\"tecla\",\"k\":\"" + (ax && !x ? "x" : "v") + "\"}");
+      }
+      bool am = Apertada(0x01); if (am && !m) Manda("{\"ev\":\"clique\"}");
+      x = ax; v = av; m = am;
+    }
+  }
+  // baú: para cada recorte (o rodapé de uma carta), o texto escuro ("LV12" azul-marinho) vira preto no branco, ampliado 3×, e vai pro OCR
+  static int Niveis(string[] a) {
+    Console.OutputEncoding = new UTF8Encoding(false);
+    ocr = OcrEngine.TryCreateFromLanguage(new Language("pt-BR")) ?? OcrEngine.TryCreateFromUserProfileLanguages();
+    var l = new System.Collections.Generic.List<string>();
+    using (var img = new Bitmap(a[0])) foreach (var r in a.Skip(1)) {
+      var n = r.Split(',').Select(int.Parse).ToArray(); string t;
+      try { t = Escuro(img, n[0], n[1], n[2], n[3]); } catch { t = ""; }
+      l.Add(t);
+    }
+    Manda("{\"niveis\":[" + string.Join(",", l.Select(J)) + "]}");
+    return 0;
+  }
+  static string Escuro(Bitmap img, int x, int y, int w, int h) {
+    int esc = 3, W = w * esc, H = h * esc; byte[] px;
+    using (var big = new Bitmap(W, H, PixelFormat.Format32bppArgb)) {
+      using (var g = Graphics.FromImage(big)) { g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic; g.DrawImage(img, new Rectangle(0, 0, W, H), new Rectangle(x, y, w, h), GraphicsUnit.Pixel); }
+      var d = big.LockBits(new Rectangle(0, 0, W, H), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+      px = new byte[W * H * 4];
+      for (int lin = 0; lin < H; lin++) Marshal.Copy(d.Scan0 + lin * d.Stride, px, lin * W * 4, W * 4);
+      big.UnlockBits(d);
+    }
+    for (int i = 0; i < px.Length; i += 4) { byte v = (byte)((px[i] + px[i + 1] + px[i + 2]) / 3 < 120 ? 0 : 255); px[i] = px[i + 1] = px[i + 2] = v; px[i + 3] = 255; }
+    return Ocr(px, W, H);
+  }
   [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
   [DllImport("user32.dll")] static extern bool BringWindowToTop(IntPtr h);
   [DllImport("user32.dll")] static extern bool AttachThreadInput(uint de, uint para, bool liga);
@@ -113,6 +158,7 @@ static class LeitorTela {
   static int Main(string[] args) {
     int ifo = Array.IndexOf(args, "-foco"); long hw; // leitor-tela.exe -foco <hwnd>
     if (ifo >= 0) return ifo + 1 < args.Length && long.TryParse(args[ifo + 1], out hw) ? Foco(new IntPtr(hw)) : 2;
+    if (Array.IndexOf(args, "-teclas") >= 0) return Teclas(args); // baú: atalhos X/V (sem OCR)
     return Leitor(args);
   }
   [MethodImpl(MethodImplOptions.NoInlining)]
@@ -120,6 +166,8 @@ static class LeitorTela {
     int pai = 0; for (int i = 0; i + 1 < args.Length; i++) if (args[i] == "-pai") int.TryParse(args[i + 1], out pai);
     int ia = Array.IndexOf(args, "-arquivo"); // teste: leitor-tela.exe -arquivo print1.png print2.png ...
     if (ia >= 0) return Teste(args.Skip(ia + 1).ToArray());
+    int inv = Array.IndexOf(args, "-niveis"); // baú: leitor-tela.exe -niveis print.png x,y,w,h x,y,w,h ...
+    if (inv >= 0) return Niveis(args.Skip(inv + 1).ToArray());
     Console.OutputEncoding = new UTF8Encoding(false);
     try {
       SetProcessDPIAware();
