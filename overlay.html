@@ -6,7 +6,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:transparent;font:13px 
 #pn{height:100%;display:flex;flex-direction:column;background:rgba(24,28,33,.95);border:1px solid #2d333a;border-radius:14px;overflow:hidden}
 #hd{display:flex;gap:6px;padding:8px;-webkit-app-region:drag;border-bottom:1px solid #2d333a}#hd *{-webkit-app-region:no-drag}
 input{flex:1;min-width:0;background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:6px 9px;font:inherit;user-select:text}
-input:focus{outline:none;border-color:#4d79c7}
+input:focus,textarea:focus{outline:none;border-color:#4d79c7}
+textarea{background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:6px 9px;font:inherit;font-size:12px;user-select:text;resize:vertical;width:100%;box-sizing:border-box}
 button{background:none;border:0;color:#9aa3ad;font-size:16px;cursor:pointer}button:hover{color:#fff}
 /* busca com × para limpar dentro do campo */
 #qw{position:relative;flex:1;display:flex;min-width:0}#qw input{padding-right:26px}
@@ -39,10 +40,6 @@ h4{margin:10px 0 4px;font-size:11px;color:#9aa3ad;text-transform:uppercase}
 .pc.vazio{background:transparent;color:#5c6670;border:1px dashed #3a414a;font-weight:400}.pc:hover{filter:brightness(1.3)}
 .pc.ed{box-shadow:inset 0 0 0 1px #7fe0a8}
 input.mini{flex:none;width:58px;margin-left:auto;padding:1px 6px;font-size:12px}
-.vt{display:inline-flex;gap:2px}.pc+.vt{margin-left:4px} /* ordem: % e depois 👍/👎 */
-.vb{display:inline-flex;align-items:center;gap:2px;padding:1px 4px;border-radius:7px;color:#5c6670;line-height:0}.vb svg{width:14px;height:14px;fill:currentColor}
-.vb:hover{color:#9aa3ad}.vb.up.on{color:#7fe0a8;background:#1f3a2c}.vb.dn.on{color:#ff9a9a;background:#3d2226}
-.vb i{font-style:normal;font-size:10px;line-height:14px;color:#9aa3ad}.vb.on i{color:inherit}
 .meu{font-size:10px;padding:0 5px;border-radius:6px;background:#2b3440;color:#8fb8ff}
 .del{cursor:pointer;font-size:11px;color:#9aa3ad}.del:hover{color:#ff7b7b}
 /* ícone de item (do tamanho do texto) e drops da ficha */
@@ -132,7 +129,9 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app';S.forEach(s=>K[s.k]=s);
 S.forEach(s=>s.n0=s.n); // número da base (o número exibido pode vir do usuário ou da comunidade)
-let ALL=[];const ordena=()=>{ALL=[...S].sort((a,b)=>(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm))};ordena(); // numerados primeiro, depois por nome
+const BOSS=new Set(['SL_DwarfBoss_MagicDark']); // boss não é capturável: grupo próprio na lista (os outros ainda sem nome conhecido)
+const grupo=s=>BOSS.has(s.k)?1:s.n!=null?0:2; // 0 numerados · 1 boss · 2 não descobertos
+let ALL=[];const ordena=()=>{ALL=[...S].sort((a,b)=>grupo(a)-grupo(b)||(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm))};ordena(); // numerados primeiro, depois boss, depois por nome
 const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const im=p=>p?`<img alt="" src="${BASE}${p}">`:'<i class="mu">?</i>'; // direto da wiki: vem do cache do app (a wiki manda guardar por 1 ano)
@@ -151,7 +150,7 @@ let CM=null; // comunidade.json (merge diário): combos, pc, pt, votos
 let CMnova=null,NOVA=null,ATUALIZADO=false,ultimaChecagem=Date.now(); // base nova já baixada, ainda não aplicada; NOVA = versão nova do app no GitHub
 function novasCombos(){return CMnova?Math.max(0,(CMnova.combos||[]).length-((CM&&CM.combos)||[]).length):0}
 let CA=[]; // combinações da base/comunidade apagadas (por você ou aprovado pela comunidade)
-let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[]},C=[],made={},used={},LBL={};
+let M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{}},C=[],made={},used={},LBL={};
 const cid=c=>c.id||[c.a,c.b,c.r,c.m].join('|'); // id estável de uma combinação da base
 const chaveC=c=>c.a+'+'+c.b+'>'+c.r; // mesmos slimes, na mesma ordem, e resultado (A + B e B + A são combinações diferentes)
 const pcBase=c=>{const t=(c.nt||[]).join(' ').match(/(\d+(?:[.,]\d+)?)\s*%/);return t?parseFloat(t[1].replace(',','.')):null};
@@ -164,9 +163,9 @@ function monta(){
   s.h=norm([s.pt,s.nm,...s.al,s.n,s.el.join(' '),s.el.map(e=>EL_EN[e]||'').join(' '),s.lc.join(' '),s.lc.map(l=>(D.locEn&&D.locEn[l])||'').join(' ')].join(' '))});
  const cpc=(CM&&CM.pc)||{},cvt=(CM&&CM.votos)||{};
  const naBase=new Set(D.combos.filter(c=>c.r).map(chaveC)); // a da comunidade que já virou base (versão nova) não repete
- const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&(K[c.r]||(c.r==null&&c.ts))&&K[c.a]&&K[c.b]&&!naBase.has(chaveC(c))) // sem resultado: teste compartilhado (selo teste)
-  .map(c=>({id:c.id,r:c.r||null,...(c.r?{}:{ts:1}),a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
- C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true,...(c.r?{}:{ts:1})}))]; // seu teste sem resultado também leva o selo teste
+ const com=((CM&&Array.isArray(CM.combos))?CM.combos:[]).filter(c=>c&&typeof c.id=='string'&&(K[c.r]||(c.r==null&&(c.ts||c.nc)))&&K[c.a]&&K[c.b]&&!naBase.has(chaveC(c))) // sem resultado: teste compartilhado (selo teste)
+  .map(c=>({id:c.id,r:c.r||null,...(c.r?{}:c.nc?{nc:1}:{ts:1}),a:c.a,b:c.b,m:String(c.m||''),l:String(c.l||''),ch:c.id in M.pc?M.pc[c.id]:(typeof c.ch=='number'?c.ch:null),n:c.n|0,com:true,nt:[]}));
+ C=[...D.combos.map(c=>{const id=cid(c),pb=pcBase(c);return{...c,ch:id in M.pc?M.pc[id]:pb!=null?pb:(cpc[id]&&typeof cpc[id].ch=='number'?cpc[id].ch:null)}}),...com,...M.combos.map(c=>({...c,meu:true,...(c.r||c.nc?{}:{ts:1})}))]; // seu teste sem resultado também leva o selo teste
  // combinação sua igual a uma da base/comunidade vira uma linha só, com o que cada uma tem de informação
  // c.alvo = presa a uma combinação da base/comunidade: modo 'editar' substitui os campos, 'juntar' só completa o que falta;
  // sem alvo, junta sozinha com a igual (mesmos slimes, mesmo resultado, material compatível)
@@ -235,8 +234,8 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
  const fx=(M.fav||[]).filter(f=>K[f.r]).map(f=>f.id.startsWith('s:')?`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(rot(K[f.r]))}</b></div>${sw(f)}</div>`
   :`<div class="row mini" data-k="${esc(f.r)}">${im(K[f.r].im)}<div><b>${esc(f.tx.r)}</b><div class="mu">= ${esc(f.tx.a)} + ${esc(f.tx.b)}${f.l?' · '+esc(f.lv+' '+f.l):''}</div></div>${sw(f)}</div>`);
- const nd=ALL.findIndex(s=>s.n==null); // os sem # ficam no fim (ordena), com título próprio
- if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
+ const bo=ALL.findIndex(s=>grupo(s)===1),nd=ALL.findIndex(s=>grupo(s)===2); // boss e os sem # ficam no fim (ordena), cada um com título próprio
+ if(!q)bd.innerHTML=(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===bo?`<h4>${t('boss')}</h4>`:i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
  else{const w=norm(q).split(/\s+/),nq=norm(q);
   if(/^gamer ?mode$/.test(nq)){bd.innerHTML=`<div class="row mini" data-gamer="1"><i class="gm0"></i><div><b>Gamer Mode</b></div></div>`;bd.scrollTop=0;return} // easter egg
   // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
@@ -244,11 +243,6 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
   bd.innerHTML=ALL.filter(s=>w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2],true)).join('')||`<p class="mu">${t('nothing')}</p>`}
  bd.scrollTop=0}
 const lk=k=>K[k]?`<span class="lk" data-k="${esc(k)}">${esc(nm(k))}</span>`:esc(k||'?');
-// votos 👍/👎: um por combinação (clicar de novo desfaz); c.v={u,d} e c.cz (contestada) vêm da base mesclada
-// ícones: paths do Material Icons "thumb_up"/"thumb_down" (licença Apache 2.0)
-const UP='<svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
-const DN='<svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>';
-const vt=c=>{const id=cid(c),v=M.votos[id]||0,p=c.v||{};return`<span class="vt"><button class="vb up${v==1?" on":""}" data-voto="${esc(id)}" data-v="1" title="${esc(t('up'))}">${UP}${p.u?`<i>${p.u}</i>`:""}</button><button class="vb dn${v==-1?" on":""}" data-voto="${esc(id)}" data-v="-1" title="${esc(t('down'))}">${DN}${p.d?`<i>${p.d}</i>`:""}</button></span>`};
 // ☆ fixar na tela: M.fav guarda o id e uma cópia do que a janelinha mostra (vale mesmo se a combinação sumir da base)
 const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
 const fvS=k=>{const on=(M.fav||[]).some(f=>f.id==='s:'+k);return`<span class="fv${on?' on':''}" data-fav="s:${esc(k)}" title="${esc(t(on?'fav_off':'fav_slime_title'))}">${on?'★':'☆'}</span>`};
@@ -272,16 +266,17 @@ function favorita(id,el){const i=M.fav.findIndex(f=>f.id===id);
 // selo "teste": veio da planilha e ninguém confirmou (👍 ou envio); o seu 👍 já tira no seu app
 const confirmada=c=>!!c.r&&((M.votos||{})[cid(c)]===1||(CM&&Array.isArray(CM.conf)&&CM.conf.includes(cid(c)))); // sem resultado não tem o que confirmar
 // combinação em 2 linhas: nomes em cima; material, nível, selos, % e votos embaixo
-const rc=(c,res)=>`<div class="rc"><div class="l1">${res?(c.r?`${im(K[c.r].im)}${lk(c.r)} =`:`${im(null)} =`):''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
+const rc=(c,res)=>`<div class="rc"><div class="l1">${res?(c.r?`${im(K[c.r].im)}${lk(c.r)} =`:c.nc?'🚫 ':`${im(null)} =`):''}${im(K[c.a]?.im)}${lk(c.a)} + ${im(K[c.b]?.im)}${lk(c.b)}</div><div class="l2">`+
  [c.m?ii(matIco(c.m))+esc(matN(c.m)):'',c.l!=null&&c.l!==''?t('lv')+' '+esc(c.l):''].filter(Boolean).map((x,i)=>`<span class="mu">${i?'· ':''}${x}</span>`).join('')+
  `${c.com?` <span class="meu" style="background:#1d3346;color:#8fd0ff" title="${esc(t('community_title',{n:c.n}))}">${t('community')}</span>`:""}`+
  `${c.ts&&!confirmada(c)?` <span class="meu" style="background:#3a3220;color:#ffd479" title="${esc(t(c.r?'teste_title':'teste_title_sem'))}">${t('teste')}</span>`:""}`+
+ `${c.nc?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('nc_title'))}">${t('nc')}</span>`:""}`+
  `${c.cz?` <span class="meu" style="background:#3d2226;color:#ff9a9a" title="${esc(t('contested_title'))}">${t('contested')}</span>`:""}`+
  `${c.meu||c.meuId?` <span class="meu">${t(c.editado?'editado':'mine')}</span>`:''}`+
  `<span class="ac"><span data-ed="${esc(cid(c))}" title="${esc(t('edit_title'))}"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span>${c.meu&&c.gemeo?`<span data-jn="${esc(c.id)}" title="${esc(t('juntar_title'))}">⇄</span>`:''}`+
  `${c.meu||c.meuId?`<span class="del" data-del="${esc(c.meu?c.id:c.meuId)}" title="${esc(t(c.editado?'del_title_edit':c.meuId?'del_title_junta':'del_title'))}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></span>`
   :`<span class="del" data-apaga="${esc(cid(c))}" title="${esc(t('apagar_title'))}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></span>`}</span>`+
- `<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>${c.meu?"":vt(c)}${fv(c)}</div></div>`;
+ `${c.nc?'':`<span class="pc${c.ch==null?' vazio':''}${!c.meu&&cid(c) in M.pc?' ed':''}" data-pc="${esc(cid(c))}" title="${esc(t('chance_title'))}">${c.ch==null?'+ %':'~'+c.ch+'%'}</span>`}${fv(c)}</div></div>`; // não combina: sem chance
 // vantagens por elemento (tabela da wiki: D.tab[ataque][defensor]); com 2 elementos, mostra cada um separado
 function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys(T);
  const ch=(a,c)=>a.map(x=>`<span class="el ${c}">${esc(elN(x))}</span>`).join('');
@@ -292,7 +287,7 @@ function elems(s){const T=D.tab;if(!T||!s.el.length)return'';const E=Object.keys
    return`<div class="eb"><b>${esc(elN(e))}</b>
    <div class="el-l"><span class="mu" title="${esc(t('atk_title',{e:elN(e)}))}">${t('attack')}</span>${ch(fo,'g')}${ch(fr,'r')}${fo.length+fr.length?'':`<span class="mu">${t('neutral')}</span>`}</div>
    <div class="el-l"><span class="mu" title="${esc(t('def_title'))}">${t('defense')}</span>${ch(mais,'r')}${ch(menos,'g')}${mais.length+menos.length?'':`<span class="mu">${t('neutral')}</span>`}</div></div>`}).join('')+'</details>'}
-function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
+function ficha(k,keep){const s=K[k],m=made[k]||[],u=(used[k]||[]).slice().sort((x,y)=>(x.a!==k)-(y.a!==k)),top /* usado em: primeiro onde ele é o principal, depois secundário (cada grupo segue o ordemC, por %) */=bd.scrollTop,a=alt(s);if(!keep)lembra(k);sel=-1;cur=k;marca({t:'ficha',k});if(document.activeElement===qi)qi.blur();
  bd.innerHTML=`${voltarLk()}<div class="fh">${im(s.im)}<div><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b> ${fvS(k)}${peIco(k)}
  ${a?`<div class="mu">${esc(a)}</div>`:''}${s.al.length?`<div class="mu">${esc(s.al.join(', '))}</div>`:''}<div class="mu">${esc(s.el.map(elN).join(' / '))}</div>
  <div id="ptw"><span class="lk sm" id="ptedit">${s.pt?t('pt_edit'):t('pt_add')}</span>${s.n0==null?` <span class="mu">·</span> <span class="lk sm" id="numedit">${s.n!=null?t('num_edit'):t('num_add')}</span>`:''}</div><div id="nume" class="err"></div></div></div>${peSel===k?peEscolha(k):''}
@@ -303,9 +298,10 @@ function ficha(k,keep){const s=K[k],m=made[k]||[],u=used[k]||[],top=bd.scrollTop
  <h4>${t('how',{n:m.length})}</h4>${m.map(c=>rc(c,0)).join('')||`<p class="mu" style="margin:4px 0">${t('no_combo')}</p>`}
  ${(()=>{const a=CA.filter(c=>(M.apaga||[]).includes(cid(c))&&[c.r,c.a,c.b].includes(k));return a.length?`<p class="mu">${t('apagadas')} ${a.map(c=>`${esc(nm(c.r)||'?')} = ${esc(nm(c.a))} + ${esc(nm(c.b))} <span class="lk sm" data-desapaga="${esc(cid(c))}" title="${esc(t('desapagar_title'))}">↺</span>`).join(' · ')}</p>`:''})()}
  <button class="btn pri" id="addc" style="margin:6px 0">${t('new_btn')}</button> <button class="btn" id="tstc" style="margin:6px 0">${t('tst_btn')}</button>
- ${(()=>{const ok=u.filter(c=>c.r),sem=u.filter(c=>!c.r); // as "?" (só testadas) ficam num bloco fechado
+ ${(()=>{const ok=u.filter(c=>c.r),sem=u.filter(c=>!c.r&&!c.nc),nc=u.filter(c=>c.nc); // as "?" (só testadas) e as que não combinam ficam em blocos fechados
   return`<h4>${t('used',{n:ok.length})}</h4>${ok.map(c=>rc(c,1)).join('')||'<span class="mu">—</span>'}`+
-  (sem.length?`<details class="sec"><summary>${t('testadas',{n:sem.length})}</summary>${sem.map(c=>rc(c,1)).join('')}</details>`:'')})()}
+  (sem.length?`<details class="sec"><summary>${t('testadas',{n:sem.length})}</summary>${sem.map(c=>rc(c,1)).join('')}</details>`:'')+
+  (nc.length?`<details class="sec"><summary>${t('nc_sec',{n:nc.length})}</summary>${nc.map(c=>rc(c,1)).join('')}</details>`:'')})()}
  `;bd.scrollTop=keep?top:0;
  for(const [el,ch] of [[window.secel,'elem-aberto'],[window.secsk,'skills-aberto']])if(el)el.ontoggle=()=>{try{localStorage.setItem(ch,el.open?'1':'0')}catch{}}} // aberto/fechado fica lembrado
 // ⇄ juntar: prende a sua combinação à igual (completa o que falta nela); se a igual também for sua, junta as duas
@@ -362,7 +358,7 @@ const LIXO='<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2
 // possibilidade: a conhecida mostra a chance real; a estimativa mostra barra e % em itálico
 const linhaP=(k,sel,ch,p)=>{const s=K[k],lv=nivelDe(k);return`<div class="tp${sel===k?' on':''}" data-tr="${esc(k)}" title="${esc(t('tst_pick'))}">${im(s.im)}<div class="nm"><b>${s.n!=null?'#'+s.n+' ':''}${esc(dn(s))}</b><div class="mu">${esc(s.el.map(elN).join(' / '))}${lv?' · '+t('lv')+' '+esc(lv):''}</div></div>`+
  (p==null?`<span class="pc${ch==null?' vazio':''}">${ch==null?'?':'~'+ch+'%'}</span>`:`<span class="br"><i style="width:${Math.max(2,Math.round(p*100))}%"></i></span><span class="es">${p<.01?'<1%':'~'+Math.round(p*100)+'%'}</span>`)+'</div>'};
-const linhaT=c=>`<div class="tm${TST.ed===c.id?' on':''}" data-te="${esc(c.id)}">${im(c.r&&K[c.r]?K[c.r].im:null)}<div class="nm"><b>${c.r?esc(nm(c.r)):'?'}</b> <span class="mu">= ${esc(nm(c.a))} + ${esc(nm(c.b))}</span><div class="mu">${[c.m?esc(matN(c.m)):'',c.l?t('lv')+' '+esc(c.l):'',c.ch!=null?'~'+c.ch+'%':''].filter(Boolean).join(' · ')}</div></div>`+
+const linhaT=c=>`<div class="tm${TST.ed===c.id?' on':''}" data-te="${esc(c.id)}">${im(c.r&&K[c.r]?K[c.r].im:null)}<div class="nm"><b>${c.r?esc(nm(c.r)):c.nc?'🚫':'?'}</b> <span class="mu">${c.nc?'':'= '}${esc(nm(c.a))} + ${esc(nm(c.b))}</span><div class="mu">${[c.nc?t('nc'):'',c.m?esc(matN(c.m)):'',c.l?t('lv')+' '+esc(c.l):'',c.ch!=null?'~'+c.ch+'%':''].filter(Boolean).join(' · ')}</div></div>`+
  `<span class="sw${c.cp?' on':''}" data-tcp="${esc(c.id)}" title="${esc(t('tst_cp')+' · '+t(c.cp?'tst_cp_on':'tst_cp_off'))}"><i></i></span><span class="del" data-tdel="${esc(c.id)}" title="${esc(t('del_title'))}">${LIXO}</span></div>`;
 function testador(o){o=o||{};
  if(o.a&&K[o.a])TST={a:rot(K[o.a]),b:'',m:'',r:'',l:'',ch:'',cp:M.cpp===true,ed:null,msg:'',mais:false};
@@ -377,7 +373,7 @@ function testador(o){o=o||{};
  <label>${t('level')}</label><input id="tsl" placeholder="${esc(t('opt_ph'))}" value="${esc(TST.l)}">
  <label>${t('chance')}</label><input id="tsp" type="number" min="0" max="100" placeholder="${esc(t('opt_ph'))}" value="${esc(TST.ch)}">
  <div class="tgl"><span class="sw${TST.cp?' on':''}" id="tscp"><i></i></span><span>${t('tst_cp')}</span><span class="mu">· ${t(TST.cp?'tst_cp_on':'tst_cp_off')}</span></div>
- <div class="bt"><span class="err" id="tse"></span><button class="btn" id="tslimpa">${t('tst_limpar')}</button><button class="btn pri" id="tssalva">${t('tst_salvar')}</button></div></div>
+ <div class="bt"><span class="err" id="tse"></span><button class="btn" id="tslimpa">${t('tst_limpar')}</button><button class="btn" id="tsnc" title="${esc(t('nc_btn_title'))}">${t('nc_btn')}</button><button class="btn pri" id="tssalva">${t('tst_salvar')}</button></div></div>
  ${TST.msg?`<p class="ok">${esc(TST.msg)}</p>`:''}
  <h4>${t('tst_meus',{n:meusT.length})}</h4>${meusT.map(linhaT).join('')||`<p class="mu">${t('tst_vazio')}</p>`}</div>
  <div id="tsres"></div></div>`;
@@ -390,9 +386,16 @@ function testador(o){o=o||{};
   const r=String(TST.r).trim()?chave(TST.r):null;if(String(TST.r).trim()&&!r){tse.textContent=t('tst_err_res');return}
   if(r&&(r===a||r===b)){tse.textContent=t('form_err_self');return}
   const p=String(TST.ch).trim(),novo={r,a,b,m:String(TST.m).trim(),l:String(TST.l).trim(),ch:p===''?null:Math.max(0,Math.min(100,+p)),nt:[],tst:1,cp:!!TST.cp};
-  const ig=M.combos.find(x=>x.id===TST.ed)||M.combos.find(x=>x.tst&&x.a===a&&x.b===b&&(x.r||null)===r); // o mesmo teste de novo: atualiza
-  if(ig)Object.assign(ig,novo);else M.combos.push({id:'t'+Date.now(),...novo});
+  const ig=M.combos.find(x=>x.id===TST.ed)||M.combos.find(x=>x.tst&&!x.nc&&x.a===a&&x.b===b&&(x.r||null)===r); // o mesmo teste de novo: atualiza
+  if(ig){Object.assign(ig,novo);delete ig.nc}else M.combos.push({id:'t'+Date.now(),...novo}); // editou um "não combina" e salvou como teste: deixa de ser
   await salva();monta();TST={...TST,r:'',l:'',ch:'',ed:null,msg:t('tst_salvo')};testador()}; // slimes e material ficam, para testar a próxima
+ // 🚫 não combina: no jogo estes dois não podem ser combinados (nessa ordem); resultado, nível e chance não valem
+ tsnc.onclick=async()=>{const a=chave(TST.a),b=chave(TST.b);if(!a||!b){tse.textContent=t('tst_err');return}
+  if(C.some(c=>c.r&&c.a===a&&c.b===b)){tse.textContent=t('nc_err_tem');return}
+  const novo={r:null,a,b,m:'',l:'',ch:null,nt:[],tst:1,nc:1,cp:!!TST.cp};
+  const ig=M.combos.find(x=>x.id===TST.ed)||M.combos.find(x=>x.tst&&x.nc&&x.a===a&&x.b===b);
+  if(ig)Object.assign(ig,novo);else M.combos.push({id:'t'+Date.now(),...novo});
+  await salva();monta();TST={...TST,r:'',l:'',ch:'',ed:null,msg:t('nc_salvo',{a:nm(a),b:nm(b)})};testador()};
  bd.querySelector('.form').onkeydown=e=>{if(e.key=='Enter'&&e.target.tagName=='INPUT')tssalva.click();else if(e.key=='Escape')voltar()};
  possib();if(!TST.a)ts1.focus();else if(!TST.b)ts2.focus()}
 // lado direito: conhecidas para A + B (chance real) em cima, estimativas embaixo
@@ -401,8 +404,11 @@ function possib(){const el=document.getElementById('tsres');if(!el)return;const 
  const par=C.filter(c=>c.a===a&&c.b===b),conh=par.filter(c=>c.r).sort(ordemC).filter((c,i,l)=>l.findIndex(x=>x.r===c.r)===i),test=par.filter(c=>!c.r),inv=a!==b?[...new Set(C.filter(c=>c.a===b&&c.b===a&&c.r).map(c=>c.r))]:[];
  const ja=new Set(conh.map(c=>c.r)),est=Testador.estimar(K[a],K[b],S,C.filter(c=>c.r),TST.m,matK).filter(x=>!ja.has(x.k)),n=TST.mais?30:10;
  el.innerHTML=`<h4>${t('tst_poss')} · ${esc(nm(a))} + ${esc(nm(b))}</h4>`+
+  (()=>{const nc=par.find(c=>c.nc),ni=a!==b&&C.find(c=>c.nc&&c.a===b&&c.b===a);
+   return(nc?`<p class="err" style="margin:4px 0 8px">🚫 ${esc(t('nc_aviso',{a:nm(a),b:nm(b)}))} ${nc.meu?`<span class="meu">${t('mine')}</span>`:`<span class="meu" style="background:#1d3346;color:#8fd0ff">${t('community')}</span>`}</p>`:'')+
+    (ni?`<p class="mu">${esc(t('nc_inv',{a:nm(b),b:nm(a)}))}</p>`:'')})()+
   (conh.length?`<h4>${t('tst_conhecidas')}</h4>${conh.map(c=>linhaP(c.r,rs,c.ch)).join('')}`:'')+
-  (test.length?`<p class="mu">? = ${esc(nm(a))} + ${esc(nm(b))} · ${t('tst_testada')}${[...new Set(test.map(c=>c.m).filter(Boolean))].map(m=>' · '+esc(matN(m))).join('')}</p>`:'')+
+  (test.filter(c=>!c.nc).length?`<p class="mu">? = ${esc(nm(a))} + ${esc(nm(b))} · ${t('tst_testada')}${[...new Set(test.map(c=>c.m).filter(Boolean))].map(m=>' · '+esc(matN(m))).join('')}</p>`:'')+
   (inv.length?`<p class="mu">${t('tst_inversa',{a:esc(nm(a)),b:esc(nm(b))})} ${inv.map(lk).join(' · ')}</p>`:'')+
   `<h4>${t(conh.length?'tst_estim_outras':'tst_estim')}</h4><p class="mu">${t('tst_estim_tip')}</p>`+
   (est.length?est.slice(0,n).map(x=>linhaP(x.k,rs,null,x.p)).join('')+(est.length>n&&!TST.mais?`<span class="lk sm" id="tsmais">${t('tst_mais')}</span>`:''):`<p class="mu">${t('tst_nada')}</p>`)}
@@ -506,13 +512,18 @@ function skillsTela(){semBusca();cur=null;sel=-1;marca({t:'skills'});
  SKT.lista=lista;lista();stq.oninput=()=>{SKT.q=stq.value;lista()};stq.onkeydown=e=>{if(e.key=='Escape')voltar()};stq.focus()}
 const pl=(k,n)=>{const [s,p]=t(k,{n}).split('|');return n===1?s:p??s};
 function skillDet(k){const s=SKK[k];if(!s)return skillsTela();semBusca();cur=null;sel=-1;marca({t:'skill',k});const l=(SKU[k]||[]).slice().sort(ordemSl),pt=(M.skn||{})[k]||(CM&&CM.skn&&CM.skn[k])||s.nm||'';
- const ds=LANG==='pt'?(s.ds||s.de):(s.de||s.ds);
+ const meuD=(M.skd||{})[k],comD=CM&&CM.skd&&CM.skd[k],ds=meuD||(LANG==='pt'?(comD||s.ds||s.de):(s.de||comD||s.ds));
  bd.innerHTML=`${voltarLk()}<div class="fh">${skIco(s,'sib')}<div><b>${esc(skNm(s))}</b>${skAlt(s)?`<div class="mu">${esc(skAlt(s))}</div>`:''}
  <div class="mu" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${ep(s.el)}${[kiN(s.ki),s.mp!=null?t('sk_mp',{n:s.mp}):'',s.cd!=null?t('sk_cd',{n:LANG==='pt'?String(s.cd).replace('.',','):s.cd}):''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join(' · ')}</div>
  ${s.cad?'':`<div id="skptw"><span class="lk sm" id="skpt">${t(pt?'sk_pt_edit':'sk_pt_add')}</span></div>`}</div></div>
- ${ds?`<p class="mu" style="font-size:12px">${esc(ds)}</p>`:''}
+ <div id="skdw">${ds?`<p class="mu" style="font-size:12px;margin-bottom:2px">${esc(ds)}${meuD?` <span class="meu">${t('mine')}</span>`:comD&&ds===comD?` <span class="meu" style="background:#1d3346;color:#8fd0ff">${t('community')}</span>`:''}</p>`:''}<span class="lk sm" id="skdesc">${t(meuD?'sk_d_edit':'sk_d_add')}</span></div>
  <h4>${t('sk_quem',{n:l.length})}</h4>${l.map(x=>linhaSk(x,0)).join('')||`<p class="mu">${t('sk_ninguem')}</p>`}
  <button class="btn pri" id="skem" style="margin:8px 0">${t('sk_anotar_em')}</button>`;bd.scrollTop=0}
+// escrever a descrição da skill: Enter (ou sair do campo) salva, Shift+Enter quebra linha, Esc cancela; vazio volta ao texto de antes
+function editaSkD(){const k=vista&&vista.k,s=SKK[k];if(!s)return;const atual=(M.skd||{})[k]||(CM&&CM.skd&&CM.skd[k])||(LANG==='pt'?'':s.de||'');
+ skdw.innerHTML=`<textarea id="skdi" rows="3" maxlength="300" placeholder="${esc(t('sk_d_ph'))}">${esc(atual)}</textarea><div class="mu" style="font-size:11px">${t('sk_d_dica')}</div>`;skdi.focus();skdi.select();let feito=false;
+ const ok=()=>{if(feito)return;feito=true;const v=skdi.value.replace(/\s+/g,' ').trim();M.skd=M.skd||{};if(v.length>=2)M.skd[k]=v;else delete M.skd[k];salva().then(()=>{monta();skillDet(k)})};
+ skdi.onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey){e.preventDefault();ok()}else if(e.key=='Escape'){feito=true;skillDet(k)}};skdi.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
 function editaSkPT(){const k=vista&&vista.k,s=SKK[k];if(!s)return;skptw.innerHTML=`<input id="skpti" maxlength="40" placeholder="${esc(t('sk_pt_ph'))}" value="${esc((M.skn||{})[k]||(CM&&CM.skn&&CM.skn[k])||s.nm||'')}" style="padding:2px 6px;font-size:12px;width:190px">`;skpti.focus();skpti.select();let feito=false;
  const ok=()=>{if(feito)return;feito=true;const v=skpti.value.trim();M.skn=M.skn||{};if(v)M.skn[k]=v;else delete M.skn[k];salva().then(()=>{monta();skillDet(k)})};
  skpti.onkeydown=e=>{if(e.key=='Enter')ok();else if(e.key=='Escape'){feito=true;skillDet(k)}};skpti.onblur=()=>{if(document.hasFocus()&&!pn.hidden)ok()}}
@@ -542,15 +553,15 @@ function csvMeus(){const q=v=>{v=(v??'').toString();return /[",\r\n]/.test(v)?'"
 // ---- enviar para a base colaborativa (revisada antes de entrar na base de todos; x:1 em combos = pedido para apagar) ----
 const assinatura=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)}; // p/ saber se mudou desde o último envio
 function envio(){semBusca();cur=null;sel=-1;marca({t:'envio'});
- const comp=M.combos.filter(c=>c.cp!==false),p={pt:M.pt,pc:M.pc,combos:[...comp.map(({id,r,a,b,m,l,ch})=>({id,r,a,b,m,l,ch})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
+ const comp=M.combos.filter(c=>c.cp!==false),p={pt:M.pt,pc:M.pc,combos:[...comp.map(({id,r,a,b,m,l,ch,nc})=>({id,r,a,b,m,l,ch,...(nc?{nc:1}:{})})),...(M.apaga||[]).map(id=>({x:1,id}))],votos:M.votos||{},num:M.num||{},loc:M.loc||{},per:M.per||{}};
  const skp=[],usadas=new Set();for(const sl in M.sk||{})for(const k in M.sk[sl]){const v=M.sk[sl][k];if(v&&v.cp===true&&K[sl]){skp.push({s:sl,k,l:Number.isInteger(v.l)?v.l:null});usadas.add(k)}}
- const skc=(M.skc||[]).filter(c=>usadas.has(c.k)).map(({k,nm,el})=>({k,nm,el})),nsn=Object.keys(M.skn||{}).length;
- if(skp.length)p.sk=skp;if(nsn)p.skn=M.skn;if(skc.length)p.skc=skc;const mp=Object.keys(M.mapap||{}).length;if(mp)p.mapap=M.mapap;
+ const skc=(M.skc||[]).filter(c=>usadas.has(c.k)).map(({k,nm,el})=>({k,nm,el})),nsn=Object.keys(M.skn||{}).length,nsd=Object.keys(M.skd||{}).length;
+ if(skp.length)p.sk=skp;if(nsn)p.skn=M.skn;if(nsd)p.skd=M.skd;if(skc.length)p.skc=skc;const mp=Object.keys(M.mapap||{}).length;if(mp)p.mapap=M.mapap;
  const n=Object.keys(p.pt).length,c=Object.keys(p.pc).length,k=comp.length,ap=(M.apaga||[]).length,v=Object.keys(p.votos).length,u=Object.keys(p.num).length,lo=Object.values(p.loc).reduce((s,x)=>s+x.length,0),pe=Object.keys(p.per).length,sig=assinatura(JSON.stringify(p));
  let ult='';try{ult=localStorage.getItem('ultimo-envio')||''}catch{}
  const vazio=!(n+c+k+v+u+lo+pe+ap+skp.length+nsn+mp),igual=sig===ult;
  bd.innerHTML=`${voltarLk()}<h4>${t('send_h')}</h4>
- ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga'],[skp.length,'u_skill'],[nsn,'u_sknome'],[mp,'u_mapap']])}
+ ${chips([[k,'u_combo'],[c,'u_chance'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[lo,'u_mapa'],[pe,'u_dn'],[ap,'u_apaga'],[skp.length,'u_skill'],[nsn,'u_sknome'],[nsd,'u_skdesc'],[mp,'u_mapap']])}
  <p class="mu">${t('send_info')}</p>
  ${vazio?`<p class="mu">${t('send_empty')}</p>`:igual?`<p class="ok">${t('send_same')}</p>`:''}
  <div class="bt" style="justify-content:flex-start"><button class="btn pri" id="envok"${vazio||igual?' disabled style="opacity:.5"':''}>${t('send_btn')}</button><button class="btn" id="envno">${t('cancel')}</button></div><p id="envmsg"></p>`;
@@ -564,7 +575,7 @@ const chips=l=>{const c=l.filter(([n])=>n>0).map(([n,k])=>{const [s,p]=t(k).spli
 function semBusca(){qi.value='';limpaX()} // a busca não tem a ver com esta tela
 function meus(msg){semBusca();cur=null;sel=-1;marca({t:'meus'});const n=Object.keys(M.pt).length,p=Object.keys(M.pc).length,c=M.combos.length,v=Object.keys(M.votos||{}).length,u=Object.keys(M.num||{}).length;
  bd.innerHTML=`${voltarLk()}<h4>${t('my_h')}</h4>
- ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado'],[Object.values(M.sk||{}).reduce((s,o)=>s+Object.keys(o).length,0),'u_skill'],[Object.keys(M.skn||{}).length,'u_sknome'],[Object.keys(M.mapap||{}).length,'u_mapap']])||`<p class="mu">${t('my_vazio')}</p>`}
+ ${chips([[c,'u_minha'],[p,'u_chance_ed'],[v,'u_voto'],[n,'u_nome'],[u,'u_num'],[Object.values(M.loc||{}).reduce((s,x)=>s+x.length,0),'u_mapa'],[Object.keys(M.per||{}).length,'u_dn'],[(M.apaga||[]).length,'u_apaga'],[(M.fav||[]).length,'u_fixado'],[Object.values(M.sk||{}).reduce((s,o)=>s+Object.keys(o).length,0),'u_skill'],[Object.keys(M.skn||{}).length,'u_sknome'],[Object.keys(M.skd||{}).length,'u_skdesc'],[Object.keys(M.mapap||{}).length,'u_mapap']])||`<p class="mu">${t('my_vazio')}</p>`}
  <p class="mu">${t('my_where_curto')} <span class="lk" id="pasta">${t('abrir_pasta')}</span></p>
  <div class="bt" style="justify-content:flex-start;margin-bottom:8px"><button class="btn pri" id="env">${t('send_open')}</button></div>
  ${(()=>{const an=Object.values(M.sk||{}).flatMap(o=>Object.values(o)),n=M.combos.length+an.length,on=M.combos.filter(c=>c.cp!==false).length+an.filter(a=>a.cp===true).length;return`<h4>${t('tst_cp_geral')}</h4><p class="mu">${t('tst_cp_geral_tip')}</p><div class="tgl"><span class="sw${M.cpp===true?' on':''}" id="cpg"><i></i></span><span>${t(M.cpp===true?'ligado':'desligado')}</span>${n?`<span class="mu">${on} / ${n}</span>`:''}</div>`})()}
@@ -590,6 +601,7 @@ pasta.onclick=()=>ov.abrirPasta();
   const novas=(Array.isArray(d.combos)?d.combos:[]).filter(c=>c&&c.id&&(K[c.r]||c.r==null)&&K[c.a]&&K[c.b]&&c.r!==c.a&&c.r!==c.b&&!ids.has(c.id));M.combos.push(...novas);
   if(d.sk&&typeof d.sk=='object'){M.sk=M.sk||{};for(const sl in d.sk)if(K[sl]&&d.sk[sl]&&typeof d.sk[sl]=='object')M.sk[sl]={...(M.sk[sl]||{}),...d.sk[sl]}}
   if(d.skn&&typeof d.skn=='object')M.skn={...(M.skn||{}),...d.skn};
+  if(d.skd&&typeof d.skd=='object'&&!Array.isArray(d.skd))M.skd={...(M.skd||{}),...d.skd};
   if(typeof d.cpp=='boolean')M.cpp=d.cpp;
   if(Array.isArray(d.skc)){M.skc=Array.isArray(M.skc)?M.skc:[];d.skc.forEach(c=>{if(c&&typeof c.k=='string'&&!M.skc.some(x=>x.k===c.k))M.skc.push(c)})}
   await salva();monta();meus(t('msg_json_in',{n:Object.keys(d.pt||{}).length,c:Object.keys(d.pc||{}).length,k:novas.length}))}}
@@ -631,6 +643,7 @@ bd.onclick=e=>{const t=e.target;
  if(t.id=='skem')return skillForm({k:vista&&vista.k});
  if(t.id=='sknv'&&SKF){SKF.novo=!SKF.novo;if(SKF.novo){SKF.k='';if(!SKF.ne){const s=K[chave(SKF.s)];SKF.ne=s&&s.el[0]||''}}skNova();skEsc();skLista();return}
  if(t.id=='skpt')return editaSkPT();
+ if(t.id=='skdesc')return editaSkD();
  const tcp=t.closest('[data-tcp]');if(tcp){const c=M.combos.find(x=>x.id===tcp.dataset.tcp);if(c){c.cp=!c.cp;salva().then(()=>testador())}return} // compartilhar este teste
  const tdl=t.closest('[data-tdel]');if(tdl){const id=tdl.dataset.tdel;M.combos=M.combos.filter(c=>c.id!==id);M.fav=M.fav.filter(f=>f.id!==id);if(TST.ed===id)TST.ed=null;salva().then(()=>{monta();testador()});return}
  const te=t.closest('[data-te]');if(te)return testador({ed:te.dataset.te});
@@ -639,7 +652,6 @@ bd.onclick=e=>{const t=e.target;
  if(t.id=='tstc')return testador({a:cur});
  if(t.dataset.lang)return idioma(t.dataset.lang);
  if(t.dataset.pc)return editaChance(t);
- const vb=t.closest("[data-voto]");if(vb){const id=vb.dataset.voto,v=+vb.dataset.v;if(M.votos[id]===v)delete M.votos[id];else M.votos[id]=v;return atualiza()}
  const pe=t.closest('[data-pe]');if(pe){peSel=peSel===pe.dataset.pe?null:pe.dataset.pe;return ficha(pe.dataset.pe,true)}
  const pv=t.closest('[data-pev]');if(pv&&cur){M.per=M.per||{};if(pv.dataset.pev)M.per[cur]=pv.dataset.pev;else delete M.per[cur];peSel=null;return atualiza()}
  if(t.dataset.apaga){M.apaga=[...new Set([...(M.apaga||[]),t.dataset.apaga])];return atualiza()}
@@ -782,7 +794,7 @@ const pCor=ov.cor().then(r=>{DALT=r.dalt||r.cor.startsWith('d-');poeCor(r.cor);G
 ov.onAbrirInicio(()=>verificaVersao().then(()=>{open();if(CORPEND){CORPEND=false;telaCor()}else if(NOVA)novidadesTela()}));
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
-const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
+const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{},...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
 const pCom=ov.comunidade().then(d=>{if(d&&typeof d=='object'){CM=d;monta();if(cur)ficha(cur,true)}}).catch(()=>{});
 Promise.all([pCor,pMeus.catch(()=>{}),pCom]).then(()=>ov.pronto()); // a abertura espera isto para sair
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----

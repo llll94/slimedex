@@ -2,8 +2,36 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.2.1",
+      "prints": [
+        "tst-nc",
+        "sk-detalhe"
+      ],
+      "pt": [
+        "Testador: botão “🚫 Não combina” para marcar os pares que o jogo não deixa juntar. O testador avisa quando o par está marcado, e a ficha mostra esses pares num bloco próprio",
+        "Skills: no detalhe da skill, “✎ escrever descrição” troca o texto pelo que o jogo diz. Vai no envio e, revisado, aparece para todo mundo",
+        "Na ficha, “Usado em” mostra primeiro as combinações em que o slime é o principal e depois as em que é o secundário, cada grupo pela maior chance",
+        "Slime fixado com muitos drops (como o Wisp) mostra 2 por linha, sem ficar comprido",
+        "Na lista do Ctrl+Tab, os boss (que não dá para capturar) ganharam um grupo próprio, “Boss”, antes dos não descobertos",
+        "Saíram os botões 👍/👎 das combinações. Para tirar algo errado, use a lixeira",
+        "A base da comunidade agora atualiza a cada 15 minutos"
+      ],
+      "en": [
+        "Tester: “🚫 Can't combine” button to mark pairs the game does not allow. The tester warns when the pair is marked, and the card shows those pairs in their own group",
+        "Skills: on a skill's details, “✎ write description” replaces the text with what the game says. It goes with your submission and, once reviewed, shows for everyone",
+        "On a card, “Used in” first shows the combinations where the slime is the main one, then where it is the second, each group by highest chance",
+        "A pinned slime with many drops (like Wisp) shows 2 per line instead of a long row",
+        "In the Ctrl+Tab list, bosses (which cannot be captured) got their own group, “Bosses”, before the undiscovered ones",
+        "The 👍/👎 buttons were removed from combinations. To remove something wrong, use the bin",
+        "The community database now updates every 15 minutes"
+      ]
+    },
+    {
       "v": "2.2.0",
-      "prints": ["abertura", "mapa-qual"],
+      "prints": [
+        "abertura",
+        "mapa-qual"
+      ],
       "pt": [
         "Tela de abertura nova: o Slimedex procura atualizações e já traz a base nova da comunidade, depois abre o painel. Se tiver versão nova, abre direto na tela de atualizar",
         "Slimes do mapa (Tab): quando o app não tem certeza do nome lido, a caixa pergunta “Qual é este mapa?” com os mais parecidos. Sua resposta é lembrada, e quando 2 pessoas respondem igual vale para todo mundo",
@@ -23,7 +51,12 @@
     },
     {
       "v": "2.1.2",
-      "prints": ["cor", "meus", "sk-ficha", "sk-lista"],
+      "prints": [
+        "cor",
+        "meus",
+        "sk-ficha",
+        "sk-lista"
+      ],
       "pt": [
         "Cartilha: os prints das telas voltaram (na 2.1.1 várias páginas mostravam só o ícone)"
       ],
@@ -33,7 +66,10 @@
     },
     {
       "v": "2.1.1",
-      "prints": ["cor", "meus"],
+      "prints": [
+        "cor",
+        "meus"
+      ],
       "pt": [
         "Ícone novo, em estilo flat. Na primeira vez que abrir, você escolhe a cor: azul, vermelho, roxo, laranja ou verde. A chave “Cores para daltônicos” mostra outras 5 cores, que continuam diferentes entre si para quem é daltônico. A cor continua nas próximas atualizações",
         "Skill nova na lista: Leque de Gelo (Ice Spread), de Gelo, que a wiki ainda não tem",
@@ -53,7 +89,12 @@
     },
     {
       "v": "2.1.0",
-      "prints": ["sk-ficha", "sk-form", "sk-lista", "sk-detalhe"],
+      "prints": [
+        "sk-ficha",
+        "sk-form",
+        "sk-lista",
+        "sk-detalhe"
+      ],
       "pt": [
         "Skills: anote quais skills cada slime pega e em que nível (ex.: Mud Bass pega a Barreira Aquática no nível 26)",
         "As 160 skills do jogo, com ícone, elemento, tipo, MP e recarga: botão de raio no topo",

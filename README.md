@@ -41,8 +41,8 @@ Com a busca vazia aparecem as 3 últimas fichas abertas e a lista completa.
 - **Dia e noite** — ícone ao lado do nome: nasce só de dia, só de noite ou nos dois. Clique para corrigir.
 - **Onde nasce** — os mapas em que ele aparece (clique num mapa para ver ou editar os slimes dele).
 - **Drops** — os itens que ele solta, com ícone.
-- **Como obter** — combinações ordenadas pela maior chance (sem % por último), com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? dê 👍. Combinação errada? **🗑** apaga (some do seu app na hora; ao enviar suas descobertas, vai para revisão e pode sumir para todos).
-- **Usado em** — combinações em que ele é ingrediente, na mesma ordem: as com resultado primeiro, da maior para a menor chance; as **testadas sem resultado** ficam no fim, recolhidas (e somem sozinhas quando o mesmo par ganha resultado).
+- **Como obter** — combinações ordenadas pela maior chance (sem % por último), com selo de % (ex.: `~70%`). Clique no selo para editar a chance. **A ordem dos slimes importa**: A + B e B + A são combinações diferentes, cada uma com sua chance. O selo **teste** marca as que ninguém confirmou ainda (vindas da planilha ou sem resultado) — fez? cadastre igual e envie, que ela é confirmada. Combinação errada? **🗑** apaga (some do seu app na hora; ao enviar suas descobertas, vai para revisão e pode sumir para todos).
+- **Usado em** — combinações em que ele é ingrediente: primeiro as em que ele é o **principal** (slime 1), depois as em que é o **secundário**, cada grupo da maior para a menor chance; as **testadas sem resultado** ficam no fim, recolhidas (e somem sozinhas quando o mesmo par ganha resultado), e logo abaixo os pares que **não combinam**.
 - **Elementos** (seção recolhível) — contra quais elementos o ataque dele é forte/fraco e de quais ele toma mais/menos dano.
 - **＋ Nova combinação** — cadastra uma combinação que você descobriu (resultado, slimes, material, nível e chance), com sugestões de nomes e dos materiais.
 - **✎ nome em PT-BR** e **✎ número** — dá um nome em português e o número da Slimepedia do jogo; a busca acha pelos dois.
@@ -55,6 +55,7 @@ Escolha o **slime 1**, o **slime 2** e, se quiser, o **material**: o painel alar
 - **Já conhecidas** — combinações da base, da comunidade ou suas para esse par (na mesma ordem: A + B ≠ B + A), com a chance real;
 - **Estimativas** — os outros resultados possíveis, do mais provável para o menos provável, calculados pelos elementos e espécies dos dois slimes e pelas combinações conhecidas (o resultado quase sempre tem elemento em comum com os pais). Nos testes com as combinações conhecidas, a certa ficou entre as 5 primeiras em ~9 de cada 10 casos;
 - **Salvar teste** — guarda o que você fez, com resultado (clique numa possibilidade ou digite) ou sem ("sei que vira algo, mas não sei o quê"). Os testes ficam em **Meus testes** e na ficha dos slimes;
+- **🚫 Não combina** — marca que o jogo não deixa juntar os dois slimes (nessa ordem). Fica em **Meus testes** e na ficha; quando o par está marcado (por você ou pela comunidade), o testador avisa em cima das possibilidades. Não aceita par que já tem resultado conhecido;
 - **Compartilhar** — cada teste tem sua chave (começa como a chave geral de **⋯**): só os compartilhados vão no *Enviar minhas descobertas*. Teste compartilhado sem resultado entra na base da comunidade com o selo **teste**. Em **⋯** a chave geral liga/desliga todas as suas contribuições e vira o padrão das novas.
 
 O botão **Testar combinação** na ficha abre o testador já com o slime no campo 1.
@@ -67,6 +68,7 @@ As **skills do jogo** (lista da [World of Slime Wiki](https://world-of-slime-wik
 - **+ Anotar skill** — escolha a skill (a lista começa nos elementos do slime) e o **nível** em que ele pegou. Ex.: Mud Bass pega a Barreira Aquática no nível 26.
 - **Não achou?** — **cadastre uma nova** com nome e elemento; se o nome parecer com uma skill que já existe, o app pergunta "é essa?".
 - **Nome no jogo (PT)** — enquanto ninguém manda o nome em português, aparece o nome em inglês da wiki; no detalhe da skill dá para corrigir.
+- **✎ Escrever descrição** — no detalhe da skill, troque o texto pelo que o jogo diz (até 300 letras). A sua aparece com o selo **meu**; vai no envio e, como é texto livre, toda descrição nova passa pela revisão antes de valer para todos.
 - **Compartilhar** — igual às combinações: cada anotação tem sua chave (começa como a chave geral de **⋯**) e a chave geral vale para tudo. Quando várias pessoas anotam níveis diferentes, a comunidade mostra o que mais gente mandou.
 
 ### Slimes do mapa (Tab) · beta, só Windows
@@ -95,14 +97,13 @@ O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](
 
 ### Base colaborativa
 
-Em **⋯ → Enviar minhas descobertas** você manda suas combinações (só as com **Compartilhar** ligado), chances, votos 👍/👎 e nomes em PT-BR para a base da comunidade. De hora em hora, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
+Em **⋯ → Enviar minhas descobertas** você manda suas combinações (só as com **Compartilhar** ligado), chances e nomes em PT-BR para a base da comunidade. A cada 15 minutos, um processo automático ([`scripts/merge-comunidade.js`](scripts/merge-comunidade.js), rodando no GitHub Actions) consolida os envios em [`comunidade.json`](comunidade.json), que o app baixa ao abrir:
 
 - uma **combinação nova** entra a partir do primeiro envio, depois de revisada (aparece com o selo *comunidade* e o número de pessoas que a enviaram);
 - a **chance** é a mais enviada (empate: fica a que já estava aprovada, senão a mais recente);
 - um **nome em PT-BR** entra com o nome mais usado;
 - o **número do slime** (para os que não têm na base) entra com o número mais enviado — número que já é de outro slime é descartado;
 - **slimes vistos nos mapas** e **dia / noite** entram com o mais marcado; tirar um slime que a base põe num mapa, mapa novo (nome lido da tela) ou trocar um dia/noite já aprovado passam por revisão;
-- os **votos** viram placar; combinação com muitos 👎 é marcada como *contestada* (e, se for da comunidade, sai da base) — é assim que dados errados são corrigidos;
 - cada atualização vira um Pull Request. Se **tudo** o que mudou segue o padrão da base, ele é aprovado sozinho: o resultado divide ao menos um elemento com os pais, o material é um item conhecido, o nível bate com o que a base já sabe daquele slime e nenhuma chance, nome ou número já aprovado muda de forma brusca. Qualquer coisa fora disso espera revisão manual — o motivo aparece no próprio PR;
 - o que for ignorado de propósito (envio ruim, nome errado) fica em [`bloqueios.json`](bloqueios.json).
 
@@ -127,6 +128,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.2.1 (Windows) | `7F740746D94A437762A4E0DFFEDE4D69A6882C1308485E9265A60B91EF09698A` | em análise |
 | 2.2.0 (Windows) | `8FE7CBCF60767241D6A6AD99AF9168F8CF7F66A6731DC1F8A7D6596FC98652A1` | [**1/62** — ver análise](https://www.virustotal.com/gui/file/8fe7cbcf60767241d6a6ad99af9168f8cf7f66a6731dc1f8a7d6596fc98652a1/detection) |
 | 2.2.0 (Mac, chip Apple) | `23F07C7B5D02EB0F529C92A79D31D96FCDABC677CAC9C38373CE45F6696F08F3` | — |
 | 2.2.0 (Mac, Intel) | `FCEEB748F3A83F799C7D0A389BB6172D35371FCF7DF6B66BE9D9CC198E98C03E` | — |

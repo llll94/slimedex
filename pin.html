@@ -10,6 +10,7 @@
 .l2 img{width:22px;height:22px;object-fit:contain;margin-right:3px} /* item: 90% da imagem dos slimes (24px; 30px no de slime) */
 .s .l2 img{width:27px;height:27px}.l2 .it{display:inline-flex;align-items:center}.sep{color:#5c6670}
 .s .l1 img{width:30px;height:30px}
+.s .l2{flex-direction:column;align-items:flex-start;gap:2px}.ln{display:flex;align-items:center;gap:4px} /* drops do slime: 2 por linha */
 .pc{padding:0 5px;border-radius:8px;background:#1f3a2c;color:#7fe0a8;font-weight:600}
 /* ★ desfixa; × só esconde (continua fixado) — aparecem ao passar o mouse */
 #bt{position:absolute;top:1px;right:3px;display:flex;gap:1px;opacity:0}#p:hover #bt{opacity:1}
@@ -24,9 +25,10 @@ function mede(){ov.pin.tamanho(p.offsetWidth+6,p.offsetHeight+6)}
 let D=null;
 // item com ícone (o ícone some se não carregar)
 const item=(u,nome)=>{const s=el('span','it');if(u){const i=el('img');i.alt='';i.src=u;i.onerror=()=>{i.remove();mede()};i.onload=mede;s.append(i)}s.append(nome);return s};
-const junta=partes=>{l2.replaceChildren();partes.forEach((p,i)=>{if(i)l2.append(el('span','sep','·'));l2.append(p)})};
+const junta=(partes,porLinha)=>{l2.replaceChildren();const n=porLinha||partes.length; // porLinha: quebra a linha a cada n itens
+  for(let i=0;i<partes.length;i+=n){const ln=porLinha?el('div','ln'):l2;partes.slice(i,i+n).forEach((p,j)=>{if(j)ln.append(el('span','sep','·'));ln.append(p)});if(porLinha)l2.append(ln)}};
 ov.pin.onDados(d=>{if(!d)return;D=d;p.className=d.tipo==='s'?'s':'';
-  if(d.tipo==='s'){l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,d.tx.el||''));junta(d.dr.length?d.dr.map(([u,n])=>item(u,n)):[el('span',null,'—')])}
+  if(d.tipo==='s'){l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,d.tx.el||''));junta(d.dr.length?d.dr.map(([u,n])=>item(u,n)):[el('span',null,'—')],2)}
   else{l1.replaceChildren(img(d.im.r),el('span','r',d.tx.r),el('i',null,'='),img(d.im.a),el('span',null,d.tx.a),el('i',null,'+'),img(d.im.b),el('span',null,d.tx.b));
    const partes=[];if(d.l)partes.push(el('span',null,d.lv+' '+d.l));if(d.m)partes.push(item(d.mi,d.m));junta(partes.length?partes:[el('span',null,'—')]);if(d.ch!=null)l2.append(el('span','pc','~'+d.ch+'%'))}
   st.title=d.tx.desfixar||'';x.title=d.tx.esconder||'';p.title=d.tx.dica;document.documentElement.lang=d.lang||'pt-BR';mede();requestAnimationFrame(mede)});

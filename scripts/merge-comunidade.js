@@ -18,11 +18,15 @@
 //   - combinação "teste" da base (veio da planilha, ts) fica confirmada (conf) quando alguém a manda ou dá 👍 nela
 //   - teste sem resultado (r: null, vem do testador com "Compartilhar" ligado): vira testada da comunidade (id 'c:A+B>?', selo teste);
 //     não entra (ou sai sozinha) quando o mesmo par A + B já tem resultado, ou quando a base já tem essa testada
+//   - não combina (2.2.1, r: null e nc: 1, botão 🚫 do testador): par que o jogo não deixa combinar (id 'c:A+B>x', nc: 1);
+//     entra sozinho com >= MIN_PESSOAS; não entra (ou sai) quando o mesmo par já tem resultado, ou com muitos 👎
 //   - 🗑 apagar (entrada {x:1, id} em combos): vai para 'apagadas' (combinação da base) ou tira da comunidade — sempre com revisão
 //   - skills (2.1.0): sk = [{s, k, l}] (slime, skill, nível) vira sk: { slime: { skill: { l, n } } } com o nível que mais gente
 //     mandou (empate: o menor); skn = nome da skill no jogo em PT (o mais mandado); skc = skill cadastrada que não está na lista
 //     (id 'u:...', entra junto com a anotação que usa ela). Aprovação automática só quando a skill é da lista, tem elemento do
 //     slime e o nível não muda mais de 10; skill nova, nome trocado e elemento diferente → revisão
+//   - descrição de skill (2.2.1, skd): texto livre escrito no app; vale o mais mandado (empate: o menor). Texto novo ou
+//     trocado SEMPRE vai para revisão (é texto livre que todo mundo vai ler). bloqueios.json skd: 'skill' ignora a descrição
 //   - combinação cujo resultado é um dos próprios slimes (Mighty + X = Mighty) não existe: é ignorada
 //   - bloqueios.json: autores, combinações, nomes e números que o merge ignora (rollback de verdade: o revert do PR
 //     sozinho não basta, porque o merge seguinte recalcularia tudo do Supabase)
@@ -71,7 +75,7 @@ const BQ_AUTOR = bloq('autores'), BQ_COMBO = bloq('combos'), BQ_PT = bloq('pt'),
 const TESTE_IDX = new Map(D.combos.filter(c => c.ts && c.r).map(c => [par(c.a, c.b, c.r), c]));
 const SKILLS = new Map((D.skills || []).map(s => [s.k, s]));
 const ELEMENTOS = new Set(['Água', 'Gelo', 'Sombrio', 'Metal', 'Fogo', 'Poder', 'Elétrico', 'Luz', 'Grama', 'Terra', 'Vento', 'Magia', 'Veneno']);
-const BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'), BQ_APAGAR = bloq('apagar'); // apagar: pedido de apagar ignorado (id da combinação) // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
+const BQ_SKD = bloq('skd'), BQ_SK = bloq('sk'), BQ_SKN = bloq('skn'), BQ_APAGAR = bloq('apagar'); // apagar: pedido de apagar ignorado (id da combinação) // sk: 's:slime>skill' · skn: 'skill' ou 'skill=nome'
 const MAPAS = new Map((D.mapas || []).map(m => [m.pt, new Set(m.sl)]));
 // mapa_certo (bloqueios.json): nome lido errado/cortado pelo app -> nome certo; o que foi marcado no errado passa para o certo
 // mesmo jeito do app (overlay.html planoM) de comparar o que o OCR leu: sem acento/espaço, o/c/e, 1/l/i e rn/m iguais
@@ -141,11 +145,15 @@ async function lerEnvios() {
   const apelidos = new Map(); // texto lido (planoM) -> Map(nome do mapa -> Set de autores)
   const skNomes = new Map(); // skill -> Map(nome normalizado -> { nome, quem:Set })
   const skCad = new Map();   // 'u:...' -> { nm:[], el:[] } (skills cadastradas)
+  const skDesc = new Map();  // skill -> Map(texto normalizado -> { texto, quem:Set })
+  const naoCombina = new Map(); // 'A+B' -> { a, b, quem:Set } (🚫 do testador)
   for (const c of PENDENTES) { const ch = pcNota(c); novos.set(par(c.a, c.b, c.r), { a: c.a, b: c.b, r: c.r, quem: new Set(['base']), m: [c.m || ''], l: [c.l || ''], ch: ch != null ? [ch] : [] }) }
 
   for (const [autor, p] of [...ultimo].sort((x, y) => ordem.get(x[0]) - ordem.get(y[0]))) { // do envio mais antigo ao mais recente
     for (const c of Array.isArray(p.combos) ? p.combos.slice(0, 1000) : []) {
       if (c && c.x === 1) { if (typeof c.id === 'string' && c.id.length <= 300) (pedidosApagar.get(c.id) || pedidosApagar.set(c.id, new Set()).get(c.id)).add(autor); continue }
+      if (c && c.r == null && c.nc === 1 && SLIMES.has(c.a) && SLIMES.has(c.b)) { const k = parT(c.a, c.b); if (BQ_COMBO.has('c:' + k + '>x')) continue;
+        (naoCombina.get(k) || naoCombina.set(k, { a: c.a, b: c.b, quem: new Set() }).get(k)).quem.add(autor); continue }
       if (c && c.r == null && SLIMES.has(c.a) && SLIMES.has(c.b)) { const k = parT(c.a, c.b); if (BQ_COMBO.has('c:' + k + '>?')) continue;
         const n = testadas.get(k) || testadas.set(k, { a: c.a, b: c.b, quem: new Set(), m: [] }).get(k);
         if (!n.quem.has(autor)) { n.quem.add(autor); n.m.push(txt(c.m, 60)) } continue }
@@ -204,6 +212,11 @@ async function lerEnvios() {
       const m = skNomes.get(k) || skNomes.set(k, new Map()).get(k), nn = norm(nome);
       (m.get(nn) || m.set(nn, { nome, quem: new Set() }).get(nn)).quem.add(autor);
     }
+    for (const [k, v] of Object.entries(p.skd && typeof p.skd === 'object' ? p.skd : {})) {
+      const texto = txt(v, 300).replace(/\s+/g, ' '); if (!(SKILLS.has(k) || cad.has(k)) || texto.length < 2 || BQ_SKD.has(k)) continue;
+      const m = skDesc.get(k) || skDesc.set(k, new Map()).get(k), nn = norm(texto);
+      (m.get(nn) || m.set(nn, { texto, quem: new Set() }).get(nn)).quem.add(autor);
+    }
     for (const [id, v] of Object.entries(p.votos && typeof p.votos === 'object' ? p.votos : {})) {
       if (v !== 1 && v !== -1 || typeof id !== 'string' || id.length > 300) continue;
       if (v === 1) { const tc = id.startsWith('c:') ? TESTE_IDX.get(id.slice(2)) : [...TESTE_IDX.values()].find(c => cidBase(c) === id); if (tc) confirmadas.add(cidBase(tc)) }
@@ -220,6 +233,10 @@ async function lerEnvios() {
   combos.push(...[...testadas.entries()]
     .filter(([k, n]) => n.quem.size >= MIN_PESSOAS && !PARES_COM_R.has(k) && !testadaNaBase.has(k) && !contestada(votos.get('c:' + k + '>?')))
     .map(([k, n]) => ({ id: 'c:' + k + '>?', r: null, a: n.a, b: n.b, m: maisCitado(n.m), l: '', ch: null, n: n.quem.size, ts: 1 }))
+    .sort((x, y) => (x.id < y.id ? -1 : 1)));
+  combos.push(...[...naoCombina.entries()]
+    .filter(([k, n]) => n.quem.size >= MIN_PESSOAS && !PARES_COM_R.has(k) && !contestada(votos.get('c:' + k + '>x')))
+    .map(([k, n]) => ({ id: 'c:' + k + '>x', r: null, a: n.a, b: n.b, m: '', l: '', ch: null, n: n.quem.size, nc: 1 }))
     .sort((x, y) => (x.id < y.id ? -1 : 1)));
   const aceitos = new Set([...baseCids, ...combos.map(c => c.id)]);
   const pc = Object.fromEntries([...chances].filter(([id, v]) => v.length >= MIN_PESSOAS).sort().map(([id, v]) => [id, { ch: maisEnviada(v, ANTES && ANTES.pc && ANTES.pc[id] && ANTES.pc[id].ch), n: v.length }]));
@@ -247,6 +264,9 @@ async function lerEnvios() {
   const skc = [...skCad].filter(([k]) => usadas.has(k)).sort().map(([k, x]) => ({ k, nm: maisCitado(x.nm), el: maisCitado(x.el) }));
   const skn = Object.fromEntries([...skNomes].map(([k, m]) => [k, [...m.values()].sort((a, b) => b.quem.size - a.quem.size || (a.nome < b.nome ? -1 : 1))[0]])
     .filter(([, t]) => t.quem.size >= MIN_PESSOAS).sort().map(([k, t]) => [k, t.nome]));
+  const skcIds = new Set(skc.map(c => c.k)); // descrição de skill cadastrada só entra junto com ela
+  const skd = Object.fromEntries([...skDesc].filter(([k]) => SKILLS.has(k) || skcIds.has(k)).map(([k, m]) => [k, [...m.values()].sort((a, b) => b.quem.size - a.quem.size || (a.texto < b.texto ? -1 : 1))[0]])
+    .filter(([, t]) => t.quem.size >= MIN_PESSOAS).sort().map(([k, t]) => [k, t.texto]));
   // apagar: só ids que existem (base do repositório ou combinação da comunidade); as da comunidade saem da lista
   const idsBase = new Set(D.combos.map(cidBase)), idsCom = new Set(combos.map(c => c.id));
   const apag = [...pedidosApagar].filter(([id, q]) => q.size >= MIN_PESSOAS && !BQ_APAGAR.has(id) && (idsBase.has(id) || idsCom.has(id))).map(([id]) => id);
@@ -256,15 +276,15 @@ async function lerEnvios() {
   for (const [lido, m] of apelidos) { const [nome, q] = [...m].sort((a, b) => b[1].size - a[1].size || (a[0] < b[0] ? -1 : 1))[0]; if (q.size >= MIN_APELIDO && !BQ_LOC.has(nome)) mp[lido] = nome }
   for (const [errado, certo] of Object.entries(MAPA_CERTO)) if (typeof certo === 'string' && planoM(errado).length >= 3) mp[planoM(errado)] = certo;
   const mapap = Object.fromEntries(Object.keys(mp).sort().map(k => [k, mp[k]]));
-  const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas, sk, skn, skc, mapap };
+  const essencial = { combos: combos.filter(c => !apag.includes(c.id)), pc, pt, votos: vt, num: numOrd, loc, per, conf, apagadas, sk, skn, skc, skd, mapap };
   const arq = path.join(RAIZ, 'comunidade.json');
-  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [], apagadas: a.apagadas || [], sk: a.sk || {}, skn: a.skn || {}, skc: a.skc || [], mapap: a.mapap || {} } } catch {}
+  let antes = null; try { const a = JSON.parse(fs.readFileSync(arq, 'utf8')); antes = { combos: a.combos || [], pc: a.pc || {}, pt: a.pt || {}, votos: a.votos || {}, num: a.num || {}, loc: a.loc || {}, per: a.per || {}, conf: a.conf || [], apagadas: a.apagadas || [], sk: a.sk || {}, skn: a.skn || {}, skc: a.skc || [], skd: a.skd || {}, mapap: a.mapap || {} } } catch {}
   const mudou = JSON.stringify(antes) !== JSON.stringify(essencial);
   if (mudou) fs.writeFileSync(arq, JSON.stringify({ gerado: new Date().toISOString(), pessoas: ultimo.size, ...essencial }, null, 1) + '\n');
 
   const nm = k => (K[k] || {}).nm || k;
   const skNome = (k, cad) => SKILLS.has(k) ? SKILLS.get(k).en : (((cad || []).find(c => c.k === k) || {}).nm || k) + ' (cadastrada)';
-  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {}, loc: {}, per: {}, conf: [], apagadas: [], sk: {}, skn: {}, skc: [] }, essencial, nm);
+  const { barrados, novidades, removidos } = verifica(antes || { combos: [], pc: {}, pt: {}, votos: {}, num: {}, loc: {}, per: {}, conf: [], apagadas: [], sk: {}, skn: {}, skc: [], skd: {}, mapap: {} }, essencial, nm);
   for (const id of apag) if (id.startsWith('c:') && antes && antes.combos.some(c => c.id === id)) barrados.push(`apagar uma combinação da comunidade (${id.slice(2)}): confira antes de aprovar`);
   const auto = mudou && barrados.length === 0;
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `auto=${auto}\n`);
@@ -272,8 +292,8 @@ async function lerEnvios() {
   const relato = recentes.map(l => {
     const p = l.payload, out = [`**${l.autor.slice(0, 8)}** · ${String(l.created_at).slice(0, 16).replace('T', ' ')} UTC`], qt = k => Object.keys(p[k] && typeof p[k] === 'object' ? p[k] : {}).length;
     for (const c of (Array.isArray(p.combos) ? p.combos : []).slice(0, 60)) { if (!c) continue;
-      const desc = `${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ' · ' + txt(c.m, 60) : ''}${c.l ? ' · nv ' + txt(c.l, 10) : ''}${chance(c.ch) != null ? ' · ' + c.ch + '%' : ''}`;
-      const o = c.r && (c.r === c.a || c.r === c.b) ? 'resultado igual a um dos slimes: ignorada' : !c.r ? (SLIMES.has(c.a) && SLIMES.has(c.b) ? (PARES_COM_R.has(parT(c.a, c.b)) ? 'teste sem resultado: o par já tem resultado, ignorada' : 'teste sem resultado (selo teste)') : 'slime desconhecido: ignorada') : ![c.r, c.a, c.b].every(k => SLIMES.has(k)) ? 'slime desconhecido: ignorada'
+      const desc = c.nc === 1 && !c.r ? `🚫 ${nm(c.a)} + ${nm(c.b)} (não combina)` : `${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ' · ' + txt(c.m, 60) : ''}${c.l ? ' · nv ' + txt(c.l, 10) : ''}${chance(c.ch) != null ? ' · ' + c.ch + '%' : ''}`;
+      const o = c.r && (c.r === c.a || c.r === c.b) ? 'resultado igual a um dos slimes: ignorada' : !c.r ? (SLIMES.has(c.a) && SLIMES.has(c.b) ? (PARES_COM_R.has(parT(c.a, c.b)) ? (c.nc === 1 ? 'não combina, mas o par já tem resultado: ignorada' : 'teste sem resultado: o par já tem resultado, ignorada') : c.nc === 1 ? 'não combina' : 'teste sem resultado (selo teste)') : 'slime desconhecido: ignorada') : ![c.r, c.a, c.b].every(k => SLIMES.has(k)) ? 'slime desconhecido: ignorada'
         : baseIdx.has(par(c.a, c.b, c.r)) ? 'já está na base' + (chance(c.ch) != null ? ' (conta como relato de chance)' : '') : 'nova (comunidade)';
       out.push(`  - ${desc} → ${o}`) }
     const pa = (Array.isArray(p.combos) ? p.combos : []).filter(c => c && c.x === 1).length; if (pa) out.push(`  - pediu para apagar: ${pa} combinação(ões)`);
@@ -286,13 +306,14 @@ async function lerEnvios() {
     `- Combinações novas aceitas (≥${MIN_PESSOAS} pessoas): **${combos.length}** · candidatas ainda sem consenso: ${[...novos.values()].filter(n => n.quem.size < MIN_PESSOAS).length}`,
     `- Chances com consenso: **${Object.keys(pc).length}** · nomes PT-BR: **${Object.keys(pt).length}** · números: **${Object.keys(numOrd).length}** · combinações com votos: **${Object.keys(vt).length}**`,
     `- Contestadas (muitos 👎): ${Object.entries(vt).filter(([, v]) => contestada(v)).length}`, '',
-    ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => `- ${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)${c.r ? '' : ' · teste'}`), ''] : []),
+    ...(combos.length ? ['### Combinações da comunidade', '', ...combos.map(c => c.nc ? `- 🚫 ${nm(c.a)} + ${nm(c.b)} não combina (${c.n} pessoas)` : `- ${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}${c.m ? ` · ${c.m}` : ''}${c.ch != null ? ` · ~${c.ch}%` : ''} (${c.n} pessoas)${c.r ? '' : ' · teste'}`), ''] : []),
     ...(Object.keys(pt).length ? ['### Nomes PT-BR', '', ...Object.entries(pt).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(numOrd).length ? ['### Números', '', ...Object.entries(numOrd).map(([k, v]) => `- ${nm(k)} → #${v}`), ''] : []),
     ...(apag.length ? ['### Apagar (pedido de alguém)', '', ...apag.map(id => id.startsWith('c:') ? `- ${(() => { const c = combos.find(x => x.id === id); return c ? `${c.r ? nm(c.r) : '?'} = ${nm(c.a)} + ${nm(c.b)}` : id })()} (comunidade)` : `- ${(() => { const [a, b, r] = id.split('|'); return `${r ? nm(r) : '?'} = ${nm(a)} + ${nm(b)}` })()} (base)`), ''] : []),
     ...(conf.length ? ['### Confirmadas (saem do selo "teste")', '', ...conf.map(id => { const [a, b, r] = id.split('|'); return `- ${nm(r)} = ${nm(a)} + ${nm(b)}` }), ''] : []),
     ...(Object.keys(sk).length ? ['### Skills anotadas', '', ...Object.entries(sk).flatMap(([s, o]) => Object.entries(o).map(([k, v]) => `- ${nm(s)}: ${skNome(k, skc)}${v.l != null ? ' · nv ' + v.l : ''} (${v.n} pessoa(s))`)), ''] : []),
     ...(Object.keys(skn).length ? ['### Nomes de skill (PT)', '', ...Object.entries(skn).map(([k, v]) => `- ${skNome(k, skc)} → ${v}`), ''] : []),
+    ...(Object.keys(skd).length ? ['### Descrições de skill', '', ...Object.entries(skd).map(([k, v]) => `- ${skNome(k, skc)}: ${v}`), ''] : []),
     ...(Object.keys(per).length ? ['### Dia / noite', '', ...Object.entries(per).map(([k, v]) => `- ${nm(k)} → ${v}`), ''] : []),
     ...(Object.keys(loc).length ? ['### Slimes vistos nos mapas', '', ...Object.entries(loc).map(([mapa, ks]) => `- ${mapa}: ${ks.map(k => k[0] === '-' ? `~~${nm(k.slice(1))}~~ (não nasce aqui)` : nm(k)).join(', ')}`), ''] : []),
     ...(relato.length ? ['### Envios das últimas 24 h', '', ...relato, ''] : []),
@@ -374,6 +395,11 @@ function verifica(antes, agora, nm) {
     else if (!/^\p{L}[\p{L} '-]{1,39}$/u.test(v)) barrados.push(`nome PT da skill ${en} — "${v}" tem caracteres fora do padrão`);
   }
   removidos += Object.keys(antes.skn).filter(k => !(k in agora.skn)).length;
+  for (const [k, v] of Object.entries(agora.skd)) { // texto livre: sempre passa pelo Lucas
+    const o = antes.skd[k]; if (o === v) continue;
+    novidades++; barrados.push(`descrição da skill ${(SKILLS.get(k) || {}).en || k}${o ? ` trocaria de "${o}" para` : ':'} "${v}"`);
+  }
+  removidos += Object.keys(antes.skd).filter(k => !(k in agora.skd)).length;
   // apelido para um mapa da base entra sozinho; para um nome fora da lista (mapa novo lido da tela), revisão
   for (const [l, v] of Object.entries(agora.mapap)) { if (antes.mapap[l] === v) continue; novidades++; if (!MAPAS.has(v)) barrados.push(`apelido de mapa "${l}" → "${v}": mapa fora da lista, confira`) }
   for (const [k, v] of Object.entries(agora.per)) { const o = antes.per[k]; if (o === v) continue; novidades++; if (o) barrados.push(`dia/noite de ${nm(k)} trocaria de ${o} para ${v}`) }

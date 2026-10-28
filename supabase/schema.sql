@@ -37,7 +37,7 @@ declare
   n  int;
 begin
   -- formato igual ao meus-dados.json do app: { pt: {...}, pc: {...}, combos: [...], votos: { id_combinação: 1 | -1 } }
-  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num', 'loc', 'per', 'sk', 'skn', 'skc')) then
+  if exists (select 1 from jsonb_object_keys(new.payload) k where k not in ('pt', 'pc', 'combos', 'votos', 'num', 'loc', 'per', 'sk', 'skn', 'skc', 'mapap', 'skd')) then
     raise exception 'formato inválido';
   end if;
   -- sk: [{ s: slime, k: skill, l: nível (1 a 99) ou null }] (2.1.0: skills anotadas, até 2000)
@@ -62,6 +62,24 @@ begin
        or exists (select 1 from jsonb_each(new.payload -> 'skn') v
                   where length(v.key) > 60 or jsonb_typeof(v.value) <> 'string' or length(v.value #>> '{}') not between 2 and 40) then
       raise exception 'skn inválido';
+    end if;
+  end if;
+  -- skd: { skill: descrição escrita no app } (2.2.1, até 500, texto de 2 a 300)
+  if new.payload ? 'skd' then
+    if jsonb_typeof(new.payload -> 'skd') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'skd')) > 500
+       or exists (select 1 from jsonb_each(new.payload -> 'skd') v
+                  where length(v.key) > 60 or jsonb_typeof(v.value) <> 'string' or length(v.value #>> '{}') not between 2 and 300) then
+      raise exception 'skd inválido';
+    end if;
+  end if;
+  -- mapap: { texto lido pelo OCR: mapa escolhido em "Qual é este mapa?" } (2.2.0, até 300)
+  if new.payload ? 'mapap' then
+    if jsonb_typeof(new.payload -> 'mapap') <> 'object'
+       or (select count(*) from jsonb_object_keys(new.payload -> 'mapap')) > 300
+       or exists (select 1 from jsonb_each(new.payload -> 'mapap') v
+                  where length(v.key) > 80 or jsonb_typeof(v.value) <> 'string' or length(v.value #>> '{}') not between 1 and 80) then
+      raise exception 'mapap inválido';
     end if;
   end if;
   -- skc: [{ k: 'u:...', nm: nome, el: elemento }] (skills cadastradas que não estão na lista, até 50)

@@ -11,7 +11,8 @@ const espera = ms => new Promise(r => setTimeout(r, ms));
 const EXEMPLO = { pt: {}, pc: {}, votos: {}, num: {}, fav: [], loc: {}, per: {}, apaga: [],
   sk: { SL_Bass_WaterGround: { Aqua_Barrier: { l: 26, cp: true, ts: 1 } } }, skn: { Aqua_Barrier: 'Barreira Aquática' }, skc: [], combos: [
   { id: 't1', r: 'SL_Starfish_WaterFire', a: 'SL_Slime_Water', b: 'SL_Slime_Fire', m: '', l: '13', ch: 30, nt: [], tst: 1, cp: true },
-  { id: 't2', r: null, a: 'SL_Kobold_Steel', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, cp: false }] };
+  { id: 't2', r: null, a: 'SL_Kobold_Steel', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, cp: false },
+  { id: 't3', r: null, a: 'SL_Slime_Water', b: 'SL_Slime_Grass', m: '', l: '', ch: null, nt: [], tst: 1, nc: 1, cp: true }] }; // 🚫 não combina
 const MAPA = 'Clareira Esquecida';
 const VESPETE = 'SL_Honet_WindElectric';
 
@@ -23,6 +24,7 @@ const TELAS = {
   usado: `document.getElementById('prt')?.remove();ficha('SL_Rat_PoisonDark');const h=[...bd.querySelectorAll('h4')].find(x=>/usado|used/i.test(x.textContent));bd.querySelector('#bd details.sec:not(#secel):not(#secsk)')?.setAttribute('open','');bd.scrollTop=h.offsetTop-bd.offsetTop-6`,
   form: `formCombo('${VESPETE}')`,
   testador: "TST={a:rot(K.SL_Kobold_Steel),b:rot(K.SL_HermitCrab_WaterPower),m:'',r:rot(K.SL_Mercury_SteelPower),l:'19',ch:'',cp:false,ed:null,msg:'',mais:false};testador()",
+  'tst-nc': "TST={a:rot(K.SL_Slime_Water),b:rot(K.SL_Slime_Grass),m:'',r:'',l:'',ch:'',cp:true,ed:null,msg:'',mais:false};testador()",
   'mapa-tela': `telaMapa('${MAPA}')`,
   'sk-ficha': "ficha('SL_Bass_WaterGround');secsk.open=true",
   'sk-form': "skillForm({s:'SL_Bass_WaterGround'});SKF.q='barreira';SKF.k='Aqua_Barrier';SKF.lv='26';skillForm()",
@@ -77,7 +79,7 @@ async function foto(c, arq, clip) {
       for (const f of figs) {
         if (['pin', 'mapa', 'mapa-qual', 'abertura'].includes(f.img)) continue; // fotografadas à parte (janelinhas e abertura)
         const tela = '{if(pn.hidden)open();' + (f.img === 'busca' ? '' : "qi.value='';limpaX();") + TELAS[f.img] + '}'; // bloco: as variáveis de uma tela não esbarram nas da outra; painel fechado (clique fora) reabre
-        await ov.js(tela); await espera(f.img === 'testador' ? 700 : 300);
+        await ov.js(tela); await espera(f.img === 'testador' || f.img === 'tst-nc' ? 700 : 300);
         const alto = ALTO[f.img];
         if (alto) { const [w, h] = await ov.js('[innerWidth,innerHeight+bd.scrollHeight-bd.clientHeight]');
           await ov.cmd('Emulation.setDeviceMetricsOverride', { width: w, height: Math.min(alto === 'auto' ? h : alto, 1000), deviceScaleFactor: 2, mobile: false }); await espera(300); await ov.js(tela); await espera(300) }
