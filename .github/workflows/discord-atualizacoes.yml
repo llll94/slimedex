@@ -13,7 +13,7 @@ on:
         required: true
         default: 'teste'
       valor:
-        description: 'versao/download: a tag (ex.: v2.1.0; download vazio = última) · aviso: o texto · apagar: id (ou download:id)'
+        description: 'versao/download: a tag (ex.: v2.1.0; download vazio = última) · aviso: o texto (download:texto vai para o #download) · apagar: id (ou download:id)'
         required: false
         default: ''
 
@@ -41,8 +41,8 @@ jobs:
           HOOK_ATUALIZACOES: ${{ secrets.DISCORD_WEBHOOK_ATUALIZACOES }}
           HOOK_DOWNLOAD: ${{ secrets.DISCORD_WEBHOOK_DOWNLOAD }}
         run: |
-          # canal: #download para tipo download e para apagar com valor "download:<id>"; o resto vai para #atualizações
-          case "$TIPO:$VALOR" in download:*|apagar:download:*) export DISCORD_WEBHOOK="$HOOK_DOWNLOAD";; *) export DISCORD_WEBHOOK="$HOOK_ATUALIZACOES";; esac
+          # canal: #download para tipo download e para aviso/apagar com valor "download:..."; o resto vai para #atualizações
+          case "$TIPO:$VALOR" in download:*|apagar:download:*|aviso:download:*) export DISCORD_WEBHOOK="$HOOK_DOWNLOAD";; *) export DISCORD_WEBHOOK="$HOOK_ATUALIZACOES";; esac
           VALOR="${VALOR#download:}"
           if [ -z "$DISCORD_WEBHOOK" ]; then echo "secret do canal não configurado"; exit 1; fi
           node scripts/discord-atualizacao.js "$TIPO" "$VALOR"
