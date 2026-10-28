@@ -1,5 +1,5 @@
 {
- "gerado": "2026-10-27T01:11:42.492Z",
+ "gerado": "2026-10-28T23:56:39.370Z",
  "pessoas": 5,
  "combos": [
   {
@@ -259,6 +259,10 @@
    "u": 1,
    "d": 0
   },
+  "SL_Mandrake_Grass|SL_Nepenthes_GrassPoison|SL_Mandrake_GrassPoison|Espinho": {
+   "u": 0,
+   "d": 1
+  },
   "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
    "u": 1,
    "d": 0
@@ -312,11 +316,8 @@
   "Monte Noecheon 7": [
    "SL_Honet_WindElectric"
   ],
-  "Sopé de Penhasco": [
-   "SL_Nepenthes_Grass",
-   "SL_Nepenthes_GrassDark",
-   "SL_Nepenthes_GrassPoison",
-   "SL_SlimeL_Grass"
+  "Sopé do Penhasco Negro": [
+   "SL_Nepenthes_GrassDark"
   ],
   "Trilha do Monte Noecheon 1": [
    "SL_Dandelion_GrassWind"
@@ -387,6 +388,10 @@
    }
   },
   "SL_Mandrake_Grass": {
+   "DrainGrass": {
+    "l": 27,
+    "n": 1
+   },
    "GrassNeedle": {
     "l": 12,
     "n": 1
@@ -408,7 +413,12 @@
   }
  },
  "skn": {
-  "Aqua_Barrier": "Barreira Aquática"
+  "Aqua_Barrier": "Barreira Aquática",
+  "DrainGrass": "Dreno de Energia"
  },
- "skc": []
+ "skc": [],
+ "skd": {},
+ "mapap": {
+  "sopodoponhasoo": "Sopé do Penhasco Negro"
+ }
 }
