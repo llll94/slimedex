@@ -1,0 +1,76 @@
+name: Build Windows
+
+# Gera o Slimedex-<versão>-portable.exe a partir do código deste repositório, no GitHub (o SignPath Foundation só assina
+# binários que saem de uma compilação automática do repositório). Com a assinatura configurada (secret SIGNPATH_API_TOKEN
+# e variável SIGNPATH_ORGANIZATION_ID), manda o .exe para o SignPath — cada pedido de assinatura é aprovado manualmente lá —
+# e anexa o .exe assinado ao release. Sem ela, só compila e guarda o .exe nos artefatos do workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag do release (ex.: v2.3.3) para compilar e anexar o .exe; vazio = só compila a main e guarda nos artefatos'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    env:
+      TAG: ${{ inputs.tag }}
+      SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # predist compila o leitor-tela.exe com o csc do .NET Framework do próprio Windows; depois o electron-builder gera o portátil
+      - name: Gerar o .exe portátil
+        run: npm run dist
+
+      - name: SHA-256 do .exe compilado
+        shell: pwsh
+        run: Get-FileHash dist\*-portable.exe -Algorithm SHA256 | Format-List Path, Hash
+
+      - name: Guardar o .exe compilado (sem assinatura)
+        id: compilado
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimedex-windows-sem-assinatura
+          path: dist/*-portable.exe
+          if-no-files-found: error
+
+      - name: Assinar no SignPath (espera a aprovação manual)
+        if: env.SIGNPATH_API_TOKEN != ''
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: slimedex
+          signing-policy-slug: release-signing
+          github-artifact-id: ${{ steps.compilado.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: assinado
+
+      - name: SHA-256 do .exe assinado
+        if: env.SIGNPATH_API_TOKEN != ''
+        shell: pwsh
+        run: Get-FileHash assinado\*-portable.exe -Algorithm SHA256 | Format-List Path, Hash
+
+      - name: Anexar o .exe assinado ao release
+        if: env.TAG != '' && env.SIGNPATH_API_TOKEN != ''   # sem assinatura não troca o .exe publicado (o hash mudaria)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" assinado/*-portable.exe --clobber

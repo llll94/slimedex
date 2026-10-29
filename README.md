@@ -4,6 +4,7 @@
 
 [![VirusTotal 1/66](https://img.shields.io/badge/VirusTotal-1%2F66_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/58a18c5effbe64783e0fe3414cc082438ea208f721fb35b724fb064ba0dd8493/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
+[![Code signing policy](https://img.shields.io/badge/code_signing-policy-informational)](#code-signing-policy)
 
 Overlay para Windows e macOS com a Slimepédia do **World of Slime** sempre à mão, por cima do jogo: busca rápida, onde cada slime nasce, como obter (combinações com % de chance), em que ele é usado e as vantagens de elemento — e deixa você cadastrar suas próprias descobertas.
 
@@ -132,7 +133,7 @@ No Mac o Slimedex fica fora do Dock: o ícone aparece na barra de menu e o paine
 
 ## Segurança do executável
 
-O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), então o Windows pode mostrar o aviso do SmartScreen: clique em *Mais informações → Executar assim mesmo*. Para conferir que o arquivo é o mesmo publicado aqui:
+O `.exe` ainda **não é assinado digitalmente** (a assinatura gratuita pelo SignPath Foundation está em andamento; veja a [política de assinatura de código](#code-signing-policy)), então o Windows pode mostrar o aviso do SmartScreen: clique em *Mais informações → Executar assim mesmo*. Para conferir que o arquivo é o mesmo publicado aqui:
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
@@ -195,6 +196,34 @@ Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o 
 ```
 
 O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab; com o Baú ligado, observa só as teclas X e V e o botão do mouse, e fotografa a tela apenas quando você clica em Capturar, sem guardar a foto) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
+
+## Code signing policy
+
+Windows releases (`Slimedex-x.y.z-portable.exe`) are built from this repository by GitHub Actions ([`build-windows.yml`](.github/workflows/build-windows.yml)) and every signing request is approved manually before the file is signed.
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+**Team roles**
+- Committers and reviewers: [Lucas Schunck](https://github.com/llll94)
+- Approvers: [Lucas Schunck](https://github.com/llll94)
+
+**Privacy policy**
+This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it.
+- It downloads slime pictures from the [World of Slime Wiki](https://world-of-slime-wiki.vercel.app), and the community database and new versions from this GitHub repository (to show the data and check for updates).
+- It sends data only when you click **Send my discoveries**: the combinations you chose to share, chances, names, numbers, map entries and skill notes, together with a random ID created on your computer (not your name or any account). It goes to the project's community database and nothing else is uploaded.
+
+**What the app does on your computer**
+- Registers one global shortcut, **Ctrl+Tab**, to open and close the panel.
+- **Map slimes (Tab)** — optional, off by default, Windows only. While it is on, a small helper (`leitor-tela.exe`, built from [`leitor-tela.cs`](leitor-tela.cs)) checks only the state of the **Tab** and **Esc** keys. When you press Tab in the game, it reads a small area below the game's minimap with the OCR built into Windows to get the map name. The image stays in memory and is discarded right away; it is never saved or sent.
+- **Chest** — optional, off by default, Windows only. While it is on, the helper checks only the **X** and **V** keys and the left mouse button (to open and close the chest in the panel) and only reacts while the game window is in front. When you click **Capture**, it takes one screenshot to read your in-game chest; the screenshot is used to recognize the slimes and their levels and is then deleted. Only the resulting list (slime and level) is kept, on your computer.
+- It does not record what you type, does not read any other key, does not read or change the game's files or memory, does not inject anything into the game and does not change system settings.
+- It is portable: nothing is installed. Your data stays in `%APPDATA%\slime-overlay`; deleting the app and that folder removes everything.
+- Updates: when a new version is released, the panel shows a button; the new `.exe` is downloaded from this repository's releases only when you click it.
+
+### Política de assinatura de código (resumo em português)
+
+O `.exe` do Windows é compilado a partir deste repositório pelo GitHub Actions, e cada assinatura é aprovada manualmente antes de o arquivo ser assinado. Assinatura gratuita por [SignPath.io](https://about.signpath.io), certificado do [SignPath Foundation](https://signpath.org). Autor, revisor e aprovador: [Lucas Schunck](https://github.com/llll94).
+
+O que o app faz no seu computador: registra o atalho **Ctrl+Tab**; os **Slimes do mapa** (opcional, desligado por padrão) observam só as teclas Tab e Esc e, no Tab, leem com o OCR do Windows o bloco abaixo do minimapa, sem guardar a imagem; o **Baú** (opcional, desligado por padrão) observa só X, V e o botão esquerdo do mouse com o jogo na frente e tira **uma** foto da tela quando você clica em **Capturar**, apagada logo depois de ler — fica só a lista de slimes e níveis. Não grava o que você digita, não mexe nos arquivos nem na memória do jogo e não muda configurações do sistema. Só envia algo quando você clica em **Enviar minhas descobertas** (o que você marcou para compartilhar, com um código aleatório deste computador).
 
 ## Rodar a partir do código
 

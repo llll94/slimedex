@@ -4,6 +4,8 @@
   "description": "Slimedex — overlay de consulta para World of Slime: busca rápida por Ctrl+Tab, combinações, chances e elementos de cada slime.",
   "main": "main.js",
   "license": "MIT",
+  "author": "Lucas Schunck",
+  "homepage": "https://github.com/llll94/slimedex",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win portable",

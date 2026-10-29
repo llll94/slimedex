@@ -861,7 +861,9 @@ function marcaMapa(n,k){if(!K[k])return;M.loc=M.loc||{};const s=slimesDoMapa(n),
  const q=mq.value,foco=document.activeElement===mq;salva().then(()=>{telaMapa(n);mq.value=q;mres.innerHTML=resultadosMapa(n,q);if(foco)mq.focus();
   if(mapaAberto&&mapaUlt)mostraMapa(mapaUlt)})}
 if(mapaOn){mapaStatus=t('mapa_iniciando');ov.mapa.ligar(true)}
-let bauOn=MAPA_OK;try{bauOn=MAPA_OK&&localStorage.getItem('bau')!=='0'}catch{} // baú: ligado por padrão (só Windows)
+let bauOn=false;try{bauOn=MAPA_OK&&localStorage.getItem('bau')==='1'}catch{} // baú: desligado por padrão (só Windows); liga em ⋯ → Baú
+// quem já usava o baú (2.3.x, quando vinha ligado) e já capturou continua com ele ligado
+try{if(MAPA_OK&&localStorage.getItem('bau')===null)ov.bau.ler().then(d=>{if(d&&Array.isArray(d.v)&&!bauOn){bauOn=true;try{localStorage.setItem('bau','1')}catch{}ov.bau.ligar(true)}}).catch(()=>{})}catch{}
 if(bauOn)ov.bau.ligar(true);
 ov.bau.onAbrir(()=>{if(pn.hidden)open();bauTela()});
 ov.bau.onAtualizado(()=>{if(vista&&vista.t=='bau')bauTela()});
