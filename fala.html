@@ -25,9 +25,10 @@ bau.onFala(d=>{document.body.classList.toggle('d',d.lado==='d');img.src=`icones/
  const ok=!d.erro;f.className=d.lendo?'lendo':ok?'ok':'erro';
  if(d.lendo){t1.textContent=t('fala_lendo');t2.textContent=t('fala_lendo2')}
  else if(ok){t1.textContent=d.n?t('fala_ok',{n:d.n}):t('fala_vazio');t2.textContent=t('fala_ok2')}
- else{t1.textContent=t('fala_erro');t2.textContent=d.erro===t('bau_nao_achei')?t('fala_erro2'):d.erro}
+ else{t1.textContent=t('fala_erro');t2.textContent=d.erro==='nao_achei'?t('fala_erro2'):d.erro}
  if(document.body.classList.contains('on'))return; // já aparecendo: só trocou o texto
  document.body.classList.remove('on');void document.body.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('on'))});
 bau.onFalaSai(()=>document.body.classList.remove('on'));
+bau.onIdioma(l=>{LANG=l});
 let lendo=false;f.onclick=()=>{if(!lendo)bau.falaClique()}; // enquanto lê, clicar não faz nada
 </script></body></html>

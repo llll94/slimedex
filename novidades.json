@@ -2,6 +2,24 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.3.2",
+      "prints": [],
+      "pt": [
+        "Baú: o Capturar agora funciona em qualquer resolução (1080p, 2K…) e com qualquer qualidade gráfica",
+        "Baú: lê certo o nível quando tem coração antes do LV e os níveis com 5 e 9",
+        "Baú: slime que o Slimedex ainda não conhece aparece como “?” com o nível, em vez de um palpite errado",
+        "Tau: foto nova, igual à do jogo (a da wiki mostrava a forma com chifres)",
+        "O botão Capturar e a fala do Slimedex trocam de idioma junto com o painel"
+      ],
+      "en": [
+        "Chest: Capture now works at any resolution (1080p, 2K…) and any graphics quality",
+        "Chest: reads the level right when there is a heart before LV, and levels with 5 and 9",
+        "Chest: a slime Slimedex does not know yet shows as “?” with its level, instead of a wrong guess",
+        "Tau: new picture, matching the game (the wiki showed the horned form)",
+        "The Capture button and the Slimedex speech bubble switch language along with the panel"
+      ]
+    },
+    {
       "v": "2.3.1",
       "prints": [],
       "pt": [

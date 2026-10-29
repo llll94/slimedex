@@ -1,6 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex · leitor do baú</title></head><body><span id="msg" hidden></span>
 <!-- janela escondida: lê o baú do jogo na tela (foto → cartas → slimes → níveis) e salva em bau.json; quem mostra o baú é o painel -->
 <script src="data.js"></script>
+<script src="imagens-extra.js"></script>
 <script src="i18n.js"></script>
 <script>
 const S=D.slimes,K={},BASE='https://world-of-slime-wiki.vercel.app',U=1440; // U: altura da tela de referência (2K)
@@ -9,6 +10,7 @@ const msg=document.getElementById('msg');
 let B=null; // último baú capturado: {ts, g:{x,y} (canto da grade, em unidades 2K), v:[{k,lv,d}|0] (0 = vaga vazia)}
 const desenha=()=>{}; // (a tela do baú agora fica no painel)
 bau.onCapturar(()=>capturar()); // pedido do botão Capturar do ícone
+bau.onIdioma(l=>{LANG=l});
 
 // ---------- captura: foto da tela → acha as cartas → reconhece cada slime → lê o nível ----------
 const carrega=src=>new Promise((ok,erro)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=erro;i.src=src});
@@ -27,7 +29,8 @@ function distancia(A,B){let s=0;for(let j=0;j<A.cel.length;j+=4){const ca=Math.m
 // referências: as imagens da wiki (mesmos desenhos do jogo), calculadas uma vez
 let REF=null;
 async function referencias(){if(REF)return REF;const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true}),l=[];
- await Promise.all(S.filter(s=>s.im).map(async s=>{try{const i=await carrega(BASE+s.im),w=Math.min(160,i.naturalWidth),h=Math.round(i.naturalHeight*w/i.naturalWidth);
+ // cada slime com a imagem do app e, se ela foi trocada (imagens-extra.js), também a da wiki
+ await Promise.all(S.flatMap(s=>[s.im,s.imWiki].filter(Boolean).map(im=>({k:s.k,im}))).map(async s=>{try{const i=await carrega(urlIm(s.im)),w=Math.min(160,i.naturalWidth),h=Math.round(i.naturalHeight*w/i.naturalWidth);
   cv.width=w;cv.height=h;cx.clearRect(0,0,w,h);cx.drawImage(i,0,0,w,h);const px=cx.getImageData(0,0,w,h).data;
   const d=descritor(px,w,0,0,w,h,(p,i)=>p[i+3]>128);if(d)l.push({k:s.k,d})}catch{}}));
  return REF=l}
@@ -39,7 +42,7 @@ function acharCartas(px,W,H,s){const P=4,mw=(W/P)|0,mh=(H/P)|0,m=new Uint8Array(
  for(let k=0;k<m.length;k++){if(m[k]!==1)continue;let a=k%mw,b=(k/mw)|0,c=a,d=b,n=0,ini=0,fim=0;fila[fim++]=k;m[k]=2;
   while(ini<fim){const q=fila[ini++],qx=q%mw,qy=(q/mw)|0;n++;if(qx<a)a=qx;if(qx>c)c=qx;if(qy<b)b=qy;if(qy>d)d=qy;
    for(const v of [q-1,q+1,q-mw,q+mw])if(v>=0&&v<m.length&&m[v]===1&&Math.abs(v%mw-qx)<=1){m[v]=2;fila[fim++]=v}}
-  const w=(c-a+1)*P,h=(d-b+1)*P;if(w>cx*.75&&w<cx*1.25&&h>cy*.75&&h<cy*1.25&&n*P*P>w*h*.25)l.push({x:a*P,y:b*P,w,h})}
+  const w=(c-a+1)*P,h=(d-b+1)*P;if(w>cx*.7&&w<cx*1.5&&h>cy*.7&&h<cy*1.5&&n*P*P>w*h*.25)l.push({x:a*P,y:b*P,w,h})}
  return l}
 const escuro=(px,W,x,y,w,h)=>{let s=0,n=0;for(let yy=y+h*.3|0;yy<y+h*.7;yy+=3)for(let xx=x+w*.3|0;xx<x+w*.7;xx+=3){const i=(yy*W+xx)*4;s+=(px[i]+px[i+1]+px[i+2])/3;n++}return n&&s/n<95};
 // nível pelo desenho dos números (a fonte do jogo engana o OCR): separa os caracteres escuros do rodapé da carta,
@@ -54,22 +57,32 @@ function glifos(px,W,x,y,w,h){const col=[];
    for(let j=y0|0;j<Math.max(y0+1,y1);j++)for(let i=x0|0;i<Math.max(x0+1,x1);i++){c++;if(ESCURO(px,((y+j)*W+x+i)*4))n++}m.push(n/c>.45?1:0)}
   return{w:gw,h:gh,m:m.join('')}});
  const alto=Math.max(0,...l.map(g=>g.h));return l.filter(g=>g.h>alto*.6&&g.w>1)} // sem sujeira (pedaço do desenho, sombra)
-// algarismo -> [{m: grade 7×10 (1 = tinta), a: largura/altura}], tirados de um print 2K do baú (falta 5, 6 e 9: esses ficam com o OCR)
-const MODELOS={"0":[{"m":"0011110011111011111111110011110001111000111110011111111101111100011100","a":1.125},{"m":"0011100011111011111111110111110001111000111110011111111101111110011110","a":1.063}],"1":[{"m":"1111111111111111111110011111001111100111110011111001111100111110011111","a":0.533},{"m":"1111111111111111111110111111011111101111110111111011111101111110111111","a":0.533}],"2":[{"m":"0111111111111111111110000111011111111111101100000110011111111111111111","a":1},{"m":"0111111111111111111110000111011111111111111100000110011111111111111111","a":1}],"3":[{"m":"1111110111111111111110000011001111000111100000011111111111111111111110","a":0.938},{"m":"1111110111111111111110000011001111100111110000011111111111111111111111","a":0.875}],"4":[{"m":"1110000111001111101111110111111011111101111111111111111100001110000011","a":0.933}],"7":[{"m":"1111111111111111111110000111000111000011100001100001110000110000111000","a":0.813},{"m":"1111111111111111111110000111000011100011100011100001110000111000111000","a":0.75},{"m":"1111111111111111111110000111000111000011100011100001110001110000111000","a":0.867}],"8":[{"m":"0111110111111111111111100011011111011001111100011111111111111110111110","a":0.938},{"m":"0111110111111111111111100011011111101111101100011111111111111110111110","a":0.938}]};
-function nivelDesenho(px,W,x,y,w,h){const g=glifos(px,W,x,y,w,h);if(g.length<3)return null;let n='';const h0=(g[0].h+g[1].h)/2; // altura do "L" e do "V"
- for(const q of g.slice(2).filter(q=>q.h>h0*.95&&q.h<h0*1.6)){ // os números são ~1,25× a altura do "LV"; ícone (coração etc.) de outro tamanho fica de fora
-  let melhor=null,dm=1;for(const [d,l] of Object.entries(MODELOS))for(const o of l){let dif=0;for(let i=0;i<o.m.length;i++)if(o.m[i]!==q.m[i])dif++;
+// algarismo -> [{m: grade 7×10 (1 = tinta), a: largura/altura}], tirados de prints do baú em 2K e em 1080p (falta o 6: ele fica com o OCR)
+const MODELOS={"0":[{"m":"0011110011111011111111110011110001111000111110011111111101111100011100","a":1.125},{"m":"0011100011111011111111110111110001111000111110011111111101111110011110","a":1.063},{"m":"0111110011111111111111110111110001111000111110111111111101111110111110","a":1.167},{"m":"0011100011111011111111110111110001111000111100111111111111111100111100","a":1.063}],"1":[{"m":"1111111111111111111110011111001111100111110011111001111100111110011111","a":0.533},{"m":"1111111111111111111110111111011111101111110111111011111101111110111111","a":0.533},{"m":"1111110111111011111100011110001111100111110011111001111000111100011110","a":0.583},{"m":"1111111111111111111110011111001111100111110011111001111100111110001111","a":0.5}],"2":[{"m":"0111111111111111111110000111011111111111101100000110011111111111111111","a":1},{"m":"0111111111111111111110000111011111111111111100000110011111111111111111","a":1},{"m":"1111111111111111111110000011000001111111001100000111111111111111111111","a":1},{"m":"1111111111111111111110000111001001111000001100000111111111111111111111","a":1},{"m":"1111111111111111111110000011001001111000001100000111111111111111111111","a":1},{"m":"1111110111111111111111111111000001111111101100000110000111111111111111","a":1},{"m":"1111110111111111111110000111001001111111001100000111111111111111111111","a":0.938},{"m":"1111111111111110001110000011011111111111101100000111111111111111111111","a":1},{"m":"1111111111111100001110000011011111111111101100000111111111111111111111","a":1},{"m":"1111111111111111111110000111011111111111101100000111111111111111111111","a":1}],"3":[{"m":"1111110111111111111110000011001111000111100000011111111111111111111110","a":0.938},{"m":"1111110111111111111110000011001111100111110000011111111111111111111111","a":0.875},{"m":"1111111111111111111110000011001111000111100000111111111111111111111110","a":0.923},{"m":"1111111111111111111110000011001111000111110000011111111111111111111111","a":0.923},{"m":"1111111111111111111110000011001111100100110000011111111111111111111111","a":0.917},{"m":"1111111111111111111110000011001111000001100000011111111111111111111111","a":1},{"m":"1111110111111111111110000011001111100111100000011111111111111111111111","a":0.923},{"m":"1111111111111111111110000011001111100111100000011111111111111111111111","a":0.923},{"m":"1111111111111111111111000011000001100111110000011000001111111111111111","a":0.917},{"m":"1111111111111111111111000011000001100111100000011100001111111111111111","a":1},{"m":"1111111111111111111111000011000001100111110000011100001111111111111111","a":1},{"m":"1111111111111111111110000011001111000000110000011111111111111111111110","a":0.875},{"m":"1111110111111111111110000011001111000000110000011111111111111111111110","a":0.875},{"m":"1111111111111111111110000011001111000100110000011111111111111111111110","a":0.938},{"m":"1111111111111111111110000011001111100100110000011111111111111111111110","a":0.875},{"m":"1111110111111111111110000011001111000101110000011111111111111111111110","a":0.938},{"m":"1111111111111111000110000011011111000111110000011111111111111111111111","a":0.933},{"m":"1111110111111111111110000011000011100111100000011111111111111111111110","a":0.875}],"4":[{"m":"1110000111001111101111110111111011111101111111111111111100001110000011","a":0.933}],"5":[{"m":"1111111111111111111111100001110000001000110000011111111111111111111111","a":1},{"m":"1111111111111111111111111111110000011111110000011000011111111111111111","a":1},{"m":"1111111111111111111111110000111111011101110000111111111111111111111110","a":0.875},{"m":"1111111111111111111111100000111111011111110000111111111111111111111111","a":1}],"7":[{"m":"1111111111111111111110000111000111000011100001100001110000110000111000","a":0.813},{"m":"1111111111111111111110000111000011100011100011100001110000111000111000","a":0.75},{"m":"1111111111111111111110000111000111000011100011100001110001110000111000","a":0.867}],"8":[{"m":"0111110111111111111111100011011111011001111100011111111111111110111110","a":0.938},{"m":"0111110111111111111111100011011111101111101100011111111111111110111110","a":0.938},{"m":"0111111111111111111111100011011111001111111100011111111111111110111110","a":0.923},{"m":"0111110111111111111111100011011111011100111100011111111111111110111110","a":0.938}],"9":[{"m":"0111110111111111111111100011111011101101110000011111111111111111111110","a":0.923},{"m":"0111110111111111111111100111110001101111110000011100011111111111111111","a":1},{"m":"0111110111111111111111100011111001101111110000011111111111111111111110","a":0.938},{"m":"0111110111111111111111100011110001101111110000011111111111111111111110","a":0.938}]};
+// o "V" é o último caractere baixo (os números são ~1,25× mais altos que o "LV"); os números vêm depois dele — o que estiver
+// antes do "LV" (o coração azul-escuro de alguns slimes) não atrapalha
+function nivelDesenho(px,W,x,y,w,h){const g=glifos(px,W,x,y,w,h);if(g.length<2)return null;
+ const alto=Math.max(...g.map(q=>q.h));let iv=-1;g.forEach((q,j)=>{if(q.h<alto*.88)iv=j});
+ const dig=g.slice(iv+1);if(iv<0||!dig.length||dig.length>3)return null;let n='';
+ for(const q of dig){let melhor=null,dm=1;
+  for(const [d,l] of Object.entries(MODELOS))for(const o of l){let dif=0;for(let i=0;i<o.m.length;i++)if(o.m[i]!==q.m[i])dif++;
    const dd=dif/o.m.length+Math.abs(Math.log((q.w/q.h)/o.a))*.3;if(dd<dm){dm=dd;melhor=d}}
   if(!melhor||dm>.2)return null;n+=melhor}
  return n?+n:null}
 async function capturar(){msg.textContent=t('bau_lendo');let res={n:0};
  try{const f=await bau.capturar();if(!f||f.erro)throw new Error(f&&f.erro||'?');
-  const img=await carrega(f.url),W=img.naturalWidth,H=img.naturalHeight,s=H/U,cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const img=await carrega(f.url),W=img.naturalWidth,H=img.naturalHeight,cv=document.createElement('canvas');let s=H/U;cv.width=W;cv.height=H; // s: escala inicial pela altura; a de verdade sai das cartas
   const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0);const px=cx.getImageData(0,0,W,H).data;
-  const cartas=acharCartas(px,W,H,s);if(!cartas.length){msg.textContent=t('bau_nao_achei');res={erro:t('bau_nao_achei')};return}
-  // grade: canto = carta mais à esquerda/acima (acertado no pixel: a busca anda de 4 em 4); vagas a cada 149×173 (2K); até 4 linhas
-  const c0=cartas.reduce((a,c)=>c.y+c.x<a.y+a.x?c:a);let x0=c0.x,y0=c0.y;
-  {const mx=c0.x+c0.w/2|0,my=c0.y+c0.h/2|0,cl=(x,y)=>{const i=(y*W+x)*4;return claro(px[i],px[i+1],px[i+2])};while(y0>0&&cl(mx,y0-1))y0--;while(x0>0&&cl(x0-1,my))x0--}
+  const cartas=acharCartas(px,W,H,s);if(!cartas.length){msg.textContent=t('bau_nao_achei');res={erro:'nao_achei'};return} // código: o balão escreve no idioma dele
+  // escala de verdade: o jogo não encolhe a interface só pela altura da tela (em 1080p as cartas ficam ~0,81 do 2K, não 0,75);
+  // sai da distância entre as cartas (passo 149×173 no 2K) ou, com uma carta só, da largura dela
+  const passo=(vs,min)=>{const u=[...new Set(vs)].sort((a,b)=>a-b),d=[];for(let i=1;i<u.length;i++)if(u[i]-u[i-1]>min)d.push(u[i]-u[i-1]);d.sort((a,b)=>a-b);return d.length?d[d.length>>1]:null};
+  const mw=[...cartas.map(c=>c.w)].sort((a,b)=>a-b)[cartas.length>>1],dx=passo(cartas.map(c=>c.x),mw*.5),dy=passo(cartas.map(c=>c.y),mw*.5);
+  s=dx&&dx<mw*1.6?dx/149:dy&&dy<mw*2?dy/173:mw/126;
+  // canto da grade: coluna mais à esquerda e linha mais de cima (a 1ª vaga pode estar vazia), acertados no pixel (a busca anda de 4 em 4)
+  let x0=Math.min(...cartas.map(c=>c.x)),y0=Math.min(...cartas.map(c=>c.y));
+  {const cl=(x,y)=>{const i=(y*W+x)*4;return claro(px[i],px[i+1],px[i+2])},cx0=cartas.find(c=>c.x===x0),cy0=cartas.find(c=>c.y===y0);
+   const my=cx0.y+cx0.h/2|0,mx=cy0.x+cy0.w/2|0;while(x0>0&&cl(x0-1,my))x0--;while(y0>0&&cl(mx,y0-1))y0--}
   const px2=149*s,py2=173*s,cw=126*s,ch=138*s,v=[],achadas=[]; // parte clara da carta
   for(let r=0;r<10;r++){let linha=0;for(let c=0;c<4;c++){const sx=x0+c*px2,sy=y0+r*py2;if(sy+ch>H)break;
     const k=cartas.find(q=>Math.abs(q.x-sx)<cw*.3&&Math.abs(q.y-sy)<ch*.3);
@@ -77,15 +90,13 @@ async function capturar(){msg.textContent=t('bau_lendo');let res={n:0};
    if(!linha)break}
   const ref=await referencias();
   for(const k of achadas){const ix=k.x+k.w*.1|0,iy=k.y+k.h*.08|0,d=descritor(px,W,ix,iy,k.w*.8|0,k.h*.64|0,naoFundo);
-   const o=d?ref.map(r=>({k:r.k,s:distancia(d,r.d)})).sort((a,b)=>a.s-b.s):[];k.k=o[0]&&o[0].k;k.d=!o[0]||o[0].s>.55||(o[1]&&o[1].s-o[0].s<.03)} // d: dúvida
+   const o=d?ref.map(r=>({k:r.k,s:distancia(d,r.d)})).sort((a,b)=>a.s-b.s):[];k.k=o[0]&&o[0].s<=.52?o[0].k:null;k.d=!k.k||(o[1]&&o[1].s-o[0].s<.03)} // nada parecido (slime que a wiki ainda não tem): fica "?" com o nível, em vez de um palpite errado; d: dúvida
   const rodape=k=>[k.x+16*s|0,k.y+118*s|0,92*s|0,20*s|0]; // faixa do "LV" (2K: 118–138 abaixo do topo, longe dos cantos arredondados)
   const tx=await bau.niveis(f.arq,achadas.map(rodape)).catch(()=>null);
   achadas.forEach((k,i)=>{const lv=nivelDesenho(px,W,...rodape(k));if(lv){k.lv=lv;return}
    const m=tx&&tx[i]&&String(tx[i]).replace(/\s+/g,'').match(/v([0-9oOlI|]{1,3})/i);k.lv=m?+m[1].replace(/[oO]/g,'0').replace(/[lI|]/g,'1')||null:null}); // reserva: OCR ("LV12"; às vezes troca 0/O e 1/l)
   B={ts:Date.now(),g:{x:Math.round(x0/s)-1,y:Math.round(y0/s)}, // canto da carta: a parte clara começa 1 px depois da borda
-   v:v.map(c=>c&&c.k?{k:c.k,lv:c.lv,...(c.d?{d:1}:{})}:0)};
+   v:v.map(c=>c?(c.k?{k:c.k,lv:c.lv,...(c.d?{d:1}:{})}:{k:null,lv:c.lv,d:1}):0)}; // k null: slime não reconhecido
   await bau.salvar(B);desenha();msg.textContent=t('bau_ok',{n:achadas.length,t:v.length});res={n:achadas.length,t:v.length};
  }catch(e){msg.textContent=t('bau_erro',{e:e.message});res={erro:e.message}}finally{bau.resultado(res)}} // o ícone mostra o resultado no botão
-bau.onEntra(()=>{document.body.classList.remove('on');void document.body.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('on'))});
-bau.onSai(()=>document.body.classList.remove('on'));
 </script></body></html>

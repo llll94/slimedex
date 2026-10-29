@@ -136,6 +136,7 @@ O `.exe` **não é assinado digitalmente** (certificado de assinatura é pago), 
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.3.2 (Windows) | `58A18C5EFFBE64783E0FE3414CC082438EA208F721FB35B724FB064BA0DD8493` | em análise |
 | 2.3.1 (Windows) | `786D94742A7526AD9ACAD37873DB8BAFC980B006062A867D5AF45456A7A9649C` | [**1/58** — ver análise](https://www.virustotal.com/gui/file/786d94742a7526ad9acad37873db8bafc980b006062a867d5af45456a7a9649c/detection) |
 | 2.3.0 (Windows) | `62D8066CF67057B5D3CBD3D9B4629B0BFD0C845A3CF421AAC23B9282A028288F` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/62d8066cf67057b5d3cbd3d9b4629b0bfd0c845a3cf421aac23b9282a028288f/detection) |
 | 2.2.1 (Windows) | `7F740746D94A437762A4E0DFFEDE4D69A6882C1308485E9265A60B91EF09698A` | [**1/63** — ver análise](https://www.virustotal.com/gui/file/7f740746d94a437762a4e0dffede4d69a6882c1308485e9265a60b91ef09698a/detection) |

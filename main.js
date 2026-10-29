@@ -128,7 +128,7 @@ app.whenReady().then(()=>{
   win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
   tray=new Tray(iconeCor());
   tray.setToolTip(`Slimedex ${app.getVersion()} (Ctrl+Tab)`);menuBandeja('pt');
-  ipcMain.on('idioma',(_,l)=>menuBandeja(l)); // a interface avisa o idioma escolhido
+  ipcMain.on('idioma',(_,l)=>{menuBandeja(l);if(l!=='pt'&&l!=='en')return;for(const w of [bauIco,falaWin,bauWin])if(vivo(w))w.webContents.send('idioma',l)}); // a interface avisa o idioma escolhido; o ícone do baú e o balão trocam junto
   ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
   ipcMain.on('abrir-pasta',()=>shell.openPath(app.getPath('userData')));

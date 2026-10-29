@@ -139,6 +139,7 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 <div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="enb"><svg viewBox="0 0 24 24"><path d="M6 2.8h11.2c1 0 1.8.8 1.8 1.8v14.6c0 1-.8 1.8-1.8 1.8H6.8A2.3 2.3 0 0 1 4.5 18.7V4.3C4.5 3.5 5.2 2.8 6 2.8z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.6 17.6c.3-.9 1.1-1.4 2.1-1.4H19" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 19.6v3l1.3-1 1.3 1v-3z" fill="currentColor"/><path d="M12.4 5.4c-2.1 2.6-3.4 4.3-3.4 6.1a3.4 3.4 0 0 0 6.8 0c0-1.8-1.3-3.5-3.4-6.1z" fill="currentColor"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
+<script src="imagens-extra.js"></script>
 <script src="i18n.js"></script>
 <script src="testador.js"></script>
 <script src="skills.js"></script>
@@ -150,7 +151,7 @@ const grupo=s=>BOSS.has(s.k)?1:s.n!=null?0:2; // 0 numerados · 1 boss · 2 não
 let ALL=[];const ordena=()=>{ALL=[...S].sort((a,b)=>grupo(a)-grupo(b)||(a.n??1e9)-(b.n??1e9)||a.nm.localeCompare(b.nm))};ordena(); // numerados primeiro, depois boss, depois por nome
 const norm=t=>(t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const esc=t=>(t??'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const im=p=>p?`<img alt="" src="${BASE}${p}">`:'<i class="mu">?</i>'; // direto da wiki: vem do cache do app (a wiki manda guardar por 1 ano)
+const im=p=>p?`<img alt="" src="${urlIm(p)}">`:'<i class="mu">?</i>'; // direto da wiki (vem do cache do app: a wiki manda guardar por 1 ano) ou foto própria (imagens-extra.js)
 // ---- idioma: nomes, elementos, locais e materiais no idioma escolhido ----
 const locN=l=>LANG==='en'?(D.locEn&&D.locEn[l])||l:l;
 const IT={},IK={};(D.itens||[]).forEach(i=>{IK[i.k]=i;[i.pt,i.en,i.pt+' ('+i.en+')'].forEach(v=>IT[norm(v)]=i)});
@@ -236,15 +237,16 @@ const BAU_IC='<svg viewBox="4 5 56 55"><rect x="11" y="24" width="42" height="5.
 const haQuanto=ts=>{const s=(Date.now()-ts)/1000,f=new Intl.RelativeTimeFormat(LANG==='pt'?'pt-BR':'en',{numeric:'auto'});
  return s<60?f.format(-Math.round(s),'second'):s<3600?f.format(-Math.round(s/60),'minute'):s<86400?f.format(-Math.round(s/3600),'hour'):f.format(-Math.round(s/86400),'day')};
 async function bauTela(){semBusca();qi.blur();cur=null;sel=-1;marca({t:'bau'});const d=await ov.bau.ler().catch(()=>null);if(!vista||vista.t!=='bau')return;
- const v=d&&Array.isArray(d.v)?d.v:null,n=v?v.filter(Boolean).length:0;
+ const v=d&&Array.isArray(d.v)?d.v:null,n=v?v.filter(Boolean).length:0,lv=c=>c.lv?'LV'+c.lv:'LV ?';
  bd.innerHTML=`${voltarLk()}<h4 class="bauh">${BAU_IC}${t('bau_h2')}</h4>`+(v?`<p class="mu" style="margin:2px 0 6px">${esc(t('bau_quando',{n,s:v.length,t:haQuanto(d.ts)}))}</p>
-  <div class="enc bau">${v.map(c=>c&&K[c.k]?`<div class="ec" data-bk="${esc(c.k)}" title="${esc(rot(K[c.k])+(c.d?' · '+t('bau_talvez'):''))}"><b>${c.lv?'LV'+c.lv:'LV ?'}</b>${K[c.k].im?`<img alt="" src="${BASE}${esc(K[c.k].im)}">`:'<span class="q">?</span>'}</div>`:'<div class="ec vaga"></div>').join('')}</div>`
+  <div class="enc bau">${v.map(c=>c&&K[c.k]?`<div class="ec" data-bk="${esc(c.k)}" title="${esc(rot(K[c.k])+(c.d?' · '+t('bau_talvez'):''))}"><b>${lv(c)}</b>${K[c.k].im?`<img alt="" src="${esc(urlIm(K[c.k].im))}">`:'<span class="q">?</span>'}</div>`
+   :c?`<div class="ec" style="cursor:default" title="${esc(t('bau_desconhecido'))}"><b>${lv(c)}</b><span class="q">?</span></div>`:'<div class="ec vaga"></div>').join('')}</div>`
   :`<p class="mu">${t('bau_vazio')}</p>`)}
 function enciclopedia(keep){const top=bd.scrollTop;semBusca();qi.blur();cur=null;sel=-1;marca({t:'enc'});
  const porN={};S.forEach(s=>{if(s.n!=null&&!BOSS.has(s.k)&&!(s.n in porN))porN[s.n]=s});const ns=Object.keys(porN).map(Number),max=ns.length?Math.max(...ns):0,conta=[0,0,0,0];
  ns.forEach(n=>conta[stDe(porN[n].k)]++);
  let h='';for(let n=1;n<=max;n++){const s=porN[n],v=s?stDe(s.k):0,num=String(n).padStart(3,'0');if(ENCF.size&&!ENCF.has(v))continue;
-  h+=s?`<div class="ec s${v}" data-ec="${esc(s.k)}" title="${esc(v?rot(s):'#'+n)}"><b>${num}</b>${v&&s.im?`<img alt="" src="${BASE}${s.im}">`:'<span class="q">?</span>'}${stI(v)}</div>`
+  h+=s?`<div class="ec s${v}" data-ec="${esc(s.k)}" title="${esc(v?rot(s):'#'+n)}"><b>${num}</b>${v&&s.im?`<img alt="" src="${urlIm(s.im)}">`:'<span class="q">?</span>'}${stI(v)}</div>`
    :`<div class="ec vazio"><b>${num}</b><span class="q">?</span></div>`}
  bd.innerHTML=`${voltarLk()}<h4>${t('enc_h')}</h4><p class="mu" style="margin:2px 0">${t('enc_conta',{d:conta[1],c:conta[2],v:conta[3],n:ns.length})}</p>${stChips(ENCF,'enc')}${h?`<div class="enc">${h}</div>`:`<p class="mu">${t('enc_vazio')}</p>`}`;
  bd.scrollTop=keep?top:0;if(keep&&ENC.sel>=0)encMarca(ENC.sel,true);else ENC.sel=-1}
@@ -332,11 +334,11 @@ const MAX_FAV=8,ehFav=c=>(M.fav||[]).some(f=>f.id===cid(c));
 const fvS=k=>{const on=(M.fav||[]).some(f=>f.id==='s:'+k);return`<span class="fv${on?' on':''}" data-fav="s:${esc(k)}" title="${esc(t(on?'fav_off':'fav_slime_title'))}">${on?'★':'☆'}</span>`};
 const favSlime=k=>{const s=K[k];return{id:'s:'+k,tipo:'s',r:k,lang:LANG,
  tx:{r:(s.n!=null?'#'+s.n+' ':'')+dn(s),el:s.el.map(elN).join(' / '),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},
- im:{r:s.im?[BASE+s.im]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
+ im:{r:s.im?[urlIm(s.im)]:null},dr:(s.dp||[]).map(d=>[itemIco(d),itemNome(d)])}};
 const fv=c=>{if(!c.r)return'';const on=ehFav(c);return`<span class="fv${on?' on':''}" data-fav="${esc(cid(c))}" title="${esc(t(on?'fav_off':'fav_title'))}">${on?'★':'☆'}</span>`};
 const favDados=c=>({id:cid(c),r:c.r,l:c.l||'',m:c.m?matN(c.m):'',ch:c.ch??null,lv:t('lv'),lang:LANG,
  tx:{r:nm(c.r),a:nm(c.a),b:nm(c.b),fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')},mi:c.m?matIco(c.m):null,
- im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?[BASE+p]:null]}))});
+ im:Object.fromEntries(['r','a','b'].map(f=>{const p=K[c[f]]&&K[c[f]].im;return[f,p?[urlIm(p)]:null]}))});
 function syncFav(){const porId=new Map(C.map(c=>[cid(c),c]));
  M.fav=(Array.isArray(M.fav)?M.fav:[]).filter(f=>f&&typeof f.id=='string'&&f.tx).map(f=>{const c=porId.get(f.id);
   const n=f.id.startsWith('s:')?(K[f.id.slice(2)]?favSlime(f.id.slice(2)):f):c&&c.r?favDados(c):{...f,lv:t('lv'),lang:LANG,tx:{...f.tx,fechar:t('pin_x'),desfixar:t('pin_desfixar'),esconder:t('pin_esconder'),dica:t('pin_tip')}};
@@ -806,13 +808,13 @@ function mostraMapa(e,lendo){mapaUlt=e;const ap=apelidoMapa(e.branco),m=ap?(mapa
   return ov.mapa.mostrar({lendo,titulo:t('mapa_qual'),sub:t('mapa_lido',{t:(e.branco||'').trim()}),tx,slimes:[],msg:'',
    escolhas:[...ops.map(n=>({txt:nomeMapa(n),v:n})),...(ops.includes(novo)?[]:[{txt:t('mapa_e_novo',{m:novo}),v:novo,novo:true}])]})}
  ov.mapa.mostrar({lendo,titulo:LANG==='en'&&m.en?m.en:m.pt,sub:corrigeNome(e.azul,e.branco),msg:slimesDoMapa(m.pt).todos.length?'':t(mapaPorPt(m.pt)?'mapa_vazio':'mapa_novo'),tx,
-  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[BASE+K[k].im]:null}))})}
+  add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[urlIm(K[k].im)]:null}))})}
 // escolheu na janelinha: o texto lido passa a ser apelido desse mapa (vai no envio; com 2 pessoas iguais vale para todos)
 ov.mapa.onEscolha(n=>{if(typeof n!='string'||!mapaUlt)return;n=n.replace(/\s+/g,' ').trim().slice(0,80);const p=planoM(mapaUlt.branco);if(!n||!p)return;
  M.mapap=M.mapap||{};M.mapap[p]=n;salva();mostraMapa(mapaUlt)});
 ov.mapa.onEvento(e=>{if(!mapaOn||!e)return;
  if(e.ev==='pronto'){mapaStatus=t('mapa_pronto');if(vista&&vista.t==='meus'&&!pn.hidden)meus();
-  ov.mapa.preparar([...new Set([...(D.mapas||[]).flatMap(m=>m.sl),...Object.values((CM&&CM.loc)||{}).flat(),...Object.values(M.loc||{}).flat()])].map(k=>K[k]&&K[k].im&&BASE+K[k].im).filter(Boolean))}
+  ov.mapa.preparar([...new Set([...(D.mapas||[]).flatMap(m=>m.sl),...Object.values((CM&&CM.loc)||{}).flat(),...Object.values(M.loc||{}).flat()])].map(k=>K[k]&&K[k].im&&urlIm(K[k].im)).filter(Boolean))}
  // Tab: abre na hora (último mapa, apagado, "lendo…"); Tab de novo fecha. A leitura chega logo depois e completa
  else if(e.ev==='tab-ini'){const a=Date.now();if(a-tabEm<TAB_TRAVA)return;tabEm=a;
   if(mapaAberto){mapaAberto=false;ov.mapa.esconder();return}mapaAberto=true;

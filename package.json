@@ -1,6 +1,6 @@
 {
   "name": "slime-overlay",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Slimedex — overlay de consulta para World of Slime: busca rápida por Ctrl+Tab, combinações, chances e elementos de cada slime.",
   "main": "main.js",
   "license": "MIT",
@@ -29,6 +29,8 @@
       "bau.html",
       "bau-ico.html",
       "bau-preload.js",
+      "imagens-extra.js",
+      "imagens/**/*",
       "fala.html",
       "i18n.js",
       "testador.js",

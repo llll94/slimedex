@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('bau', {
   ler: () => ipcRenderer.invoke('bau-ler'), salvar: d => ipcRenderer.invoke('bau-salvar', d),
   resultado: r => ipcRenderer.send('bau-resultado', r), onResultado: cb => ipcRenderer.on('bau-resultado', (_, r) => cb(r)),
   // balão de fala do Slimedex
+  onIdioma: cb => ipcRenderer.on('idioma', (_, l) => cb(l)),
   onFala: cb => ipcRenderer.on('fala', (_, d) => cb(d)), onFalaSai: cb => ipcRenderer.on('fala-sai', () => cb()), falaClique: () => ipcRenderer.send('fala-clique'),
 });
