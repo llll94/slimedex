@@ -199,8 +199,10 @@ O app só acessa a internet para carregar as imagens da wiki, baixar a base da c
 
 ## Code signing policy
 
-Windows releases (`Slimedex-x.y.z-portable.exe`) are built from this repository by GitHub Actions ([`build-windows.yml`](.github/workflows/build-windows.yml)) and every signing request is approved manually before the file is signed.
+Windows releases (`Slimedex-x.y.z-portable.exe`) are built from this repository by GitHub Actions ([`build-windows.yml`](.github/workflows/build-windows.yml)). Only files built by that workflow are submitted for signing, and every signing request is approved manually before the file is signed. The private key is kept by SignPath in a hardware security module (HSM). macOS builds are not signed through SignPath.
 Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+Contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 **Team roles**
 - Committers and reviewers: [Lucas Schunck](https://github.com/llll94)
