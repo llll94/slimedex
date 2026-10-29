@@ -373,7 +373,8 @@ function verifica(antes, agora, nm) {
   for (const [mapa, ks] of Object.entries(agora.loc)) { const o = new Set(antes.loc[mapa] || []), n = ks.filter(k => !o.has(k)).length; novidades += n;
     if (n && !MAPAS.has(mapa)) barrados.push(`mapa novo "${mapa}" (nome lido da tela: confira antes de aprovar)`);
     for (const k of ks) if (k[0] === '-' && !o.has(k)) barrados.push(`tirar ${nm(k.slice(1))} de "${mapa}" (corrige a base: confira)`) }
-  for (const [mapa, ks] of Object.entries(antes.loc)) { const n = new Set(agora.loc[mapa] || []); removidos += ks.filter(k => !n.has(k)).length }
+  // sair de um mapa que não está na lista da base (nome lido errado da tela, que a pessoa corrigiu) não conta: é correção, não perda
+  for (const [mapa, ks] of Object.entries(antes.loc)) { if (!MAPAS.has(mapa)) continue; const n = new Set(agora.loc[mapa] || []); removidos += ks.filter(k => !n.has(k)).length }
   novidades += agora.conf.filter(id => !antes.conf.includes(id)).length; // confirmar é sempre ok
   for (const id of agora.apagadas) if (!antes.apagadas.includes(id)) { novidades++; barrados.push(`apagar ${descCid(id)} (confira antes de aprovar)`) }
 
