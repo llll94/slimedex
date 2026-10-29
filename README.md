@@ -2,7 +2,7 @@
 
 # Slimedex
 
-[![VirusTotal 2/67](https://img.shields.io/badge/VirusTotal-2%2F67_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/bd96dbcbf783ea5f8eeb4e7ff743e6b7b7ca1a2ca9a4923439de0383e29235aa/detection)
+[![VirusTotal 2/64](https://img.shields.io/badge/VirusTotal-2%2F64_%28falso_positivo%29-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/3985f4c5048ed500d85d4d1b499d0aeaa1c64a194be9507b1d2f9d8124adae50/detection)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 [![Code signing policy](https://img.shields.io/badge/code_signing-policy-informational)](#code-signing-policy)
 
@@ -137,7 +137,7 @@ O `.exe` ainda **não é assinado digitalmente** (a assinatura gratuita pelo Sig
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
-| 2.4.1 (Windows) | `3985F4C5048ED500D85D4D1B499D0AEAA1C64A194BE9507B1D2F9D8124ADAE50` | em análise |
+| 2.4.1 (Windows) | `3985F4C5048ED500D85D4D1B499D0AEAA1C64A194BE9507B1D2F9D8124ADAE50` | [**2/64** — ver análise](https://www.virustotal.com/gui/file/3985f4c5048ed500d85d4d1b499d0aeaa1c64a194be9507b1d2f9d8124adae50/detection) |
 | 2.4.0 (Windows) | `BD96DBCBF783EA5F8EEB4E7FF743E6B7B7CA1A2CA9A4923439DE0383E29235AA` | [**2/67** — ver análise](https://www.virustotal.com/gui/file/bd96dbcbf783ea5f8eeb4e7ff743e6b7b7ca1a2ca9a4923439de0383e29235aa/detection) |
 | 2.3.2 (Windows) | `58A18C5EFFBE64783E0FE3414CC082438EA208F721FB35B724FB064BA0DD8493` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/58a18c5effbe64783e0fe3414cc082438ea208f721fb35b724fb064ba0dd8493/detection) |
 | 2.3.1 (Windows) | `786D94742A7526AD9ACAD37873DB8BAFC980B006062A867D5AF45456A7A9649C` | [**1/58** — ver análise](https://www.virustotal.com/gui/file/786d94742a7526ad9acad37873db8bafc980b006062a867d5af45456a7a9649c/detection) |
