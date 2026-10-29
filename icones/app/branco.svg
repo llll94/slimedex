@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<!-- glifo branco do ícone (o mesmo da tela de abertura, estilo Discord): bandeja do Windows no gamer mode -->
+<defs><mask id="m"><rect x="40" y="16" width="176" height="224" rx="28" fill="#fff"/>
+<path d="M76 16v224" stroke="#000" stroke-width="9"/>
+<path d="M76 126h52l22-24h70" fill="none" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
+<circle cx="116" cy="70" r="38.5" fill="#000"/><circle cx="116" cy="70" r="29.5" fill="#fff"/><circle cx="116" cy="70" r="20" fill="#000"/>
+<circle cx="164" cy="50" r="12" fill="#000"/><circle cx="186" cy="50" r="12" fill="#000"/>
+<path d="M118 196h68" stroke="#000" stroke-width="10" stroke-linecap="round"/>
+<path d="M150 157l19 13-19 13z" fill="#000"/></mask></defs>
+<rect width="256" height="256" fill="#fff" mask="url(#m)"/>
+<circle cx="107" cy="61" r="7" fill="#fff"/>
+<circle cx="164" cy="50" r="6.5" fill="#fff"/><circle cx="186" cy="50" r="6.5" fill="#fff"/>
+</svg>

@@ -9,7 +9,7 @@ const SEM_ABERTURA=!!process.env.SLIMEDEX_SEM_ABERTURA; // só para teste/prints
 let win,tray,aberto=false,dialogo=false,largo=false; // dialogo: janela de importar/exportar aberta; largo: painel na largura do testador
 function size(open){aberto=open;const b=win.getBounds(),[w,h]=open?[largo?LARGO:PANEL[0],PANEL[1]]:ICON,wa=screen.getDisplayMatching(b).workArea;
   let x=b.x+b.width-w,y=b.y;x=Math.max(wa.x,Math.min(x,wa.x+wa.width-w));y=Math.max(wa.y,Math.min(y,wa.y+wa.height-h));
-  win.setBounds({x,y,width:w,height:h});if(!open){win.blur();salva()}} // ao fechar, devolve o foco pro jogo
+  win.setBounds({x,y,width:w,height:h});if(open&&falaMenu)calaFala();else if(falaUlt&&vivo(falaWin)&&falaWin.isVisible())fala(falaUlt);if(!open){win.blur();salva()}} // ao fechar, devolve o foco pro jogo
 // última posição do ícone, salva na pasta de dados do app; ignorada se cair fora de todas as telas
 const POS=()=>path.join(app.getPath('userData'),'posicao.json');
 function salva(){try{const [x,y]=win.getPosition();fs.writeFileSync(POS(),JSON.stringify({x,y}))}catch{}}
@@ -109,6 +109,8 @@ const CORES=['azul','vermelho','roxo','laranja','verde','d-azul','d-amarelo','d-
 let apar={};try{apar=JSON.parse(fs.readFileSync(APAR(),'utf8'))||{}}catch{}
 let cor=CORES.includes(apar.cor)?apar.cor:null;
 const gravaApar=()=>{try{fs.writeFileSync(APAR(),JSON.stringify(apar))}catch{}};
+// bandeja no gamer mode: o glifo branco (lá não dá para animar as cores como no ícone da tela)
+const iconeBandeja=()=>apar.gamer===true?nativeImage.createFromPath(path.join(__dirname,'icones','app','branco.png')):iconeCor();
 const iconeCor=grande=>nativeImage.createFromPath(path.join(__dirname,'icones','app',(cor||'azul')+(grande?'-256':'')+'.png')); // o .png pequeno puxa o @2x sozinho
 // menu da bandeja: título com o ícone (cinza, como no Discord), reiniciar e sair
 let idiomaMenu='pt';
@@ -126,9 +128,9 @@ app.whenReady().then(()=>{
   win.on('blur',()=>{if(aberto&&!dialogo)win.webContents.send('fechar')}); // clicou fora: recolhe para o ícone
   // botão "voltar" do mouse: no Windows ele chega como comando de app (não como clique), mesmo sem foco
   win.on('app-command',(_,cmd)=>{if(process.env.SLIME_DEBUG)console.log('app-command',cmd);if(cmd==='browser-backward'&&aberto)win.webContents.send('voltar')});
-  tray=new Tray(iconeCor());
+  tray=new Tray(iconeBandeja());
   tray.setToolTip(`Slimedex ${app.getVersion()} (Ctrl+Tab)`);menuBandeja('pt');
-  ipcMain.on('idioma',(_,l)=>{menuBandeja(l);if(l!=='pt'&&l!=='en')return;for(const w of [bauIco,falaWin,bauWin])if(vivo(w))w.webContents.send('idioma',l)}); // a interface avisa o idioma escolhido; o ícone do baú e o balão trocam junto
+  ipcMain.on('idioma',(_,l)=>{menuBandeja(l);if(l!=='pt'&&l!=='en')return;for(const w of [falaWin,bauWin])if(vivo(w))w.webContents.send('idioma',l)}); // a interface avisa o idioma escolhido; o balão troca junto
   ipcMain.handle('versao',()=>app.getVersion());
   ipcMain.handle('pasta',()=>app.getPath('userData')); // onde ficam os dados do usuário neste sistema
   ipcMain.on('abrir-pasta',()=>shell.openPath(app.getPath('userData')));
@@ -163,9 +165,9 @@ app.whenReady().then(()=>{
   // cor escolhida: grava e troca o ícone da bandeja, do menu e da cartilha na hora
   ipcMain.handle('cor',()=>({cor:cor||'azul',escolhida:!!cor,gamer:apar.gamer===true,dalt:apar.dalt===true,abertura:!SEM_ABERTURA}));
   ipcMain.on('dalt',(_,on)=>{apar.dalt=!!on;gravaApar()});
-  ipcMain.on('gamer',(_,on)=>{apar.gamer=!!on;gravaApar()});
+  ipcMain.on('gamer',(_,on)=>{apar.gamer=!!on;gravaApar();if(tray)tray.setImage(iconeBandeja())});
   ipcMain.on('cor',(_,c)=>{if(!CORES.includes(c))return;cor=apar.cor=c;gravaApar();
-    if(tray){tray.setImage(iconeCor());menuBandeja()}if(guiaWin&&!guiaWin.isDestroyed())guiaWin.setIcon(iconeCor(true))});
+    if(tray){tray.setImage(iconeBandeja());menuBandeja()}if(guiaWin&&!guiaWin.isDestroyed())guiaWin.setIcon(iconeCor(true))});
   ipcMain.on('guia-janela',(e,a)=>{const w=guiaWin;if(!w||w.isDestroyed()||e.sender!==w.webContents)return;
     if(a==='min')w.minimize();else if(a==='max')w.isMaximized()?w.unmaximize():w.maximize();else if(a==='fechar')w.close()});
   ipcMain.on('size',(_,o)=>size(o));
@@ -175,7 +177,7 @@ app.whenReady().then(()=>{
   ipcMain.on('drag-start',e=>{const w=jan(e);if(!w)return;const c=screen.getCursorScreenPoint(),[x,y]=w.getPosition();arrasto.set(w,{x:c.x-x,y:c.y-y})});
   ipcMain.on('drag-move',e=>{const w=jan(e),o=w&&arrasto.get(w);if(!o)return;const c=screen.getCursorScreenPoint();w.setPosition(c.x-o.x,c.y-o.y)});
   ipcMain.on('drag-end',e=>{const w=jan(e);if(!w||!arrasto.delete(w))return;
-    if(w===win)salva();else if(w===bauIco){const [x,y]=w.getPosition();try{gravaJson(BAU_POS(),{x,y})}catch{}}else if(w===mapaWin){const [x,y]=w.getPosition();try{gravaJson(MAPA_POS(),{x,y})}catch{}}else salvaPins()});
+    if(w===win)salva();else if(w===mapaWin){const [x,y]=w.getPosition();try{gravaJson(MAPA_POS(),{x,y})}catch{}}else salvaPins()});
   // combinações fixadas: o painel manda a lista toda (abre as novas, atualiza e fecha as que saíram)
   try{posPins=JSON.parse(fs.readFileSync(PINS(),'utf8'))||{}}catch{}
   ipcMain.on('fav-sync',(_,lista)=>{if(!Array.isArray(lista))return;lista=lista.filter(d=>d&&typeof d.id=='string').slice(0,MAX_PINS);
@@ -207,68 +209,90 @@ function abertura(versaoNova){const espera=ms=>new Promise(r=>setTimeout(r,Math.
     fase('iniciando');t=Date.now();await ate(montou,8000);await espera(800-(Date.now()-t));
     fase('pronto');await espera(500);fase('sai');await espera(350);
   }finally{if(!sp.isDestroyed())sp.close();win.show();if(MAC)app.focus({steal:true});win.focus();trazFrente();win.webContents.send('abrir-inicio')}})()}
-// ---- baú (só Windows, chave no ⋯): ícone arrastável; o baú em si é uma tela do painel do Slimedex ----
-// ícone em unidades de uma tela 2K (1 unidade = altura da tela / 1440), como os ícones do jogo. A leitura do baú do jogo
-// (foto da tela → cartas → slimes → níveis) roda numa janela escondida (bau.html); o resultado o Slimedex "fala" num balão
-let bauIco=null,bauWin=null,vistaBau=false; // vistaBau: o painel está mostrando a tela do baú
-const BAU=()=>path.join(app.getPath('userData'),'bau.json'),BAU_POS=()=>path.join(app.getPath('userData'),'bau-posicao.json');
+// ---- baú (só Windows): o baú em si é uma tela do painel; abrir e capturar ficam no menu do ícone (mouse em cima do Slimedex).
+// A chave no ⋯ liga os atalhos com o jogo na frente (X e Ctrl+X). A leitura do baú do jogo (foto da tela → cartas → slimes →
+// níveis) roda numa janela escondida (bau.html); o resultado o Slimedex "fala" num balão
+let bauWin=null,vistaBau=false,lendoBau=0; // vistaBau: o painel está mostrando a tela do baú; lendoBau: hora em que a leitura começou
+const BAU=()=>path.join(app.getPath('userData'),'bau.json');
 const vivo=w=>w&&!w.isDestroyed();
-function ligaBau(on){ligaTeclas(on);
-  if(!on){for(const w of [bauIco,bauWin])if(vivo(w))w.destroy();bauIco=bauWin=null;return}
-  if(vivo(bauIco)||process.platform!=='win32')return;
-  const b=win.getBounds(),d=screen.getDisplayMatching(b),e=d.bounds.height/1440,L=Math.round(92*e),A=Math.round(132*e); // 92×132 em 2K: desenho com ~68 de altura (os do jogo têm 62–69) + botão Capturar embaixo
-  let p=null;try{p=JSON.parse(fs.readFileSync(BAU_POS(),'utf8'))}catch{}
-  if(!naTela(p,L,A))p={x:Math.max(d.workArea.x,b.x-L-8),y:b.y}; // sem posição salva: à esquerda do ícone do Slimedex
-  bauIco=new BrowserWindow({width:L,height:A,x:p.x,y:p.y,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,focusable:false,
-    webPreferences:{preload:path.join(__dirname,'bau-preload.js')}});
-  bauIco.setAlwaysOnTop(true,'screen-saver');bauIco.setIgnoreMouseEvents(true,{forward:true});bauIco.loadFile('bau-ico.html')} // só o ícone e o botão pegam o mouse
-// quem pega o mouse no ícone: ele manda os retângulos clicáveis (ícone e o botão Capturar quando aparece) e o main confere a posição
-// do cursor a cada 50 ms (o "forward" do Windows às vezes para de avisar)
-setInterval(()=>{if(!vivo(bauIco)||!bauIco.isVisible())return; // o ícone só existe depois do app 'ready': antes disso o 'screen' não pode ser usado (2.3.0 travava ao abrir em PCs mais lentos)
-  const c=screen.getCursorScreenPoint();for(const w of [bauIco]){if(!vivo(w)||!w.isVisible())continue;const b=w.getBounds();
-  const dentro=(w.alvos||[]).some(([x,y,l,a])=>c.x>=b.x+x&&c.x<b.x+x+l&&c.y>=b.y+y&&c.y<b.y+y+a);
-  if(dentro!==w.pega){w.pega=dentro;w.setIgnoreMouseEvents(!dentro,{forward:true});w.webContents.send('bau-dentro',dentro)}}},50);
+function ligaBau(on){ligaTeclas(on);if(!on&&vivo(bauWin)){bauWin.destroy();bauWin=null}}
 // abrir/fechar o baú = abrir o painel na tela do baú / fechar o painel
 const bauAberto=()=>aberto&&vistaBau;
 function abreBau(){win.show();win.focus();trazFrente();win.webContents.send('abrir-bau')}
 function fechaBau(){if(bauAberto())win.webContents.send('fechar')}
 const alternaBau=()=>{if(bauAberto())fechaBau();else abreBau()};
-// atalhos com o jogo na frente (leitor-tela.exe -teclas): X abre/fecha o baú, V fecha
+// atalhos com o jogo na frente (leitor-tela.exe -teclas): X abre/fecha o baú, V fecha, Ctrl+X captura
 let teclas=null;
 function ligaTeclas(on){if(!on||process.platform!=='win32'){const p=teclas;teclas=null;if(p)p.kill();return}
   const exe=LEITOR_EXE();if(teclas||!fs.existsSync(exe))return;const p=teclas=require('child_process').spawn(exe,['-teclas','-pai',String(process.pid)],{windowsHide:true});
   require('readline').createInterface({input:p.stdout}).on('line',l=>{let o;try{o=JSON.parse(l)}catch{return}if(teclas!==p||o.ev!=='tecla')return; // (o clique fora o painel já trata: ele fecha ao perder o foco)
-    if(o.k==='x')alternaBau();else if(o.k==='v')fechaBau()});
+    if(o.k==='x')alternaBau();else if(o.k==='v')fechaBau();else if(o.k==='cx')capturaBau()});
   p.on('exit',()=>{if(teclas===p)teclas=null});p.on('error',()=>{if(teclas===p)teclas=null})}
-const doBau=e=>[bauWin,bauIco,falaWin].some(w=>vivo(w)&&e.sender===w.webContents);
+const doBau=e=>[bauWin,falaWin].some(w=>vivo(w)&&e.sender===w.webContents);
 ipcMain.on('bau-ligar',(_,on)=>ligaBau(!!on));
 ipcMain.on('bau-vista',(e,on)=>{if(e.sender===win.webContents)vistaBau=!!on});
-ipcMain.on('bau-alterna',e=>{if(doBau(e))alternaBau()});
-ipcMain.on('bau-alvos',(e,r)=>{if(!doBau(e)||!Array.isArray(r))return;const w=BrowserWindow.fromWebContents(e.sender);if(vivo(w))w.alvos=r.slice(0,40).filter(q=>Array.isArray(q)&&q.length===4&&q.every(Number.isFinite))});
-// Capturar (botão do ícone): a leitura roda na janela escondida (criada na 1ª vez); o resultado volta para o ícone (botão),
-// para o painel (redesenha o baú) e vira a fala do Slimedex
-ipcMain.on('bau-capturar-agora',e=>{if(!vivo(bauIco)||e.sender!==bauIco.webContents)return;fala({lendo:true});
+// Capturar (menu do ícone, Ctrl+X): a leitura roda na janela escondida (criada na 1ª vez); o resultado vai para o painel
+// (redesenha o baú) e vira a fala do Slimedex. Uma leitura por vez (com folga, se o leitor travar)
+function capturaBau(){if(process.platform!=='win32'||Date.now()-lendoBau<20000)return;lendoBau=Date.now();fala({lendo:true});
   if(!vivo(bauWin)){bauWin=new BrowserWindow({width:200,height:200,show:false,frame:false,transparent:true,skipTaskbar:true,focusable:false,webPreferences:{preload:path.join(__dirname,'bau-preload.js'),backgroundThrottling:false}});bauWin.loadFile('bau.html')}
-  bauWin.tela=screen.getDisplayMatching(bauIco.getBounds());const pede=()=>vivo(bauWin)&&bauWin.webContents.send('bau-capturar');
-  if(bauWin.webContents.isLoading())bauWin.webContents.once('did-finish-load',()=>setTimeout(pede,50));else pede()});
+  bauWin.tela=screen.getDisplayMatching(win.getBounds());const pede=()=>vivo(bauWin)&&bauWin.webContents.send('bau-capturar');
+  if(bauWin.webContents.isLoading())bauWin.webContents.once('did-finish-load',()=>setTimeout(pede,50));else pede()}
+ipcMain.on('bau-capturar-agora',e=>{if(e.sender===win.webContents){win.webContents.send('bau-usou');capturaBau()}}); // Ctrl+X no painel
 ipcMain.on('bau-resultado',(e,r)=>{if(!vivo(bauWin)||e.sender!==bauWin.webContents)return;r=r&&typeof r=='object'?r:{erro:'?'};
-  if(vivo(bauIco))bauIco.webContents.send('bau-resultado',r);win.webContents.send('bau-atualizado');fala(r)});
+  lendoBau=0;win.webContents.send('bau-atualizado');fala({...r,acao:'bau'})});
 ipcMain.handle('bau-ler',()=>{try{return JSON.parse(fs.readFileSync(BAU(),'utf8'))}catch{return null}});
-ipcMain.handle('bau-salvar',(e,d)=>{if(!doBau(e)||!d||typeof d!='object')return false;gravaJson(BAU(),d);return true});
-// a fala do Slimedex: balão saindo do ícone (ou do painel) contando o que aconteceu; some sozinho; clicar abre o baú
-let falaWin=null,falaT=0,falaSai=0;
-function fala(msg){const W=320,H=96,b=win.getBounds(),wa=screen.getDisplayMatching(b).workArea,topo=aberto?b.y+18:b.y+b.height/2-H/2;
-  let x=b.x-W+6,lado='e';if(x<wa.x){x=b.x+b.width-6;lado='d'} // à esquerda do Slimedex; sem espaço, à direita
-  const pos={x:Math.round(x),y:Math.round(Math.max(wa.y,Math.min(topo,wa.y+wa.height-H))),width:W,height:H},dados={...msg,lado,cor:cor||'azul'};
+ipcMain.handle('bau-salvar',(e,d)=>{if(!doBau(e)||!d||typeof d!='object')return false;herdaCoracao(d);gravaJson(BAU(),d);return true});
+// coração da carta (clique no baú do painel): 0 nada, 1 azul vazio, 2 rosa
+ipcMain.handle('bau-coracao',(e,i,k,am)=>{if(!vivo(win)||e.sender!==win.webContents||![0,1,2].includes(am))return false;let d;try{d=JSON.parse(fs.readFileSync(BAU(),'utf8'))}catch{return false}
+  const c=d&&Array.isArray(d.v)&&d.v[i];if(!c||c.k!==k)return false;if(am)c.am=am;else delete c.am;gravaJson(BAU(),d);return true});
+// nova captura: o coração marcado à mão continua na mesma carta (mesma casa e slime; senão o mesmo slime e nível ainda sem dono).
+// Se a captura já leu o coração na tela (c.am), vale o que ela leu
+function herdaCoracao(d){let velho;try{velho=JSON.parse(fs.readFileSync(BAU(),'utf8')).v}catch{}if(!Array.isArray(velho)||!Array.isArray(d.v))return;
+  const usado=new Set(),pega=(c,j)=>{if(!('am' in c))c.am=velho[j].am;usado.add(j)},tem=j=>velho[j]&&velho[j].am&&!usado.has(j);
+  d.v.forEach((c,i)=>{if(c&&c.k&&tem(i)&&velho[i].k===c.k)pega(c,i)});
+  d.v.forEach(c=>{if(!c||!c.k||'am' in c)return;const j=velho.findIndex((o,j)=>tem(j)&&o.k===c.k&&o.lv===c.lv);if(j>=0)pega(c,j)});
+  d.v.forEach(c=>{if(c&&!c.am)delete c.am})}
+// a fala do Slimedex: balão saindo do ícone (ou do painel) contando o que aconteceu; some sozinho; clicar abre o baú.
+// O mesmo balão mostra o menu do ícone (msg.menu): fica enquanto o cursor estiver no ícone ou nele
+// msg.fica: aviso que só some depois que o mouse passa por cima e sai (ou com um clique); msg.acao: o que o clique faz
+let falaWin=null,falaT=0,falaSai=0,falaMenu=false,menuFora=0,falaFica=false,ficaPassou=false,falaAcao=null,falaUlt=null;
+// onde o balão fica: à esquerda do Slimedex (ícone ou painel); sem espaço, à direita
+function posFala(W,H){const b=win.getBounds(),wa=screen.getDisplayMatching(b).workArea,topo=aberto?b.y+18:b.y+b.height/2-H/2;
+  let x=b.x-W+6,lado='e';if(x<wa.x){x=b.x+b.width-6;lado='d'}
+  return{lado,pos:{x:Math.round(x),y:Math.round(Math.max(wa.y,Math.min(topo,wa.y+wa.height-H))),width:W,height:H}}}
+function fala(msg){falaMenu=!!msg.menu;falaFica=!!msg.fica;ficaPassou=false;falaAcao=msg.acao||null;falaUlt=msg.menu?null:msg;
+  const W=msg.menu?212:320,H=msg.menu?(msg.atualizar?160:126):96,{lado,pos}=posFala(W,H),dados={...msg,lado,cor:cor||'azul'};
   const mostra=()=>{if(!vivo(falaWin))return;const ja=falaWin.isVisible();falaSai++;falaWin.webContents.send('fala',dados);
     if(!ja){falaWin.setOpacity(0);falaWin.showInactive();falaWin.moveTop();setTimeout(()=>{if(vivo(falaWin))falaWin.setOpacity(1)},16)} // igual ao Tab: aparece invisível e sobe um quadro depois; já aberto, só troca o texto
-    clearTimeout(falaT);if(!msg.lendo)falaT=setTimeout(calaFala,msg.erro?7000:5000)};
-  if(vivo(falaWin)){if(!falaWin.isVisible())falaWin.setBounds(pos);return mostra()}
+    clearTimeout(falaT);if(!msg.lendo&&!msg.menu&&!msg.fica)falaT=setTimeout(calaFala,msg.ms||(msg.erro?7000:5000))};
+  if(vivo(falaWin)){falaWin.setBounds(pos);return mostra()} // menu e fala têm tamanhos diferentes
   falaWin=new BrowserWindow({...pos,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,hasShadow:false,focusable:false,show:false,
     webPreferences:{preload:path.join(__dirname,'bau-preload.js'),backgroundThrottling:false}});
   falaWin.setAlwaysOnTop(true,'screen-saver');falaWin.loadFile('fala.html');falaWin.webContents.once('did-finish-load',mostra)}
-function calaFala(){if(!vivo(falaWin)||!falaWin.isVisible())return;const n=++falaSai;falaWin.webContents.send('fala-sai');setTimeout(()=>{if(n===falaSai&&vivo(falaWin))falaWin.hide()},220)}
-ipcMain.on('fala-clique',e=>{if(!vivo(falaWin)||e.sender!==falaWin.webContents)return;calaFala();abreBau()});
+function calaFala(){falaMenu=falaFica=false;falaUlt=null;if(!vivo(falaWin)||!falaWin.isVisible())return;const n=++falaSai;falaWin.webContents.send('fala-sai');setTimeout(()=>{if(n===falaSai&&vivo(falaWin))falaWin.hide()},220)}
+ipcMain.on('fala-clique',e=>{if(!vivo(falaWin)||e.sender!==falaWin.webContents)return;const a=falaAcao;calaFala();
+  if(a==='bau')abreBau();else if(a==='atualizar')win.webContents.send('atualizar-agora');
+  else if(a==='feitas'){win.show();win.focus();trazFrente();win.webContents.send('abrir-feitas')}}); // "atualizado": abre o que mudou
+// o painel pede uma fala (saudação ao abrir, versão nova, descobertas novas da comunidade). Não toma o lugar do "lendo…",
+// do menu aberto nem de um aviso que fica
+ipcMain.on('fala-pede',(e,m)=>{if(e.sender!==win.webContents||!m||typeof m!='object'||lendoBau||falaMenu)return;
+  if(falaFica&&!m.fica&&vivo(falaWin)&&falaWin.isVisible())return;
+  fala({t1:String(m.t1||'').slice(0,80),t2:String(m.t2||'').slice(0,140),tipo:m.tipo==='aviso'?'aviso':'ok',fica:!!m.fica,acao:['atualizar','feitas'].includes(m.acao)?m.acao:null,ms:Math.min(15000,+m.ms||0)||undefined})});
+// menu do ícone: aparece com o mouse em cima do Slimedex (fechado); não toma o lugar do "lendo…"
+ipcMain.on('ico-menu',(e,on,at)=>{if(e.sender!==win.webContents||process.platform!=='win32')return; // at: tem versão nova (4ª opção: Atualizar)
+  if(!on){if(falaMenu)calaFala();return}if(!aberto&&!lendoBau&&!falaMenu)fala({menu:true,atualizar:!!at})});
+// menu: some quando o cursor sai do ícone e do balão (com folga para atravessar o vão entre os dois). Aviso que fica: some depois
+// que o mouse passa por cima dele e sai. Só roda com um dos dois na tela (antes do app 'ready' o 'screen' não pode ser usado)
+setInterval(()=>{if(!(falaMenu||falaFica)||!vivo(falaWin)||!falaWin.isVisible())return;
+  const c=screen.getCursorScreenPoint(),em=b=>c.x>=b.x&&c.x<b.x+b.width&&c.y>=b.y&&c.y<b.y+b.height;
+  if(falaFica){if(em(falaWin.getBounds()))ficaPassou=true;else if(ficaPassou)calaFala();return}
+  if((!aberto&&em(win.getBounds()))||em(falaWin.getBounds())){menuFora=0;return}
+  if(!menuFora)menuFora=Date.now();else if(Date.now()-menuFora>250){menuFora=0;calaFala()}},60);
+ipcMain.on('menu-acao',(e,a)=>{if(!vivo(falaWin)||e.sender!==falaWin.webContents||!falaMenu)return;
+  if(a==='abrir'){calaFala();win.show();win.focus();trazFrente();win.webContents.send('toggle',false)} // igual ao Ctrl+Tab
+  else if(a==='bau'){calaFala();win.webContents.send('bau-usou');abreBau()}
+  else if(a==='capturar'){win.webContents.send('bau-usou');capturaBau()} // o menu vira o "lendo…" no mesmo balão
+  else if(a==='atualizar'){calaFala();win.webContents.send('atualizar-agora')}});
 // Capturar: fotografa a tela (resolução real) e devolve a foto, sem esconder nada (o ícone, o painel e o balão não ficam em cima
 // das cartas do jogo); o arquivo temporário serve só para o OCR dos níveis e é apagado na leitura seguinte
 let bauFoto=null;

@@ -48,7 +48,7 @@ static class LeitorTela {
   static void Le(int x, int y, int w, int h, int esc, out string azul, out string branco) {
     int W = w * esc, H = h * esc; byte[] px;
     using (var tela = new Bitmap(w, h, PixelFormat.Format32bppArgb)) {
-      using (var g = Graphics.FromImage(tela)) { if (arquivo != null) g.DrawImage(arquivo, new Rectangle(0, 0, w, h), new Rectangle(x, y, w, h), GraphicsUnit.Pixel); else g.CopyFromScreen(x, y, 0, 0, new Size(w, h)); }
+      using (var g = Graphics.FromImage(tela)) { if (arquivo != null) g.DrawImage(arquivo, new Rectangle(0, 0, w, h), new Rectangle(x, y, w, h), GraphicsUnit.Pixel); else g.CopyFromScreen(x, y, 0, 0, new System.Drawing.Size(w, h)); }
       using (var big = new Bitmap(W, H, PixelFormat.Format32bppArgb)) {
         using (var g = Graphics.FromImage(big)) { g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic; g.DrawImage(tela, new Rectangle(0, 0, W, H)); }
         var d = big.LockBits(new Rectangle(0, 0, W, H), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
@@ -64,7 +64,7 @@ static class LeitorTela {
       byte va = (byte)(az ? 0 : 255), vb = (byte)(br ? 0 : 255);
       a[i] = a[i + 1] = a[i + 2] = va; b[i] = b[i + 1] = b[i + 2] = vb; a[i + 3] = b[i + 3] = 255;
     }
-    azul = Ocr(a, W, H); branco = Ocr(b, W, H);
+    Escolhe(OcrLinhas(a, W, H), OcrLinhas(b, W, H), out azul, out branco);
   }
   // espera uma operação do Windows terminar (sem as extensões .AsTask(), que pedem o SDK do Windows para compilar)
   static T Espera<T>(IAsyncOperation<T> op) {
@@ -74,6 +74,38 @@ static class LeitorTela {
       if (op.Status != AsyncStatus.Completed) throw op.ErrorCode ?? new Exception("OCR: " + op.Status);
       return op.GetResults();
     }
+  }
+  struct Linha { public string T; public double Y0, Y1; }
+  static System.Collections.Generic.List<Linha> OcrLinhas(byte[] bgra, int w, int h) {
+    var sb = SoftwareBitmap.CreateCopyFromBuffer(CryptographicBuffer.CreateFromByteArray(bgra), BitmapPixelFormat.Bgra8, w, h);
+    var r = Espera(ocr.RecognizeAsync(sb)); var l = new System.Collections.Generic.List<Linha>();
+    foreach (var ln in r.Lines) { if (ln.Words.Count == 0) continue;
+      double y0 = ln.Words.Min(p => p.BoundingRect.Y), y1 = ln.Words.Max(p => p.BoundingRect.Y + p.BoundingRect.Height);
+      l.Add(new Linha { T = ln.Text, Y0 = y0, Y1 = y1 }); }
+    return l.OrderBy(x => x.Y0).ToList();
+  }
+  // o bloco do jogo: a linha azul (região) e, coladas logo abaixo, as linhas brancas do nome do mapa. A área lida é maior que o
+  // bloco (a interface do jogo não escala igual em toda resolução), então fica de fora o que não é dele: "Tab", "CH 01", ícones
+  // e o texto da missão logo abaixo (separado por um espaço maior)
+  static bool Lixo(string t) { var u = (t ?? "").Trim(); return u.Length < 3 || u.Equals("Tab", StringComparison.OrdinalIgnoreCase) || u.Count(char.IsLetter) < 3; }
+  static void Escolhe(System.Collections.Generic.List<Linha> az, System.Collections.Generic.List<Linha> br, out string azul, out string branco) {
+    if (Environment.GetEnvironmentVariable("LEITOR_DEBUG") == "1") { foreach (var x in az) Console.Error.WriteLine("  azul   " + (int)x.Y0 + "-" + (int)x.Y1 + " " + x.T); foreach (var x in br) Console.Error.WriteLine("  branco " + (int)x.Y0 + "-" + (int)x.Y1 + " " + x.T); }
+    br = br.Where(x => !Lixo(x.T)).ToList(); az = az.Where(x => !Lixo(x.T)).ToList();
+    azul = ""; branco = "";
+    // azul: a linha azul que tem uma linha branca logo abaixo (a região fica em cima do nome do mapa)
+    foreach (var a in az) {
+      double h = Math.Max(1, a.Y1 - a.Y0);
+      var lista = br.Where(b => b.Y0 >= a.Y0 + h * 0.5 && b.Y0 <= a.Y1 + h * 1.6).ToList();
+      if (lista.Count == 0) continue;
+      var nome = new System.Collections.Generic.List<Linha> { lista[0] };
+      foreach (var b in br.Where(b => b.Y0 > lista[0].Y0).OrderBy(b => b.Y0)) { var u = nome[nome.Count - 1]; if (b.Y0 - u.Y1 <= (u.Y1 - u.Y0) * 1.6 && nome.Count < 3) nome.Add(b); else break; } // linhas coladas = mesmo nome
+      azul = a.T; branco = string.Join(" ", nome.Select(x => x.T)); return;
+    }
+    // sem a linha azul: as primeiras linhas brancas coladas
+    if (br.Count > 0) { var nome = new System.Collections.Generic.List<Linha> { br[0] };
+      foreach (var b in br.Skip(1)) { var u = nome[nome.Count - 1]; if (b.Y0 - u.Y1 <= (u.Y1 - u.Y0) * 1.6 && nome.Count < 3) nome.Add(b); else break; }
+      branco = string.Join(" ", nome.Select(x => x.T)); }
+    if (az.Count > 0) azul = az[0].T;
   }
   static string Ocr(byte[] bgra, int w, int h) {
     var sb = SoftwareBitmap.CreateCopyFromBuffer(CryptographicBuffer.CreateFromByteArray(bgra), BitmapPixelFormat.Bgra8, w, h);
@@ -86,15 +118,15 @@ static class LeitorTela {
     ocr = OcrEngine.TryCreateFromLanguage(new Language("pt-BR")) ?? OcrEngine.TryCreateFromUserProfileLanguages();
     foreach (var p in prints) using (arquivo = new Bitmap(p)) {
       int W = arquivo.Width, H = arquivo.Height; string azul, branco; var sw = Stopwatch.StartNew();
-      Le((int)(W * 0.885), (int)(H * 0.163), (int)(W * 0.11), (int)(H * 0.075), 3, out azul, out branco);
+      Le((int)(W * 0.84), (int)(H * 0.12), (int)(W * 0.156), (int)(H * 0.19), 3, out azul, out branco);
       Manda("{\"arquivo\":" + J(System.IO.Path.GetFileName(p)) + ",\"azul\":" + J(azul) + ",\"branco\":" + J(branco) + ",\"ms\":" + sw.ElapsedMilliseconds + "}");
     }
     return 0;
   }
-  // baú: atalhos com o jogo em primeiro plano — X abre/fecha o baú, V fecha. Só olha essas 2 teclas (sem segurar: o jogo
-  // continua recebendo); com Ctrl, Alt ou a tecla Windows não conta; no próprio Slimedex quem cuida é o painel.
-  // Também avisa quando o botão esquerdo do mouse é apertado (sem posição: o Slimedex confere onde está o cursor), para
-  // fechar o baú com um clique fora dele
+  // baú: atalhos com o jogo em primeiro plano — X abre/fecha o baú, V fecha, Ctrl+X captura. Só olha essas teclas (sem
+  // segurar: o jogo continua recebendo); com Alt, Shift (no Ctrl+X) ou a tecla Windows não conta; no próprio Slimedex quem
+  // cuida é o painel. Também avisa quando o botão esquerdo do mouse é apertado (sem posição: o Slimedex confere onde está o
+  // cursor), para fechar o baú com um clique fora dele
   static int Teclas(string[] args) {
     int pai = 0; for (int i = 0; i + 1 < args.Length; i++) if (args[i] == "-pai") int.TryParse(args[i + 1], out pai);
     Console.OutputEncoding = new UTF8Encoding(false);
@@ -102,10 +134,13 @@ static class LeitorTela {
     while (true) {
       Thread.Sleep(25);
       if (pai != 0 && ++volta % 80 == 0) { try { Process.GetProcessById(pai); } catch { return 0; } } // o Slimedex fechou
-      bool ax = Apertada(0x58), av = Apertada(0x56), mod = Apertada(0x11) || Apertada(0x12) || Apertada(0x5B) || Apertada(0x5C);
-      if (((ax && !x) || (av && !v)) && !mod) {
+      bool ax = Apertada(0x58), av = Apertada(0x56), ctrl = Apertada(0x11), outro = Apertada(0x12) || Apertada(0x5B) || Apertada(0x5C);
+      string k = null;
+      if (((ax && !x) || (av && !v)) && !ctrl && !outro) k = ax && !x ? "x" : "v";
+      else if (ax && !x && ctrl && !outro && !Apertada(0x10)) k = "cx";
+      if (k != null) {
         string nome = NomeDe(Janela()[4]);
-        if (nome.IndexOf("slime", StringComparison.OrdinalIgnoreCase) >= 0 && !Meus.Contains(nome)) Manda("{\"ev\":\"tecla\",\"k\":\"" + (ax && !x ? "x" : "v") + "\"}");
+        if (nome.IndexOf("slime", StringComparison.OrdinalIgnoreCase) >= 0 && !Meus.Contains(nome)) Manda("{\"ev\":\"tecla\",\"k\":\"" + k + "\"}");
       }
       bool am = Apertada(0x01); if (am && !m) Manda("{\"ev\":\"clique\"}");
       x = ax; v = av; m = am;
@@ -189,9 +224,10 @@ static class LeitorTela {
             Manda("{\"ev\":\"tab-ini\"}"); // avisa já: o Slimedex abre a janelinha enquanto a tela é lida
             var sw = Stopwatch.StartNew();
             try {
-              // bloco abaixo do minimapa: x 88,5–99,5% e y 16,3–23,8% da janela (medido em prints de 2560x1440)
+              // canto de cima à direita, em volta do bloco abaixo do minimapa: x 84–99,6% e y 12–31% da janela (o bloco muda de lugar
+              // conforme a resolução: em 1080p a interface fica ~0,81 do 2K, não 0,75); Escolhe separa o bloco do resto
               string azul, branco;
-              Le((int)(j[0] + j[2] * 0.885), (int)(j[1] + j[3] * 0.163), (int)(j[2] * 0.11), (int)(j[3] * 0.075), 3, out azul, out branco);
+              Le((int)(j[0] + j[2] * 0.84), (int)(j[1] + j[3] * 0.12), (int)(j[2] * 0.156), (int)(j[3] * 0.19), 3, out azul, out branco);
               Manda("{\"ev\":\"tab\",\"azul\":" + J(azul) + ",\"branco\":" + J(branco) + ",\"ms\":" + sw.ElapsedMilliseconds + ",\"jogo\":" + J(nome) + "}");
             } catch (Exception ex) { Manda("{\"ev\":\"erro\",\"msg\":" + J(ex.GetBaseException().Message) + "}"); }
           } else Manda("{\"ev\":\"tab-ignorado\",\"jogo\":" + J(nome) + "}");

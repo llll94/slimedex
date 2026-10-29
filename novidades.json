@@ -2,6 +2,40 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.4.0",
+      "prints": [],
+      "pt": [
+        "O Slimedex fala com você: ao abrir, um balão diz bom dia, boa tarde, boa noite ou boa madrugada (pela hora do seu computador), e o painel fica fechado",
+        "Versão nova: o balão fica amarelo até você passar o mouse por cima; clicar nele já atualiza e, no fim, mostra o que mudou",
+        "Passe o mouse no ícone do Slimedex: menu com Abrir, Baú, Capturar baú e, quando há versão nova, Atualizar (o ícone separado do baú saiu)",
+        "Ícone do Slimedex sem o fundo escuro, só com sombra",
+        "Baú: lê o coração de amizade de cada slime (azul: pode ficar amigável, abaixo de 20%; rosa: 20% ou mais). Clique na carta para marcar à mão; botão direito abre a ficha",
+        "Baú: Ctrl+X captura com o jogo na frente, e tem um botão do baú no topo do painel",
+        "Enciclopédia: os não descobertos mostram a foto em preto e branco. Clique para trocar (não descoberto → descoberto → capturado → vínculo); botão direito abre a ficha",
+        "Mapa: “Outro mapa… (digitar)” quando o app não reconhece o nome: escolha o certo e da próxima vez ele já abre nele",
+        "Mapa: o nome do mapa é lido em qualquer resolução (1080p, 1440p…)",
+        "Vila de Larus e Vila de Noecheon na base (vilas não têm slimes)",
+        "Aviso num balão quando alguém sobe descobertas novas para a base",
+        "Gamer Mode: o ícone do Slimedex fica passando pelas cores, e o da bandeja do Windows fica branco",
+        "Baú desligado por padrão para quem ainda não usa: liga sozinho quando você usa Baú ou Capturar baú"
+      ],
+      "en": [
+        "Slimedex talks to you: when it starts, a speech bubble says good morning, good afternoon, good evening or hello, night owl (based on your computer's clock), and the panel stays closed",
+        "New version: the bubble turns yellow until you hover over it; clicking it updates right away and, when done, shows what changed",
+        "Hover over the Slimedex icon: a menu with Open, Chest, Capture chest and, when there is a new version, Update (the separate chest icon is gone)",
+        "Slimedex icon without the dark background, just a shadow",
+        "Chest: reads each slime's friendship heart (blue: can become friendly, below 20%; pink: 20% or more). Click a card to set it by hand; right-click opens its card",
+        "Chest: Ctrl+X captures with the game in front, and there is a chest button at the top of the panel",
+        "Encyclopedia: undiscovered slimes show their picture in black and white. Click to change (undiscovered → discovered → captured → bond); right-click opens its card",
+        "Map: “Another map… (type it)” when the app does not recognize the name: pick the right one and next time it opens it right away",
+        "Map: the map name is read at any resolution (1080p, 1440p…)",
+        "Larus Village and Noecheon Village added to the database (villages have no slimes)",
+        "A speech bubble lets you know when someone shares new discoveries to the database",
+        "Gamer Mode: the Slimedex icon cycles through colors, and the Windows tray icon turns white",
+        "Chest off by default for those who do not use it yet: it turns on by itself when you use Chest or Capture chest"
+      ]
+    },
+    {
       "v": "2.3.2",
       "prints": [],
       "pt": [

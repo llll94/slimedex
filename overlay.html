@@ -1,8 +1,8 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0;height:100%;overflow:hidden;background:transparent;font:13px system-ui,sans-serif;color:#e8eaed;user-select:none}
-#ico{position:relative;width:56px;height:56px;margin:4px;border-radius:50%;background:rgba(14,19,21,.72);display:flex;align-items:center;justify-content:center;cursor:grab;transition:transform .12s;box-shadow:0 2px 8px #0008;touch-action:none}
-#ico:hover{transform:scale(1.12)}#ico:active{cursor:grabbing}#ico img{width:50px;pointer-events:none}
+#ico{position:relative;width:56px;height:56px;margin:4px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;transition:transform .12s;touch-action:none}
+#ico:hover{transform:scale(1.12)}#ico:active{cursor:grabbing}#ico img{width:50px;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)) drop-shadow(0 0 1.5px rgba(0,0,0,.3))} /* sem fundo: só a sombra, como os ícones do jogo */
 #pn{height:100%;display:flex;flex-direction:column;background:rgba(24,28,33,.95);border:1px solid #2d333a;border-radius:14px;overflow:hidden}
 #hd{display:flex;gap:6px;padding:8px;-webkit-app-region:drag;border-bottom:1px solid #2d333a}#hd *{-webkit-app-region:no-drag}
 input{flex:1;min-width:0;background:#14171a;color:inherit;border:1px solid #2d333a;border-radius:8px;padding:6px 9px;font:inherit;user-select:text}
@@ -24,7 +24,11 @@ h4{margin:10px 0 4px;font-size:11px;color:#9aa3ad;text-transform:uppercase}
 .vas{display:inline-flex;vertical-align:-3px;margin-left:5px;padding:1px 2px;border-radius:5px;color:#5c6670;cursor:pointer}.vas svg{width:13px;height:13px;fill:currentColor}.vas:hover{color:#fff;background:#262c33}
 .cores{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.cor{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1f252c;border:2px solid transparent}
 .cor img{width:44px;pointer-events:none}.cor:hover{background:#262c33}.cor.on{border-color:#7fe0a8}
-.gm0{width:48px;height:48px;border-radius:8px;background:#1f252c;flex:none}
+.gm0{width:48px;height:48px;border-radius:8px;background:#1f252c;flex:none}img.gm0{object-fit:contain;padding:5px;box-sizing:border-box;animation:matiz 4s linear infinite}
+/* gamer mode: o ícone do Slimedex passa pelas cores (gira o matiz; a sombra vem depois para continuar preta) */
+@keyframes matiz{from{filter:hue-rotate(0deg) saturate(1.4)}to{filter:hue-rotate(360deg) saturate(1.4)}}
+#ico.gamer img{animation:matizIco 4s linear infinite}
+@keyframes matizIco{from{filter:hue-rotate(0deg) saturate(1.4) drop-shadow(0 2px 3px rgba(0,0,0,.45)) drop-shadow(0 0 1.5px rgba(0,0,0,.3))}to{filter:hue-rotate(360deg) saturate(1.4) drop-shadow(0 2px 3px rgba(0,0,0,.45)) drop-shadow(0 0 1.5px rgba(0,0,0,.3))}}
 /* gamer mode: anel de cores girando na borda do painel (só CSS; o painel escondido não anima) */
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
 #pn.gamer{position:relative;border-color:transparent}
@@ -110,14 +114,14 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 /* skills: linha com ícone, nome, pílula do elemento e nível */
 #skb{display:flex;align-items:center;padding:0 2px}#skb svg{width:17px;height:17px;fill:currentColor}
 /* identificar e enciclopédia: símbolos do jogo, cartas 5 por linha (claras como as do jogo), menu do slime */
-#enb{display:flex;align-items:center;padding:0 2px;color:#7fd0f5}#enb:hover{color:#c6ecff}#enb svg{width:18px;height:18px}
+#enb,#bab{display:flex;align-items:center;padding:0 2px}#enb svg,#bab svg{width:18px;height:18px}
 .sti{display:inline-flex;width:16px;height:16px;vertical-align:-3px;flex:none}.sti svg{width:100%;height:100%}.row b .sti{margin-left:5px}
 .stb{display:inline-flex;width:20px;height:20px;vertical-align:-4px;margin-left:4px;cursor:pointer;border-radius:50%}.stb svg{width:100%;height:100%}.stb:hover{box-shadow:0 0 0 2px #6aa8ff}
 .chips.stc{gap:5px}.stc .chip{display:inline-flex;align-items:center;gap:3px;cursor:pointer;padding:3px 8px;border-radius:12px}.stc .chip svg{width:18px;height:18px}.stc .chip:not(.on){opacity:.75}.stc .chip:not(.on):hover{opacity:1}
 .enc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0 8px}
 .ec{position:relative;aspect-ratio:192/220;border-radius:10px;background:#D7EDFF;display:flex;flex-direction:column;align-items:center;cursor:pointer;overflow:hidden}
 .ec b{font:800 11px system-ui;color:#173448;margin-top:3px;letter-spacing:.5px}.ec img{width:86%;flex:1;min-height:0;object-fit:contain}
-.ec.s1 img{filter:grayscale(1)}.ec.s3{background:#FFEDF4}
+.ec.s0 img,.ec.s1 img{filter:grayscale(1)}.ec.s3{background:#FFEDF4}
 .ec .q{flex:1;display:flex;align-items:center;font:900 30px system-ui;color:#9fb6cf}.ec.vazio{cursor:default;opacity:.5}
 .enc.bau{grid-template-columns:repeat(4,1fr);gap:8px}.ec.vaga{background:#2a3139;cursor:default}.bauh{display:flex;align-items:center;gap:8px}.bauh svg{width:26px;height:26px;flex:none}
 .ec .sti{position:absolute;right:3px;bottom:3px;width:14px;height:14px}
@@ -136,7 +140,7 @@ kbd{font:600 10px system-ui;padding:1px 5px;border-radius:4px;background:#2b3440
 .skesc{display:flex;align-items:center;gap:6px;min-height:30px}.skesc img,.skesc>i{width:26px;height:26px;object-fit:contain}
 </style></head><body>
 <div id="ico"><img src="icon.svg" alt=""><i id="ponto" hidden></i><i id="anel" hidden><svg viewBox="0 0 64 64"><circle class="trilho" cx="32" cy="32" r="30"/><circle class="prog" id="anelp" cx="32" cy="32" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 32 32)"/></svg></i><i id="pct" hidden></i><i id="check" hidden>✓</i></div>
-<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="enb"><svg viewBox="0 0 24 24"><path d="M6 2.8h11.2c1 0 1.8.8 1.8 1.8v14.6c0 1-.8 1.8-1.8 1.8H6.8A2.3 2.3 0 0 1 4.5 18.7V4.3C4.5 3.5 5.2 2.8 6 2.8z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.6 17.6c.3-.9 1.1-1.4 2.1-1.4H19" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 19.6v3l1.3-1 1.3 1v-3z" fill="currentColor"/><path d="M12.4 5.4c-2.1 2.6-3.4 4.3-3.4 6.1a3.4 3.4 0 0 0 6.8 0c0-1.8-1.3-3.5-3.4-6.1z" fill="currentColor"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
+<div id="pn" hidden><div id="hd"><div id="qw"><input id="qi"><button id="qx" hidden>×</button></div><button id="inf">i</button><button id="nv">＋</button><button id="skb"><svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/></svg></button><button id="tsb"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg></button><button id="enb"><svg viewBox="0 0 24 24"><path d="M6 2.8h11.2c1 0 1.8.8 1.8 1.8v14.6c0 1-.8 1.8-1.8 1.8H6.8A2.3 2.3 0 0 1 4.5 18.7V4.3C4.5 3.5 5.2 2.8 6 2.8z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.6 17.6c.3-.9 1.1-1.4 2.1-1.4H19" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 19.6v3l1.3-1 1.3 1v-3z" fill="currentColor"/><path d="M12.4 5.4c-2.1 2.6-3.4 4.3-3.4 6.1a3.4 3.4 0 0 0 6.8 0c0-1.8-1.3-3.5-3.4-6.1z" fill="currentColor"/></svg></button><button id="bab" hidden><svg viewBox="0 0 24 24"><path d="M4 10.6h16v7.8a2.1 2.1 0 0 1-2.1 2.1H6.1A2.1 2.1 0 0 1 4 18.4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.7 10.4 5.7 4.8l3.3 2.7h6l3.3-2.7 1 5.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="10" y="8.8" width="4" height="4.8" rx="1" fill="currentColor"/></svg></button><button id="mn">⋯</button><button id="x">✕</button></div><div id="bd"></div><div id="rodape"><span id="rst" class="mu"></span><button class="btn pri" id="avb" hidden></button><button class="btn" id="avc" hidden></button><button id="chk"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></div></div>
 <datalist id="nomes"></datalist><datalist id="materiais"></datalist>
 <script src="data.js"></script>
 <script src="imagens-extra.js"></script>
@@ -224,7 +228,7 @@ const ST_IC=['<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#3a4
  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#31FFB7"/><path d="M3.8 12c2.2-3.6 5-5.4 8.2-5.4s6 1.8 8.2 5.4c-2.2 3.6-5 5.4-8.2 5.4S6 15.6 3.8 12z" fill="#117152"/><circle cx="12" cy="12" r="3.3" fill="#31FFB7"/><circle cx="12" cy="12" r="1.6" fill="#117152"/></svg>',
  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#6351B3"/><path d="M12 19.2s-6.8-4.1-6.8-8.8A3.7 3.7 0 0 1 12 8.3a3.7 3.7 0 0 1 6.8 2.1c0 4.7-6.8 8.8-6.8 8.8z" fill="#FB75A7"/><ellipse cx="8.9" cy="10.5" rx="1.3" ry=".9" fill="#FF9BBF"/></svg>'];
 const IR_IC='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#2b3440"/><path d="M10 7l5 5-5 5" fill="none" stroke="#c9d1d9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const stDe=k=>(M.st||{})[k]|0,stI=v=>v?`<span class="sti" title="${esc(t('st_'+v))}">${ST_IC[v]}</span>`:'';
+const stDe=k=>(M.st||{})[k]|0,stI=(v,z)=>v||z?`<span class="sti" title="${esc(t('st_'+v))}">${ST_IC[v]}</span>`:'';
 // filtros liga/desliga (conjunto vazio = todos): um da enciclopédia e um da lista do Ctrl+Tab
 let ENCF=new Set(),LSTF=new Set();
 const stChips=(f,ctx)=>`<div class="chips stc">${[0,1,2,3].map(v=>`<span class="chip${f.has(v)?' on':''}" data-stf="${ctx}:${v}" title="${esc(t('st_f'+v))}">${ST_IC[v]}</span>`).join('')}</div>`; // nenhum ligado = todos
@@ -236,20 +240,29 @@ let ENC={sel:-1};
 const BAU_IC='<svg viewBox="4 5 56 55"><rect x="11" y="24" width="42" height="5.5" fill="#26496E"/><path d="M11.5 25 L14.3 11.5 L23 18.8 H41 L49.7 11.5 L52.5 25 Z" fill="#A3E8FF" stroke="#A3E8FF" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 21.6 L15.9 15.3 L22.6 20.6 H41.4 L48.1 15.3 L50 21.6 Z" fill="#63BCED"/><rect x="9" y="28.5" width="46" height="26" rx="7" fill="#A3E8FF"/><rect x="11" y="30.3" width="42" height="19.2" rx="5.5" fill="#63BCED"/><rect x="26" y="22.5" width="12" height="13" rx="3.5" fill="#26496E"/><rect x="29.4" y="26" width="5.2" height="5.6" rx="1.5" fill="#52C698"/></svg>';
 const haQuanto=ts=>{const s=(Date.now()-ts)/1000,f=new Intl.RelativeTimeFormat(LANG==='pt'?'pt-BR':'en',{numeric:'auto'});
  return s<60?f.format(-Math.round(s),'second'):s<3600?f.format(-Math.round(s/60),'minute'):s<86400?f.format(-Math.round(s/3600),'hour'):f.format(-Math.round(s/86400),'day')};
+// coração de amizade da carta: 1 azul vazio (pode ficar amigável, ainda abaixo de 20%), 2 rosa (20% ou mais, o mesmo ícone do Vínculo)
+const AM_IC='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#26496E"/><path d="M12 18.4s-6-3.7-6-7.9A3.3 3.3 0 0 1 12 8.6a3.3 3.3 0 0 1 6 1.9c0 4.2-6 7.9-6 7.9z" fill="none" stroke="#63BCED" stroke-width="2" stroke-linejoin="round"/></svg>';
+// clique na carta: nada → azul → rosa → nada (fica no bau.json, e uma nova captura mantém o coração da mesma carta)
+async function bauGira(i,k){const d=await ov.bau.ler().catch(()=>null),c=d&&Array.isArray(d.v)&&d.v[i];if(!c||c.k!==k)return;
+ const top=bd.scrollTop;if(await ov.bau.coracao(i,k,((c.am|0)+1)%3).catch(()=>false)){await bauTela();bd.scrollTop=top}}
 async function bauTela(){semBusca();qi.blur();cur=null;sel=-1;marca({t:'bau'});const d=await ov.bau.ler().catch(()=>null);if(!vista||vista.t!=='bau')return;
  const v=d&&Array.isArray(d.v)?d.v:null,n=v?v.filter(Boolean).length:0,lv=c=>c.lv?'LV'+c.lv:'LV ?';
- bd.innerHTML=`${voltarLk()}<h4 class="bauh">${BAU_IC}${t('bau_h2')}</h4>`+(v?`<p class="mu" style="margin:2px 0 6px">${esc(t('bau_quando',{n,s:v.length,t:haQuanto(d.ts)}))}</p>
-  <div class="enc bau">${v.map(c=>c&&K[c.k]?`<div class="ec" data-bk="${esc(c.k)}" title="${esc(rot(K[c.k])+(c.d?' · '+t('bau_talvez'):''))}"><b>${lv(c)}</b>${K[c.k].im?`<img alt="" src="${esc(urlIm(K[c.k].im))}">`:'<span class="q">?</span>'}</div>`
+ bd.innerHTML=`${voltarLk()}<h4 class="bauh">${BAU_IC}${t('bau_h2')}</h4>`+(v?`<p class="mu" style="margin:2px 0 6px">${esc(t('bau_quando',{n,s:v.length,t:haQuanto(d.ts)}))}</p><p class="mu" style="margin:-4px 0 6px;font-size:11px">${t('bau_dica')}</p>
+  <div class="enc bau">${v.map((c,i)=>c&&K[c.k]?`<div class="ec" data-bk="${esc(c.k)}" data-bi="${i}" title="${esc(rot(K[c.k])+(c.d?' · '+t('bau_talvez'):''))}"><b>${lv(c)}</b>${K[c.k].im?`<img alt="" src="${esc(urlIm(K[c.k].im))}">`:'<span class="q">?</span>'}${c.am?`<span class="sti" title="${esc(t('bau_am'+c.am))}">${c.am==2?ST_IC[3]:AM_IC}</span>`:''}</div>`
    :c?`<div class="ec" style="cursor:default" title="${esc(t('bau_desconhecido'))}"><b>${lv(c)}</b><span class="q">?</span></div>`:'<div class="ec vaga"></div>').join('')}</div>`
   :`<p class="mu">${t('bau_vazio')}</p>`)}
 function enciclopedia(keep){const top=bd.scrollTop;semBusca();qi.blur();cur=null;sel=-1;marca({t:'enc'});
  const porN={};S.forEach(s=>{if(s.n!=null&&!BOSS.has(s.k)&&!(s.n in porN))porN[s.n]=s});const ns=Object.keys(porN).map(Number),max=ns.length?Math.max(...ns):0,conta=[0,0,0,0];
  ns.forEach(n=>conta[stDe(porN[n].k)]++);
  let h='';for(let n=1;n<=max;n++){const s=porN[n],v=s?stDe(s.k):0,num=String(n).padStart(3,'0');if(ENCF.size&&!ENCF.has(v))continue;
-  h+=s?`<div class="ec s${v}" data-ec="${esc(s.k)}" title="${esc(v?rot(s):'#'+n)}"><b>${num}</b>${v&&s.im?`<img alt="" src="${urlIm(s.im)}">`:'<span class="q">?</span>'}${stI(v)}</div>`
+  h+=s?`<div class="ec s${v}" data-ec="${esc(s.k)}" title="${esc(v?rot(s):'#'+n)}"><b>${num}</b>${s.im?`<img alt="" src="${urlIm(s.im)}">`:'<span class="q">?</span>'}${stI(v,1)}</div>`
    :`<div class="ec vazio"><b>${num}</b><span class="q">?</span></div>`}
- bd.innerHTML=`${voltarLk()}<h4>${t('enc_h')}</h4><p class="mu" style="margin:2px 0">${t('enc_conta',{d:conta[1],c:conta[2],v:conta[3],n:ns.length})}</p>${stChips(ENCF,'enc')}${h?`<div class="enc">${h}</div>`:`<p class="mu">${t('enc_vazio')}</p>`}`;
+ bd.innerHTML=`${voltarLk()}<h4>${t('enc_h')}</h4><p class="mu" style="margin:2px 0">${t('enc_conta',{d:conta[1],c:conta[2],v:conta[3],n:ns.length})}</p><p class="mu" style="margin:0 0 2px;font-size:11px">${t('enc_dica')}</p>${stChips(ENCF,'enc')}${h?`<div class="enc">${h}</div>`:`<p class="mu">${t('enc_vazio')}</p>`}`;
  bd.scrollTop=keep?top:0;if(keep&&ENC.sel>=0)encMarca(ENC.sel,true);else ENC.sel=-1}
+// clique esquerdo: próximo status, em loop (0 não descoberto → 1 descoberto → 2 capturado → 3 vínculo → 0)
+function encGira(k){fechaStm();const v=(stDe(k)+1)%4;M.st=M.st||{};if(v)M.st[k]=v;else delete M.st[k];salva();enciclopedia(true)}
+// clique direito: abre a ficha do slime
+bd.addEventListener('contextmenu',e=>{const ec=e.target.closest('[data-ec],[data-bk]'),k=ec&&(ec.dataset.ec||ec.dataset.bk);if(!k||!K[k])return;e.preventDefault();fechaStm();ficha(k)}); // enciclopédia e baú
 function encMarca(i,semRolar){const c=[...bd.querySelectorAll('.ec')];if(!c.length)return;ENC.sel=Math.max(0,Math.min(i,c.length-1));c.forEach((e,j)=>e.classList.toggle('on',j==ENC.sel));if(!semRolar)c[ENC.sel].scrollIntoView({block:'nearest'})}
 // setas andam na grade (↑↓ = uma linha de 5), Enter abre o menu do slime marcado
 function encTecla(e){const d={ArrowLeft:-1,ArrowRight:1,ArrowUp:-5,ArrowDown:5}[e.key];
@@ -291,7 +304,7 @@ function marca(v){const igual=vista&&JSON.stringify(vista)===JSON.stringify(v);
  vista=v;fechaStm();ov.largo(v.t=='testador');ov.bau.vista(v.t=='bau')} // só o testador usa o painel largo
 function voltar(){const v=hist.pop();if(!v){if(vista&&vista.t!='lista'){list();qi.focus()}return}
  voltando=true;try{if(v.t=='lista'){qi.value=v.q||'';list();qi.focus()}else if(v.t=='ficha'&&K[v.k])ficha(v.k)
-  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else if(v.t=='enc')enciclopedia();else if(v.t=='bau')bauTela();else list()}finally{voltando=false}}
+  else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else if(v.t=='enc')enciclopedia();else if(v.t=='bau')bauTela();else if(v.t=='mapabusca')buscaMapaTela();else list()}finally{voltando=false}}
 // re-desenha a tela atual (ex.: depois de trocar o idioma ou chegar a base da comunidade)
 function redesenha(){const v=vista;if(!v)return;voltando=true;try{if(v.t=='ficha'&&K[v.k])ficha(v.k,true);else if(v.t=='lista')list();else if(v.t=='form')formCombo(v.r);else if(v.t=='meus')meus();else if(v.t=='envio')envio();else if(v.t=='novas')novidadesTela();else if(v.t=='mapa')telaMapa(v.m);else if(v.t=='testador')testador();else if(v.t=='skform')skillForm();else if(v.t=='skills')skillsTela();else if(v.t=='skill')skillDet(v.k);else if(v.t=='cor')telaCor();else if(v.t=='gamer')gamer();else if(v.t=='enc')enciclopedia(true);else if(v.t=='bau')bauTela()}finally{voltando=false}}
 function limpaX(){qx.hidden=!qi.value}
@@ -310,9 +323,10 @@ function poeCor(c){if(!CORES_APP.includes(c)&&!CORES_D.includes(c))return;COR=c;
 const coresHtml=()=>`<div class="tgl" style="margin-top:8px"><span class="sw${DALT?' on':''}" id="dlt" style="margin-left:0"><i></i></span><span>${t('cor_dalt')}</span></div><div class="cores">${(DALT?CORES_D:CORES_APP).map(c=>`<span class="cor${c===COR?' on':''}" data-cor="${c}" title="${esc(t('cor_'+c.replace('-','_')))}"><img src="${icoCor(c)}" alt=""></span>`).join('')}</div>`;
 function telaCor(){semBusca();cur=null;sel=-1;marca({t:'cor'});bd.innerHTML=`<h4>${t('cor_h')}</h4><p class="mu">${t('cor_tip')}</p>${coresHtml()}`}
 // ---- gamer mode (easter egg: buscar "gamer mode"): chave "Aumenta o FPS" (piada) que liga a borda RGB do painel, e a escolha da cor ----
-let GAMER=false;const poeGamer=()=>pn.classList.toggle('gamer',GAMER);
+let GAMER=false;const poeGamer=()=>{pn.classList.toggle('gamer',GAMER);ico.classList.toggle('gamer',GAMER)};
+const gmIc=()=>`<img class="gm0" src="${icoCor(COR)}" alt="">`; // a "foto" do Gamer Mode: o ícone trocando de cor
 function gamer(){cur=null;sel=-1;marca({t:'gamer'});
- bd.innerHTML=`${voltarLk()}<div class="row mini" style="cursor:default"><i class="gm0"></i><div><b>Gamer Mode</b></div></div><div class="tgl" style="margin:10px 0"><span class="sw${GAMER?' on':''}" id="gmw" style="margin-left:0"><i></i></span><span>${t('gm_fps')}</span></div>${coresHtml()}`;
+ bd.innerHTML=`${voltarLk()}<div class="row mini" style="cursor:default">${gmIc()}<div><b>Gamer Mode</b></div></div><div class="tgl" style="margin:10px 0"><span class="sw${GAMER?' on':''}" id="gmw" style="margin-left:0"><i></i></span><span>${t('gm_fps')}</span></div>${coresHtml()}`;
  gmw.onclick=()=>{GAMER=!GAMER;ov.gamer(GAMER);poeGamer();gamer()}}
 function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});limpaX();
  const sw=f=>`<span class="sw${f.oculto?'':' on'}" data-fx="${esc(f.id)}" title="${esc(t(f.oculto?'fx_off':'fx_on'))}"><i></i></span>`;
@@ -323,7 +337,7 @@ function list(){const q=qi.value.trim();sel=-1;cur=null;marca({t:'lista',q});lim
  if(!q&&LSTF.size)bd.innerHTML=ch+(ALL.filter(fl).map(s=>row(s,true)).join('')||`<p class="mu">${t('enc_vazio')}</p>`);
  else if(!q)bd.innerHTML=ch+(fx.length?`<h4>${t('favs')}${vas('fav')}</h4>${fx.join('')}`:'')+(rec.length?`<h4>${t('recent')}${vas('rec')}</h4>${rec.map(k=>row(K[k],true)).join('')}<h4>${t('all',{n:S.length})}</h4>`:'')+ALL.map((s,i)=>(i===bo?`<h4>${t('boss')}</h4>`:i===nd?`<h4>${t('nao_desc')}</h4>`:'')+row(s,true)).join(''); // todas as linhas no mesmo tamanho (compacto); sem número = ainda não descoberto no jogo
  else{const w=norm(q).split(/\s+/),nq=norm(q);
-  if(/^gamer ?mode$/.test(nq)){bd.innerHTML=`<div class="row mini" data-gamer="1"><i class="gm0"></i><div><b>Gamer Mode</b></div></div>`;bd.scrollTop=0;return} // easter egg
+  if(/^gamer ?mode$/.test(nq)){bd.innerHTML=`<div class="row mini" data-gamer="1">${gmIc()}<div><b>Gamer Mode</b></div></div>`;bd.scrollTop=0;return} // easter egg
   // relevância: nome começa com o termo > uma palavra do nome começa com ele > nome contém > resto (elemento, local, número)
   const nota=s=>{const ns=[dn(s),s.nm,...s.al].filter(Boolean).map(norm);return ns.some(n=>n.startsWith(nq))?0:ns.some(n=>n.split(' ').some(p=>p.startsWith(nq)))?1:ns.some(n=>n.includes(nq))?2:3};
   bd.innerHTML=ch+(ALL.filter(s=>fl(s)&&w.every(x=>s.h.includes(x))).map((s,i)=>[nota(s),i,s]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>row(x[2],true)).join('')||`<p class="mu">${t('nothing')}</p>`)}
@@ -697,7 +711,7 @@ pasta.onclick=()=>ov.abrirPasta();
 let VERSAO='',PASTA='';
 // textos fixos do topo (mudam com o idioma)
 function estaticos(){document.documentElement.lang=LANG=='pt'?'pt-BR':'en';ico.title=t('ico_title')+(NOVA?' · '+t('nova_versao_tip',{v:NOVA.versao}):CMnova?' · '+t('nova_base'):'');const dois=NOVA&&CMnova;if(NOVA&&!avb.disabled)avb.textContent=dois?t('btn_app_curto',{v:NOVA.versao}):t(NOVA.arquivo?'nova_versao':'nova_versao_baixar',{v:NOVA.versao});if(!avc.disabled)avc.textContent=dois?t('btn_base_curto'):t('reiniciar_btn');rst.textContent=ATUALIZADO?t('atualizado',{v:VERSAO}):t('base_em_dia')+(VERSAO?' · v'+VERSAO:'');qi.placeholder=t('search_ph');chk.title=t('chk_title');qx.title=t('clear');
- inf.title=t('info_tip');tsb.title=t('tst_title');skb.title=t('sk_title');enb.title=t('enc_title');nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
+ inf.title=t('info_tip');tsb.title=t('tst_title');skb.title=t('sk_title');enb.title=t('enc_title');bab.title=t('menu_bau')+' (X)';nv.title=t('new_title');mn.title=t('my_title');x.title=t('close_title')}
 function idioma(l){if(l!=='pt'&&l!=='en'||l===LANG)return;LANG=l;try{localStorage.setItem('lang',l)}catch{}estaticos();monta();redesenha();ov.idioma(l)}
 // ---- navegação ----
 function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Math.max(0,Math.min(i,r.length-1));
@@ -710,7 +724,7 @@ function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hi
  qi.value='';hist=[];vista=null;list();qi.focus()}
 let fechouEm=0; // quando o painel fechou (o Esc que fecha o painel não fecha os slimes do mapa)
 function close(){fechaStm();fechouEm=Date.now();const a=document.activeElement;if(a&&a.tagName=="INPUT"&&bd.contains(a))campo=a;pn.hidden=true;ico.hidden=false;ov.size(false);ov.largo(false)}
-x.onclick=close;tsb.onclick=()=>testador();skb.onclick=()=>skillsTela();enb.onclick=()=>enciclopedia();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
+x.onclick=close;tsb.onclick=()=>testador();skb.onclick=()=>skillsTela();enb.onclick=()=>enciclopedia();bab.onclick=()=>vista&&vista.t=='bau'?list():bauTela();mn.onclick=()=>meus();nv.onclick=()=>formCombo(cur);inf.onclick=()=>ov.guia(LANG);qi.oninput=list; // i: cartilha em janela própria
 qx.onclick=()=>{qi.value='';list();qi.focus()}; // × dentro da busca
 qi.onkeydown=e=>{
  if(e.key=='ArrowDown'){e.preventDefault();mark(sel+1)}
@@ -720,8 +734,9 @@ qi.onkeydown=e=>{
 bd.onclick=e=>{const t=e.target;
  if(t.id=='bk')return voltar();
  const sf=t.closest('[data-stf]');if(sf){const [c,v]=sf.dataset.stf.split(':');return stFiltro(c,+v)} // filtro de identificar (enciclopédia ou lista)
- const bk=t.closest('[data-bk]');if(bk&&K[bk.dataset.bk])return ficha(bk.dataset.bk); // carta do baú
- const ec=t.closest('[data-ec]');if(ec){encMarca([...bd.querySelectorAll('.ec')].indexOf(ec),true);return stMenu(ec.dataset.ec,ec,false)}
+ const mb=t.closest('[data-mbn]');if(mb)return escolheMapa(mb.dataset.mbn); // "Outro mapa…": escolheu na busca
+ const bk=t.closest('[data-bk]');if(bk&&K[bk.dataset.bk])return bauGira(+bk.dataset.bi,bk.dataset.bk); // carta do baú: gira o coração
+ const ec=t.closest('[data-ec]');if(ec){encMarca([...bd.querySelectorAll('.ec')].indexOf(ec),true);return encGira(ec.dataset.ec)}
  const sk=t.closest('[data-stk]');if(sk)return stMenu(sk.dataset.stk,sk,true);
  if(t.closest('#dlt')){DALT=!DALT;ov.dalt(DALT);return vista&&vista.t=='cor'?telaCor():gamer()}
  const cr=t.closest('[data-cor]');if(cr){const primeira=vista&&vista.t=='cor';poeCor(cr.dataset.cor);ov.escolheCor(COR);if(primeira){qi.value='';hist=[];list();qi.focus()}else gamer();return}
@@ -762,7 +777,9 @@ bd.onclick=e=>{const t=e.target;
  const r=t.closest('[data-k]');if(r&&K[r.dataset.k])ficha(r.dataset.k)};
 // ícone: arrastar move a janela; clique simples (sem arrastar) abre o painel
 let drag=null;
-ico.onpointerdown=e=>{if(e.button)return;ico.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false};ov.dragStart()};
+// mouse em cima: o menu (Abrir / Baú / Capturar baú) aparece no balão ao lado; arrastar some com ele (só Windows: o baú é só lá)
+ico.onmouseenter=()=>{if(!drag&&MAPA_OK)ov.bau.menu(true,!!NOVA&&!avb.disabled)}; // com versão nova: + Atualizar
+ico.onpointerdown=e=>{if(e.button)return;ov.bau.menu(false);ico.setPointerCapture(e.pointerId);drag={x:e.screenX,y:e.screenY,moved:false};ov.dragStart()};
 ico.onpointermove=e=>{if(!drag)return;if(!drag.moved&&Math.hypot(e.screenX-drag.x,e.screenY-drag.y)>4)drag.moved=true;if(drag.moved)ov.dragMove()};
 ico.onpointerup=()=>{const d=drag;drag=null;ov.dragEnd();if(d&&!d.moved)open()};
 ov.onToggle(f=>f&&!pn.hidden?close():open()); // Ctrl+Tab
@@ -770,7 +787,7 @@ ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
 ov.onVoltar(()=>{if(!pn.hidden)voltar()});
 // ---- slimes do mapa (Tab) · beta: o leitor manda o texto lido abaixo do minimapa; aqui ele vira um mapa da base ----
-const MAPA_OK=ov.plataforma==='win32';let mapaOn=false,mapaAberto=false,mapaStatus='';
+const MAPA_OK=ov.plataforma==='win32';bab.hidden=!MAPA_OK; // baú: só Windowslet mapaOn=false,mapaAberto=false,mapaStatus='';
 // o jogo ignora o Tab enquanto o mapa dele anima (medido em vídeo: aceita o próximo ~0,52 s depois); aqui também, senão a janelinha sai do ritmo
 const TAB_TRAVA=520;let tabEm=0;try{mapaOn=MAPA_OK&&localStorage.getItem('mapa-tab')==='1'}catch{}
 // o OCR confunde letras parecidas: compara sem acento/espaço e com o/c/e, 1/l/i e rn/m 'achatados'; o número no fim tem que bater
@@ -806,9 +823,19 @@ function mostraMapa(e,lendo){mapaUlt=e;const ap=apelidoMapa(e.branco),m=ap?(mapa
  // não achou com segurança: pergunta (os 3 mais perto + "é um mapa novo", com o nome corrigido); a resposta vira apelido
  if(!m){const ops=maisPerto(e.branco),novo=corrigeNome(e.branco,e.azul);
   return ov.mapa.mostrar({lendo,titulo:t('mapa_qual'),sub:t('mapa_lido',{t:(e.branco||'').trim()}),tx,slimes:[],msg:'',
-   escolhas:[...ops.map(n=>({txt:nomeMapa(n),v:n})),...(ops.includes(novo)?[]:[{txt:t('mapa_e_novo',{m:novo}),v:novo,novo:true}])]})}
+   escolhas:[...ops.map(n=>({txt:nomeMapa(n),v:n})),{txt:t('mapa_outro'),abrir:'mapabusca:'},...(ops.includes(novo)?[]:[{txt:t('mapa_e_novo',{m:novo}),v:novo,novo:true}])]})}
  ov.mapa.mostrar({lendo,titulo:LANG==='en'&&m.en?m.en:m.pt,sub:corrigeNome(e.azul,e.branco),msg:slimesDoMapa(m.pt).todos.length?'':t(mapaPorPt(m.pt)?'mapa_vazio':'mapa_novo'),tx,
   add:{txt:t('mapa_add'),id:'mapa:'+m.pt},slimes:slimesDoMapa(m.pt).todos.map(k=>({k,nome:nm(k),pe:per(k),im:K[k].im?[urlIm(K[k].im)]:null}))})}
+// "Outro mapa…": a janelinha não pega o teclado, então a busca fica no painel. Mapas do mais parecido com o que foi lido para
+// o menos parecido; digitar filtra (PT ou EN); escolher grava o apelido, a janelinha passa a mostrar esse mapa e o painel fecha
+function buscaMapaTela(){const e=mapaUlt;if(!e)return list();semBusca();cur=null;sel=-1;marca({t:'mapabusca'});
+ const p=planoM(e.branco),dist=n=>{const a=planoM(n);return levM(a,p)/Math.max(a.length,p.length,1)},ord=nomesMapas().map(n=>[n,dist(n)]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);
+ bd.innerHTML=`${voltarLk()}<h4>${t('mapa_qual')}</h4><p class="mu" style="margin:2px 0 6px">${esc(t('mapa_lido',{t:(e.branco||'').trim()}))} · ${t('mapa_busca_tip')}</p><input id="mbq" placeholder="${esc(t('mapa_busca_ph'))}" style="width:100%"><div id="mbl" style="margin-top:6px"></div>`;
+ const mbq=document.getElementById('mbq'),mbl=document.getElementById('mbl');
+ const lista=()=>{const q=norm(mbq.value),l=(q?ord.filter(n=>norm(n+' '+((mapaPorPt(n)||{}).en||'')).includes(q)):ord).slice(0,40);
+  mbl.innerHTML=l.map(n=>`<div class="row mini" data-mbn="${esc(n)}"><div><b>${esc(nomeMapa(n))}</b></div></div>`).join('')||`<p class="mu">${t('nothing')}</p>`};
+ mbq.oninput=lista;mbq.onkeydown=ev=>{if(ev.key=='Enter'){const f=mbl.querySelector('[data-mbn]');if(f)escolheMapa(f.dataset.mbn)}else if(ev.key=='Escape')voltar()};lista();mbq.focus()}
+function escolheMapa(n){const p=mapaUlt&&planoM(mapaUlt.branco);if(!p||!n)return;M.mapap=M.mapap||{};M.mapap[p]=n;salva();mostraMapa(mapaUlt);close()}
 // escolheu na janelinha: o texto lido passa a ser apelido desse mapa (vai no envio; com 2 pessoas iguais vale para todos)
 ov.mapa.onEscolha(n=>{if(typeof n!='string'||!mapaUlt)return;n=n.replace(/\s+/g,' ').trim().slice(0,80);const p=planoM(mapaUlt.branco);if(!n||!p)return;
  M.mapap=M.mapap||{};M.mapap[p]=n;salva();mostraMapa(mapaUlt)});
@@ -865,6 +892,7 @@ let bauOn=false;try{bauOn=MAPA_OK&&localStorage.getItem('bau')==='1'}catch{} // 
 // quem já usava o baú (2.3.x, quando vinha ligado) e já capturou continua com ele ligado
 try{if(MAPA_OK&&localStorage.getItem('bau')===null)ov.bau.ler().then(d=>{if(d&&Array.isArray(d.v)&&!bauOn){bauOn=true;try{localStorage.setItem('bau','1')}catch{}ov.bau.ligar(true)}}).catch(()=>{})}catch{}
 if(bauOn)ov.bau.ligar(true);
+ov.bau.onUsou(()=>{if(bauOn)return;bauOn=true;try{localStorage.setItem('bau','1')}catch{}ov.bau.ligar(true)}); // usou Baú/Capturar no menu: liga os atalhos
 ov.bau.onAbrir(()=>{if(pn.hidden)open();bauTela()});
 ov.bau.onAtualizado(()=>{if(vista&&vista.t=='bau')bauTela()});
 // ---- dia / noite: vale o seu (M.per), depois o da comunidade (CM.per), depois o da base (s.pe, da wiki) ----
@@ -877,9 +905,13 @@ function peEscolha(k){const p=(M.per||{})[k];const b=(v,ic,txt)=>`<button class=
  return`<div class="pesel">${b('dia','<i class="sol" style="color:#ffd479">'+IC.sol+'</i>',t('pe_b_dia'))}${b('noite','<i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_noite'))}${b('ambos','<i style="color:#ffd479">'+IC.sol+'</i><i style="color:#b9a6ff">'+IC.lua+'</i>',t('pe_b_ambos'))}${p?b('','',t('pe_b_limpa')):''}</div><p class="mu">${t('pe_tip')}</p>`}
 ov.fav.onOculto(id=>{const f=(M.fav||[]).find(x=>x.id===id);if(!f)return;f.oculto=true;salva();if(vista&&vista.t==='lista'&&!pn.hidden)list()}); // × na janelinha: escondida, continua fixada
 ov.fav.onRemovido(id=>{M.fav=M.fav.filter(f=>f.id!==id);atualiza()}); // × na combinação fixada
-ov.fav.onAbrir(k=>{if(typeof k=='string'&&k.startsWith('mapa:')){if(pn.hidden)open();telaMapa(k.slice(5));mq.focus({preventScroll:true});return bd.scrollTop=0} // foco na busca sem rolar a tela // + adicionar slime (janelinha do mapa)
+ov.fav.onAbrir(k=>{if(k==='mapabusca:'){if(pn.hidden)open();return buscaMapaTela()} // "Outro mapa…" da pergunta
+ if(typeof k=='string'&&k.startsWith('mapa:')){if(pn.hidden)open();telaMapa(k.slice(5));mq.focus({preventScroll:true});return bd.scrollTop=0} // foco na busca sem rolar a tela // + adicionar slime (janelinha do mapa)
  if(!K[k])return;if(pn.hidden)open();ficha(k);bd.scrollTop=0;requestAnimationFrame(()=>bd.scrollTop=0)}); // a ficha começa do topo // clique na combinação fixada: abre a ficha // botão voltar do mouse no Windows (vem do main como app-command)
 if(ov.plataforma==='darwin')addEventListener('mouseup',e=>{if(e.button===3&&!pn.hidden){e.preventDefault();voltar()}}); // no Mac chega como clique
+// Ctrl+X fora de campo de texto: captura o baú do jogo (igual ao menu do ícone)
+addEventListener('keydown',e=>{if(pn.hidden||!MAPA_OK||!e.ctrlKey||e.altKey||e.shiftKey||(e.key!='x'&&e.key!='X'))return;const t=e.target;
+ if(t.tagName=='INPUT'||t.tagName=='TEXTAREA'||t.isContentEditable)return;e.preventDefault();ov.bau.capturar()});
 // teclado fora de campos de texto: V = voltar, Esc = fechar, outra letra = começa a buscar
 addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)return;const t=e.target;
  if(STM&&stTecla(e))return;
@@ -889,11 +921,15 @@ addEventListener('keydown',e=>{if(pn.hidden||e.ctrlKey||e.altKey||e.metaKey)retu
  else if(e.key=='v'||e.key=='V'){e.preventDefault();if(vista&&vista.t=='bau')close();else voltar()} // no baú, fecha; senão volta
  else if(e.key=='Escape'){e.preventDefault();close()}
  else if(e.key.length===1&&e.key!==' '){qi.value='';qi.focus()}}); // a letra cai na busca vazia
-estaticos();monta();ov.idioma(LANG);ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
+estaticos();monta();ov.idioma(LANG);const pVer=ov.versao().then(v=>{VERSAO=v;estaticos()}).catch(()=>{});ov.pasta().then(p=>PASTA=p).catch(()=>{});
 let CORPEND=false; // 1ª vez: falta escolher a cor
 const pCor=ov.cor().then(r=>{DALT=r.dalt||r.cor.startsWith('d-');poeCor(r.cor);GAMER=r.gamer;poeGamer();CORPEND=!r.escolhida;if(CORPEND&&!r.abertura){CORPEND=false;open();telaCor()}}).catch(()=>{});
 // fim da abertura: abre o painel na escolha de cor (1ª vez), na tela de atualização (versão nova) ou na lista
-ov.onAbrirInicio(()=>verificaVersao().then(()=>{open();if(CORPEND){CORPEND=false;telaCor()}else if(NOVA)novidadesTela()}));
+// ao abrir: o Slimedex fala com a pessoa (saudação no balão) e o painel fica fechado; só abre na 1ª vez, para escolher a cor.
+// Logo depois de atualizar (ou de trocar de versão na mão), a fala diz a versão e o clique abre o que mudou desde a que ela tinha
+ov.onAbrirInicio(()=>Promise.all([verificaVersao(),pFoi,pVer]).then(()=>{INICIOU=true;let vv='';try{vv=localStorage.getItem('versaoVista')||'';if(VERSAO)localStorage.setItem('versaoVista',VERSAO)}catch{}
+ const subiu=vv&&VERSAO&&comparaV(vv,VERSAO)<0;FEITAS=ATUALIZADO||subiu?(subiu?vv:''):null;if(CORPEND){CORPEND=false;open();telaCor()}saudacao()}));
+ov.onAbrirFeitas(()=>{open();feitasTela(FEITAS||'')}); // clicou na fala de "atualizado"
 // slime duplicado que virou um só (D.apelidos: chave antiga -> nova): seus dados com a chave antiga passam para a nova
 const semApelidos=d=>{let s=JSON.stringify(d);for(const [de,para] of Object.entries(D.apelidos||{}))s=s.replace(new RegExp('\\b'+de+'\\b','g'),para);return JSON.parse(s)};
 const pMeus=ov.meus.ler().then(d=>{if(d&&typeof d=='object')M={pt:{},pc:{},combos:[],votos:{},num:{},fav:[],loc:{},per:{},apaga:[],sk:{},skn:{},skc:[],skd:{},st:{},...semApelidos(d)};if(!TST.ed)TST.cp=M.cpp===true;monta()});
@@ -902,10 +938,17 @@ Promise.all([pCor,pMeus.catch(()=>{}),pCom]).then(()=>ov.pronto()); // a abertur
 // ---- aviso de base nova da comunidade: bolinha no ícone + botão de reiniciar no rodapé ----
 function avisa(){ponto.hidden=false;rst.hidden=true;avb.hidden=!NOVA;avc.hidden=!CMnova;estaticos()} // a pessoa escolhe: atualizar o app ou só a base
 let LIMITE=0; // GitHub sem login: 60 perguntas por hora; estourou = hora em que libera
-function verificaVersao(){return ov.versaoNova().then(r=>{LIMITE=(r&&r.limite)||0;if(r&&r.versao){NOVA=r;avisa()}}).catch(()=>{})}
+// balão amarelo da versão nova: uma vez por versão; fica até a pessoa passar o mouse por cima e sair (clicar já atualiza)
+let INICIOU=false,avisouNova='',avisouBase='',FEITAS=null; // FEITAS: acabou de atualizar (versão de antes, ou '' sem saber)
+function avisaNova(oi){if(!NOVA||avisouNova===NOVA.versao||avb.disabled)return false;avisouNova=NOVA.versao;
+ ov.fala({t1:oi||t('fala_nova'),t2:oi?t('fala_nova'):t('fala_nova2'),tipo:'aviso',fica:true,acao:'atualizar'});return true}
+// ao abrir: saudação pela hora do relógio do Windows; com versão nova, o balão amarelo; logo depois de atualizar, diz a versão
+function saudacao(){const h=new Date().getHours(),oi=t(h<6?'oi_madrugada':h<12?'oi_dia':h<18?'oi_tarde':'oi_noite');
+ if(avisaNova(oi))return;const at=FEITAS!=null;ov.fala({t1:oi,t2:at?t('fala_atualizado',{v:VERSAO}):'',tipo:'ok',ms:at?9000:4000,acao:at?'feitas':null})}
+function verificaVersao(){return ov.versaoNova().then(r=>{LIMITE=(r&&r.limite)||0;if(r&&r.versao){NOVA=r;avisa();if(INICIOU)avisaNova()}}).catch(()=>{})}
 function verificaComunidade(){ultimaChecagem=Date.now();return Promise.all([verificaVersao(),ov.comunidade().then(d=>{
  if(!d||typeof d!='object'||!d.gerado||(CM&&d.gerado===CM.gerado))return; // nada novo
- CMnova=d;avisa()}).catch(()=>{})])}
+ CMnova=d;avisa();if(avisouBase!==d.gerado){avisouBase=d.gerado;ov.fala({t1:t('fala_base'),t2:'',tipo:'ok',ms:6000})}}).catch(()=>{})])} // sem botão: a base entra pelo rodapé
 // refresh no rodapé: confere agora; nada novo = avisa "tudo em dia" por uns segundos
 // todo clique vale; a cada 10 cliques em 10 min avisa do limite do GitHub, e se o limite estourou diz a hora em que libera
 let chkVolta=0,chkCl=[];
@@ -917,6 +960,7 @@ chk.onclick=async()=>{const a=Date.now();chkCl=chkCl.filter(x=>a-x<600e3);chkCl.
  if(rapido||NOVA||CMnova)return;aviso(t('chk_ok'),3500)};
 avb.onclick=()=>novidadesTela(); // versão nova: mostra o que mudou e pede confirmação
 avc.onclick=()=>{avc.disabled=true;ov.reiniciar()}; // base nova: reinicia com as combinações novas
+ov.onAtualizarAgora(()=>iniciarAtualizacao()); // Atualizar do menu do ícone ou clique no balão amarelo: atualiza direto
 // ---- novidades da versão (para quem joga): todas as versões entre a atual e a nova ----
 const comparaV=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++)if((x[i]||0)!==(y[i]||0))return(x[i]||0)-(y[i]||0);return 0};
 function novidadesTela(){const n=NOVA;if(!n)return list();cur=null;sel=-1;marca({t:'novas'});
@@ -930,6 +974,13 @@ function novidadesTela(){const n=NOVA;if(!n)return list();cur=null;sel=-1;marca(
   if(L.length>1)nvh.textContent=t('novidades_varias',{v:VERSAO});
   nvl.innerHTML=L.length?L.map(x=>`<h4>${esc(t('versao_x',{v:x.v}))}</h4><ul>${(x[LANG]||x.pt||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`).join(''):`<p class="mu">${t('sem_novidades')}</p>`})
   .catch(()=>{if(window.nvl)nvl.innerHTML=`<p class="mu">${t('sem_novidades')}</p>`})}
+// depois de atualizar: o que mudou (das versões depois da que a pessoa tinha até a atual; sem saber qual tinha, só a atual)
+function feitasTela(de){cur=null;sel=-1;marca({t:'feitas'});
+ bd.innerHTML=`${voltarLk()}<h4>${esc(t('atualizado_h',{v:VERSAO}))}</h4><div id="nvl" class="info"><p class="mu">…</p></div>`;
+ ov.novidades().then(d=>{if(!window.nvl||vista.t!=='feitas')return;
+  const L=((d&&d.versoes)||[]).filter(x=>x&&x.v&&comparaV(x.v,VERSAO)<=0&&(de?comparaV(x.v,de)>0:comparaV(x.v,VERSAO)===0)).sort((a,b)=>comparaV(b.v,a.v));
+  nvl.innerHTML=L.length?L.map(x=>`<h4>${esc(t('versao_x',{v:x.v}))}</h4><ul>${(x[LANG]||x.pt||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`).join(''):`<p class="mu">${t('sem_novidades')}</p>`})
+  .catch(()=>{if(window.nvl)nvl.innerHTML=`<p class="mu">${t('sem_novidades')}</p>`})}
 // ---- atualizar: anel no ícone sobe até 90% em 10 s e segura; 100% quando o download termina e confere; aí reinicia ----
 function iniciarAtualizacao(){const n=NOVA;if(!n)return;if(!n.arquivo){ov.baixarAtualizacao(n);return} // Mac: abre a página de download
  close();ponto.hidden=true;check.hidden=true;avc.hidden=true;anel.hidden=false;pct.hidden=false;pct.className='';anel.setAttribute('class','gira');avb.disabled=true;
@@ -941,7 +992,7 @@ function iniciarAtualizacao(){const n=NOVA;if(!n)return;if(!n.arquivo){ov.baixar
  ov.baixarAtualizacao(n).then(r=>{if(!r||!r.ok)return falhou(r&&r.erro||'?');
   feito=true;clearInterval(tm);anel.setAttribute('class','ok');pinta(100);setTimeout(()=>ov.instalarAtualizacao(),800)}).catch(e=>falhou(e.message))}
 // aberto logo depois de atualizar: ✓ verde no ícone por alguns segundos e "Atualizado para vX" no rodapé
-ov.foiAtualizado().then(f=>{if(!f)return;ATUALIZADO=true;check.hidden=false;estaticos();setTimeout(()=>{check.hidden=true},8000)}).catch(()=>{});
+const pFoi=ov.foiAtualizado().then(f=>{if(!f)return;ATUALIZADO=true;check.hidden=false;estaticos();setTimeout(()=>{check.hidden=true},8000)}).catch(()=>{});
 setTimeout(verificaVersao,5000); // ao abrir o app, já confere se saiu versão nova
 setInterval(verificaComunidade,60*60e3); // confere a cada 1 hora
 </script></body></html>

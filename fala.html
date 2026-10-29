@@ -1,5 +1,6 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Slimedex</title><style>
 /* a fala do Slimedex: balão saindo do ícone (o rabinho aponta para ele) contando o que aconteceu; clicar abre o baú.
+   No mesmo balão, o menu do ícone (mouse em cima do Slimedex): Abrir, Baú e Capturar baú, com o atalho no tooltip.
    Entra e sai com fade, como a janelinha do Tab. Cores do painel; borda verde (deu certo) ou vermelha (não deu). */
 html,body{margin:0;height:100%;background:transparent;overflow:hidden;user-select:none;font:13px/1.35 system-ui,sans-serif;color:#e8eaed}
 #f{position:absolute;top:8px;bottom:8px;left:8px;right:18px;display:flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;background:#232a31;
@@ -13,22 +14,36 @@ body.d #f::before{right:auto;left:-19px;border-left:9px solid transparent;border
 body.d #f::after{right:auto;left:-16px;border-left:9px solid transparent;border-right:9px solid #232a31}
 #f.ok{border-color:#3f8f6a}#f.ok::before{border-left-color:#3f8f6a}body.d #f.ok::before{border-left-color:transparent;border-right-color:#3f8f6a}
 #f.lendo{border-color:#3a6fd8}#f.lendo::before{border-left-color:#3a6fd8}body.d #f.lendo::before{border-left-color:transparent;border-right-color:#3a6fd8}
+#f.aviso{border-color:#d9b44a}#f.aviso::before{border-left-color:#d9b44a}body.d #f.aviso::before{border-left-color:transparent;border-right-color:#d9b44a}#f.aviso #tx span{color:#f2cf63}
 #f.erro{border-color:#a14b57}#f.erro::before{border-left-color:#a14b57}body.d #f.erro::before{border-left-color:transparent;border-right-color:#a14b57}
-#f img{width:34px;height:34px;flex:none}
-#f b{display:block;font-size:13px}#f span{color:#c3cad1}
+#tx{display:flex;align-items:center;gap:10px}#tx img{width:34px;height:34px;flex:none}
+#tx b{display:block;font-size:13px}#tx span{color:#c3cad1}
+#mn{display:none;flex-direction:column;gap:2px;width:100%}#f.menu{padding:5px;cursor:default}#f.menu #tx{display:none}#f.menu #mn{display:flex}
+.it{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:10px;cursor:pointer;font-weight:600;white-space:nowrap}.it:hover{background:#2f3842}
+.it img,.it svg{width:22px;height:22px;flex:none}.it[hidden]{display:none}
 #f.lendo{cursor:default}#f.lendo b::after{content:'';animation:pts 1.2s steps(4) infinite}@keyframes pts{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
-</style></head><body><div id="f"><img alt=""><div><b id="t1"></b><span id="t2"></span></div></div>
+</style></head><body><div id="f"><div id="tx"><img alt=""><div><b id="t1"></b><span id="t2"></span></div></div>
+<div id="mn"><div class="it" data-a="abrir" title="Ctrl+Tab"><img id="mi" alt=""><span id="m1"></span></div>
+<div class="it" data-a="bau" title="X"><svg viewBox="4 5 56 55"><rect x="11" y="24" width="42" height="5.5" fill="#26496E"/><path d="M11.5 25 L14.3 11.5 L23 18.8 H41 L49.7 11.5 L52.5 25 Z" fill="#A3E8FF" stroke="#A3E8FF" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 21.6 L15.9 15.3 L22.6 20.6 H41.4 L48.1 15.3 L50 21.6 Z" fill="#63BCED"/><rect x="9" y="28.5" width="46" height="26" rx="7" fill="#A3E8FF"/><rect x="11" y="30.3" width="42" height="19.2" rx="5.5" fill="#63BCED"/><rect x="26" y="22.5" width="12" height="13" rx="3.5" fill="#26496E"/><rect x="29.4" y="26" width="5.2" height="5.6" rx="1.5" fill="#52C698"/></svg><span id="m2"></span></div>
+<div class="it" data-a="capturar" title="Ctrl+X"><svg viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13" rx="3.5" fill="#63BCED"/><path d="M8.3 7.4l1.6-2.6h4.2l1.6 2.6z" fill="#63BCED"/><circle cx="12" cy="13.5" r="4.3" fill="#26496E"/><circle cx="12" cy="13.5" r="2.2" fill="#A3E8FF"/></svg><span id="m3"></span></div>
+<div class="it" data-a="atualizar" id="mat" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#d9b44a"/><path d="M12 6.2v8.3M8.2 11 12 14.8l3.8-3.8M7.4 17.8h9.2" fill="none" stroke="#2b2410" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="m4"></span></div></div></div>
 <script src="i18n.js"></script>
 <script>
-const f=document.getElementById('f'),t1=document.getElementById('t1'),t2=document.getElementById('t2'),img=f.querySelector('img');
-bau.onFala(d=>{document.body.classList.toggle('d',d.lado==='d');img.src=`icones/app/${d.cor||'azul'}.svg`;lendo=!!d.lendo;
+const f=document.getElementById('f'),t1=document.getElementById('t1'),t2=document.getElementById('t2'),img=document.querySelector('#tx img');
+bau.onFala(d=>{document.body.classList.toggle('d',d.lado==='d');img.src=mi.src=`icones/app/${d.cor||'azul'}.svg`;lendo=!!d.lendo;menu=!!d.menu;feito=false;
+ if(menu){f.className='menu';m1.textContent=t('menu_abrir');m2.textContent=t('menu_bau');m3.textContent=t('menu_capturar');m4.textContent=t('menu_atualizar');mat.hidden=!d.atualizar}
+ else if(d.t1!=null){f.className=d.tipo||'ok';t1.textContent=d.t1;t2.textContent=d.t2||''} // texto pronto do painel (saudação, versão nova, comunidade)
+ else{
  const ok=!d.erro;f.className=d.lendo?'lendo':ok?'ok':'erro';
  if(d.lendo){t1.textContent=t('fala_lendo');t2.textContent=t('fala_lendo2')}
  else if(ok){t1.textContent=d.n?t('fala_ok',{n:d.n}):t('fala_vazio');t2.textContent=t('fala_ok2')}
- else{t1.textContent=t('fala_erro');t2.textContent=d.erro==='nao_achei'?t('fala_erro2'):d.erro}
+ else{t1.textContent=t('fala_erro');t2.textContent=d.erro==='nao_achei'?t('fala_erro2'):d.erro}}
  if(document.body.classList.contains('on'))return; // já aparecendo: só trocou o texto
  document.body.classList.remove('on');void document.body.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('on'))});
 bau.onFalaSai(()=>document.body.classList.remove('on'));
 bau.onIdioma(l=>{LANG=l});
-let lendo=false;f.onclick=()=>{if(!lendo)bau.falaClique()}; // enquanto lê, clicar não faz nada
+// com o jogo na frente o Windows engole o apertar e o click desta janela (ela não pega foco): só o soltar chega, às vezes
+// repetido; então vale o mouseup, uma vez por balão. Enquanto lê, clicar não faz nada
+let lendo=false,menu=false,feito=false;
+f.onmouseup=e=>{if(e.button||feito)return;const it=e.target.closest('.it');if(menu){if(it){feito=true;bau.menuAcao(it.dataset.a)}return}if(!lendo){feito=true;bau.falaClique()}};
 </script></body></html>

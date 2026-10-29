@@ -78,7 +78,7 @@ Todos os slimes com número, 5 por linha, mostrando o que **você** já fez no j
 
 ### Baú · beta, só Windows
 
-Um ícone de baú na tela (arrastável) guarda o que está no seu **baú do jogo**, para consultar longe dele. Com o baú do jogo aberto, passe o mouse no ícone e clique em **Capturar**: o Slimedex lê a tela, reconhece cada slime pelo desenho (comparando com as imagens da wiki) e o nível, e conta num balão de fala o que achou. Clicar no ícone (ou apertar **X**) abre o baú no painel, com o nível de cada slime; **V** fecha. A foto da tela não é guardada nem enviada: só a lista de slimes e níveis. Liga e desliga em **⋯ → Baú**.
+O Slimedex guarda o que está no seu **baú do jogo**, para consultar longe dele. Com o baú do jogo aberto, passe o mouse no ícone do Slimedex e clique em **Capturar baú** (ou aperte **Ctrl+X**): o Slimedex lê a tela, reconhece cada slime pelo desenho (comparando com as imagens da wiki), o nível e o coração de amizade, e conta num balão de fala o que achou. **Baú** no mesmo menu, o botão do baú no topo do painel ou a tecla **X** abrem o baú no painel; **V** fecha. Clique numa carta para marcar o coração (azul vazio: pode ficar amigável, abaixo de 20%; rosa: 20% ou mais); o botão direito abre a ficha. A foto da tela não é guardada nem enviada: só a lista de slimes, níveis e corações. Os atalhos ligam e desligam em **⋯ → Baú** (e ligam sozinhos quando você usa o baú pelo menu).
 
 ### Slimes do mapa (Tab) · beta, só Windows
 
@@ -95,10 +95,10 @@ O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDA
 
 ### Atualizações
 
-A partir da 1.5.0 o Slimedex confere de hora em hora se há novidades e avisa no **rodapé do painel** (e com uma bolinha verde no ícone):
+A partir da 1.5.0 o Slimedex confere de hora em hora se há novidades e avisa no **rodapé do painel** (e com uma bolinha verde no ícone). Desde a 2.4.0 ele também avisa num **balão de fala** ao lado do ícone:
 
-- **versão nova:** mostra o que mudou (inclusive das versões puladas) e pede confirmação; no Windows ele baixa o `.exe` novo para a mesma pasta, **confere o SHA-256 informado pelo GitHub**, reinicia na versão nova e apaga a antiga — o progresso aparece num anel com porcentagem no ícone. No Mac o botão abre a página de download;
-- **base nova da comunidade:** um clique reinicia o app já com as combinações novas;
+- **versão nova:** o balão fica amarelo até você passar o mouse por cima; clicar nele (ou em **Atualizar**, no menu do ícone) atualiza direto e, no fim, mostra o que mudou (inclusive das versões puladas). Pelo rodapé, mostra o que mudou e pede confirmação. No Windows ele baixa o `.exe` novo para a mesma pasta, **confere o SHA-256 informado pelo GitHub**, reinicia na versão nova e apaga a antiga — o progresso aparece num anel com porcentagem no ícone. No Mac o botão abre a página de download;
+- **base nova da comunidade:** o balão avisa que alguém subiu descobertas novas; um clique no rodapé reinicia o app já com as combinações novas;
 - se houver as duas ao mesmo tempo, você escolhe qual fazer;
 - o botão **⟳** no rodapé confere na hora, sem esperar a próxima hora.
 
@@ -137,6 +137,7 @@ O `.exe` ainda **não é assinado digitalmente** (a assinatura gratuita pelo Sig
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.4.0 (Windows) | `BD96DBCBF783EA5F8EEB4E7FF743E6B7B7CA1A2CA9A4923439DE0383E29235AA` | em análise |
 | 2.3.2 (Windows) | `58A18C5EFFBE64783E0FE3414CC082438EA208F721FB35B724FB064BA0DD8493` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/58a18c5effbe64783e0fe3414cc082438ea208f721fb35b724fb064ba0dd8493/detection) |
 | 2.3.1 (Windows) | `786D94742A7526AD9ACAD37873DB8BAFC980B006062A867D5AF45456A7A9649C` | [**1/58** — ver análise](https://www.virustotal.com/gui/file/786d94742a7526ad9acad37873db8bafc980b006062a867d5af45456a7a9649c/detection) |
 | 2.3.0 (Windows) | `62D8066CF67057B5D3CBD3D9B4629B0BFD0C845A3CF421AAC23B9282A028288F` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/62d8066cf67057b5d3cbd3d9b4629b0bfd0c845a3cf421aac23b9282a028288f/detection) |
@@ -195,7 +196,7 @@ Os hashes dos `.dmg` de Mac ficam no arquivo `SHA256-mac.txt` gerado junto pelo 
 Get-FileHash .\Slimedex-x.y.z-portable.exe -Algorithm SHA256   # até a 1.1.0 o arquivo se chamava Slimepedia-…
 ```
 
-O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab; com o Baú ligado, observa só as teclas X e V e o botão do mouse, e fotografa a tela apenas quando você clica em Capturar, sem guardar a foto) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
+O app só acessa a internet para carregar as imagens da wiki, baixar a base da comunidade e conferir/baixar versões novas no GitHub; não captura tela nem teclado (só registra o atalho Ctrl+Tab; com os Slimes do mapa ligados, lê o bloco abaixo do minimapa quando você aperta Tab; com o Baú ligado, observa só as teclas X, V e Ctrl+X e o botão do mouse, e fotografa a tela apenas quando você clica em Capturar baú ou aperta Ctrl+X, sem guardar a foto) e guarda apenas a posição do ícone, o histórico e os seus dados em `%APPDATA%\slime-overlay`. Arquivos fora dessa pasta só são lidos/gravados quando você usa Importar/Exportar.
 
 ## Code signing policy
 
@@ -216,16 +217,16 @@ This program will not transfer any information to other networked systems unless
 **What the app does on your computer**
 - Registers one global shortcut, **Ctrl+Tab**, to open and close the panel.
 - **Map slimes (Tab)** — optional, off by default, Windows only. While it is on, a small helper (`leitor-tela.exe`, built from [`leitor-tela.cs`](leitor-tela.cs)) checks only the state of the **Tab** and **Esc** keys. When you press Tab in the game, it reads a small area below the game's minimap with the OCR built into Windows to get the map name. The image stays in memory and is discarded right away; it is never saved or sent.
-- **Chest** — optional, off by default, Windows only. While it is on, the helper checks only the **X** and **V** keys and the left mouse button (to open and close the chest in the panel) and only reacts while the game window is in front. When you click **Capture**, it takes one screenshot to read your in-game chest; the screenshot is used to recognize the slimes and their levels and is then deleted. Only the resulting list (slime and level) is kept, on your computer.
+- **Chest** — optional, off by default, Windows only. While it is on, the helper checks only the **X**, **V** and **Ctrl+X** keys and the left mouse button (to open and close the chest in the panel, and Ctrl+X to capture) and only reacts while the game window is in front. When you click **Capture chest** (in the menu that shows when you hover the Slimedex icon) or press Ctrl+X, it takes one screenshot to read your in-game chest; the screenshot is used to recognize the slimes and their levels and is then deleted. Only the resulting list (slime and level) is kept, on your computer.
 - It does not record what you type, does not read any other key, does not read or change the game's files or memory, does not inject anything into the game and does not change system settings.
 - It is portable: nothing is installed. Your data stays in `%APPDATA%\slime-overlay`; deleting the app and that folder removes everything.
-- Updates: when a new version is released, the panel shows a button; the new `.exe` is downloaded from this repository's releases only when you click it.
+- Updates: when a new version is released, Slimedex shows a speech bubble and a button in the panel; the new `.exe` is downloaded from this repository's releases only when you click one of them.
 
 ### Política de assinatura de código (resumo em português)
 
 O `.exe` do Windows é compilado a partir deste repositório pelo GitHub Actions, e cada assinatura é aprovada manualmente antes de o arquivo ser assinado. Assinatura gratuita por [SignPath.io](https://about.signpath.io), certificado do [SignPath Foundation](https://signpath.org). Autor, revisor e aprovador: [Lucas Schunck](https://github.com/llll94).
 
-O que o app faz no seu computador: registra o atalho **Ctrl+Tab**; os **Slimes do mapa** (opcional, desligado por padrão) observam só as teclas Tab e Esc e, no Tab, leem com o OCR do Windows o bloco abaixo do minimapa, sem guardar a imagem; o **Baú** (opcional, desligado por padrão) observa só X, V e o botão esquerdo do mouse com o jogo na frente e tira **uma** foto da tela quando você clica em **Capturar**, apagada logo depois de ler — fica só a lista de slimes e níveis. Não grava o que você digita, não mexe nos arquivos nem na memória do jogo e não muda configurações do sistema. Só envia algo quando você clica em **Enviar minhas descobertas** (o que você marcou para compartilhar, com um código aleatório deste computador).
+O que o app faz no seu computador: registra o atalho **Ctrl+Tab**; os **Slimes do mapa** (opcional, desligado por padrão) observam só as teclas Tab e Esc e, no Tab, leem com o OCR do Windows o bloco abaixo do minimapa, sem guardar a imagem; o **Baú** (opcional, desligado por padrão) observa só X, V, Ctrl+X e o botão esquerdo do mouse com o jogo na frente e tira **uma** foto da tela quando você clica em **Capturar baú** ou aperta Ctrl+X, apagada logo depois de ler — fica só a lista de slimes e níveis. Não grava o que você digita, não mexe nos arquivos nem na memória do jogo e não muda configurações do sistema. Só envia algo quando você clica em **Enviar minhas descobertas** (o que você marcou para compartilhar, com um código aleatório deste computador).
 
 ## Rodar a partir do código
 
