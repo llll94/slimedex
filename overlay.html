@@ -637,7 +637,8 @@ const chaveCsv=n=>{const t=TYPO[norm((n||'').trim())];return chave(t||n)};
 // nome ambíguo (ex.: 4 "Skull") -> usa o número da coluna ID, se ele bater com um slime de mesmo nome
 const porNumero=(id,nome)=>{const n=parseInt(id,10);if(!n)return null;const s=S.find(x=>x.n===n);return s&&[s.pt,s.nm,...s.al].some(v=>v&&norm(v)===norm(nome||''))?s.k:null};
 function importaCsv(texto){const rows=lerCsv(texto);if(rows[0]&&/result|resultado/i.test(rows[0][0]))rows.shift();
- const par=(a,b,r)=>a+'+'+b+'>'+r,idx={}; // a ordem importaC.forEach(c=>idx[par(c.a,c.b,c.r)]=c);const o={novas:0,pcs:0,ja:0,falha:new Set()};
+ const par=(a,b,r)=>a+'+'+b+'>'+r,idx={}; // a ordem importa
+ C.forEach(c=>idx[par(c.a,c.b,c.r)]=c);const o={novas:0,pcs:0,ja:0,falha:new Set()};
  for(const [res,idn,lv,a1,a2,mat,...rest] of rows){if(!res||/^\?+$/.test(res.trim())||/^\*/.test(res.trim())||res.length>60)continue; // pula "?" e linhas de nota
   const k={r:chaveCsv(res)||porNumero(idn,res),a:chaveCsv(a1),b:chaveCsv(a2)};
   if(k.r&&(k.r===k.a||k.r===k.b))continue; // resultado igual a um dos slimes: não existe
@@ -718,7 +719,7 @@ function mark(i){const r=bd.querySelectorAll('.row');if(!r.length)return;sel=Mat
  r.forEach((e,j)=>e.classList.toggle('on',j==sel));r[sel].scrollIntoView({block:'nearest'})}
 // último campo de edição usado no painel: se o painel fechar no meio (clicou fora, Ctrl+Tab, Alt+Tab), reabre nele com o que já foi digitado
 let campo=null;bd.addEventListener('focusin',e=>{if(e.target.tagName=='INPUT')campo=e.target});
-function open(){if(Date.now()-ultimaChecagem>60*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;const tst=vista&&vista.t=='testador';if(tst)ov.largo(true);ov.size(true);
+function open(){if(Date.now()-ultimaChecagem>15*60e3)verificaComunidade();ico.hidden=true;pn.hidden=false;const tst=vista&&vista.t=='testador';if(tst)ov.largo(true);ov.size(true);
  if(tst){(campo&&bd.contains(campo)?campo:ts1).focus();return}
  if(vista&&(vista.t=='form'||vista.t=='ficha'||vista.t=='skform')&&campo&&bd.contains(campo)){campo.focus();return}
  qi.value='';hist=[];vista=null;list();qi.focus()}
@@ -787,7 +788,8 @@ ov.onFechar(()=>{if(!pn.hidden)close()}); // clicou fora do painel
 addEventListener('mousedown',e=>{if(e.button===3)e.preventDefault()});
 ov.onVoltar(()=>{if(!pn.hidden)voltar()});
 // ---- slimes do mapa (Tab) · beta: o leitor manda o texto lido abaixo do minimapa; aqui ele vira um mapa da base ----
-const MAPA_OK=ov.plataforma==='win32';bab.hidden=!MAPA_OK; // baú: só Windowslet mapaOn=false,mapaAberto=false,mapaStatus='';
+const MAPA_OK=ov.plataforma==='win32';bab.hidden=!MAPA_OK; // baú: só Windows
+let mapaOn=false,mapaAberto=false,mapaStatus='';
 // o jogo ignora o Tab enquanto o mapa dele anima (medido em vídeo: aceita o próximo ~0,52 s depois); aqui também, senão a janelinha sai do ritmo
 const TAB_TRAVA=520;let tabEm=0;try{mapaOn=MAPA_OK&&localStorage.getItem('mapa-tab')==='1'}catch{}
 // o OCR confunde letras parecidas: compara sem acento/espaço e com o/c/e, 1/l/i e rn/m 'achatados'; o número no fim tem que bater
@@ -994,5 +996,10 @@ function iniciarAtualizacao(){const n=NOVA;if(!n)return;if(!n.arquivo){ov.baixar
 // aberto logo depois de atualizar: ✓ verde no ícone por alguns segundos e "Atualizado para vX" no rodapé
 const pFoi=ov.foiAtualizado().then(f=>{if(!f)return;ATUALIZADO=true;check.hidden=false;estaticos();setTimeout(()=>{check.hidden=true},8000)}).catch(()=>{});
 setTimeout(verificaVersao,5000); // ao abrir o app, já confere se saiu versão nova
-setInterval(verificaComunidade,60*60e3); // confere a cada 1 hora
+// confere a cada 15 min, 4 min depois de cada merge da comunidade (que roda aos :02, :17, :32 e :47): aos :06, :21, :36 e :51.
+// A versão nova vem junto (4 perguntas por hora, longe do limite de 60 do GitHub sem login)
+function agendaComunidade(){const a=new Date(),h=new Date(a);h.setSeconds(0,0);let alvo=null;
+ for(let i=0;!alvo;i++){const d=new Date(h);d.setMinutes(0);d.setHours(h.getHours()+(i>>2));d.setMinutes([6,21,36,51][i&3]);if(d-a>30e3)alvo=d}
+ setTimeout(()=>{verificaComunidade();agendaComunidade()},alvo-a)}
+agendaComunidade();
 </script></body></html>

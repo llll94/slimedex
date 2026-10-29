@@ -95,12 +95,12 @@ O que você cadastra fica **só no seu PC**, separado da base do app, em `%APPDA
 
 ### Atualizações
 
-A partir da 1.5.0 o Slimedex confere de hora em hora se há novidades e avisa no **rodapé do painel** (e com uma bolinha verde no ícone). Desde a 2.4.0 ele também avisa num **balão de fala** ao lado do ícone:
+A partir da 1.5.0 o Slimedex confere se há novidades (desde a 2.4.1, a cada 15 minutos: aos :06, :21, :36 e :51, logo depois do merge da comunidade) e avisa no **rodapé do painel** (e com uma bolinha verde no ícone). Desde a 2.4.0 ele também avisa num **balão de fala** ao lado do ícone:
 
 - **versão nova:** o balão fica amarelo até você passar o mouse por cima; clicar nele (ou em **Atualizar**, no menu do ícone) atualiza direto e, no fim, mostra o que mudou (inclusive das versões puladas). Pelo rodapé, mostra o que mudou e pede confirmação. No Windows ele baixa o `.exe` novo para a mesma pasta, **confere o SHA-256 informado pelo GitHub**, reinicia na versão nova e apaga a antiga — o progresso aparece num anel com porcentagem no ícone. No Mac o botão abre a página de download;
 - **base nova da comunidade:** o balão avisa que alguém subiu descobertas novas; um clique no rodapé reinicia o app já com as combinações novas;
 - se houver as duas ao mesmo tempo, você escolhe qual fazer;
-- o botão **⟳** no rodapé confere na hora, sem esperar a próxima hora.
+- o botão **⟳** no rodapé confere na hora, sem esperar a próxima checagem.
 
 O que mudou em cada versão, escrito para quem joga, fica em [`novidades.json`](novidades.json); os detalhes técnicos ficam na descrição de cada release.
 
@@ -137,6 +137,7 @@ O `.exe` ainda **não é assinado digitalmente** (a assinatura gratuita pelo Sig
 
 | Versão | SHA-256 | VirusTotal |
 |---|---|---|
+| 2.4.1 (Windows) | `3985F4C5048ED500D85D4D1B499D0AEAA1C64A194BE9507B1D2F9D8124ADAE50` | em análise |
 | 2.4.0 (Windows) | `BD96DBCBF783EA5F8EEB4E7FF743E6B7B7CA1A2CA9A4923439DE0383E29235AA` | [**2/67** — ver análise](https://www.virustotal.com/gui/file/bd96dbcbf783ea5f8eeb4e7ff743e6b7b7ca1a2ca9a4923439de0383e29235aa/detection) |
 | 2.3.2 (Windows) | `58A18C5EFFBE64783E0FE3414CC082438EA208F721FB35B724FB064BA0DD8493` | [**1/66** — ver análise](https://www.virustotal.com/gui/file/58a18c5effbe64783e0fe3414cc082438ea208f721fb35b724fb064ba0dd8493/detection) |
 | 2.3.1 (Windows) | `786D94742A7526AD9ACAD37873DB8BAFC980B006062A867D5AF45456A7A9649C` | [**1/58** — ver análise](https://www.virustotal.com/gui/file/786d94742a7526ad9acad37873db8bafc980b006062a867d5af45456a7a9649c/detection) |

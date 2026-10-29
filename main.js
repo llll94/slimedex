@@ -39,7 +39,8 @@ ipcMain.handle('enviar',async(_,payload)=>{
 // base da comunidade (gerada pelo merge diário no GitHub): baixa a mais nova; sem internet usa a última baixada ou a que vem no app
 const COMUNIDADE='https://raw.githubusercontent.com/llll94/slimedex/main/comunidade.json';
 async function baixaComunidade(){const cache=path.join(app.getPath('userData'),'comunidade.json');
-  try{const r=await fetch(COMUNIDADE,{signal:AbortSignal.timeout(6000)});
+  // ?t=: o raw do GitHub guarda o arquivo em cache por até 5 min; com a hora no endereço vem o mais novo
+  try{const r=await fetch(COMUNIDADE+'?t='+Date.now(),{signal:AbortSignal.timeout(6000)});
     if(r.ok){const t=await r.text(),d=JSON.parse(t);if(d&&typeof d=='object'){fs.writeFileSync(cache,t);return d}}}catch{}
   for(const f of [cache,path.join(__dirname,'comunidade.json')]){try{return JSON.parse(fs.readFileSync(f,'utf8'))}catch{}}
   return null}

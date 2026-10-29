@@ -2,6 +2,20 @@
   "_sobre": "O que mudou em cada versão, escrito para quem joga (o app mostra antes de atualizar). Detalhes técnicos ficam na descrição do release no GitHub. prints: telas da cartilha (guia/pt-<nome>.webp) que vão no post do Discord, até 4.",
   "versoes": [
     {
+      "v": "2.4.1",
+      "prints": [],
+      "pt": [
+        "Mapa (Tab): voltou a mostrar os slimes do mapa (na 2.4.0 ele lia o nome, mas não abria a janelinha)",
+        "Importar CSV (em ⋯) voltou a funcionar",
+        "Descobertas novas da comunidade chegam em até 15 minutos (antes, até 1 hora)"
+      ],
+      "en": [
+        "Map (Tab): shows the map's slimes again (2.4.0 read the name but did not open the window)",
+        "Import CSV (in ⋯) works again",
+        "New community discoveries arrive within 15 minutes (it used to take up to 1 hour)"
+      ]
+    },
+    {
       "v": "2.4.0",
       "prints": [],
       "pt": [
