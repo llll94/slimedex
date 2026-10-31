@@ -1,6 +1,6 @@
 {
- "gerado": "2026-10-28T23:56:39.370Z",
- "pessoas": 5,
+ "gerado": "2026-10-31T19:20:20.768Z",
+ "pessoas": 6,
  "combos": [
   {
    "id": "c:SL_Bass_WaterGround+SL_Embers_MagicIce>SL_Carp_WaterMagic",
@@ -20,7 +20,7 @@
    "m": "Fragmento Sólido (Solid Fragment)",
    "l": "31",
    "ch": 10,
-   "n": 2
+   "n": 3
   },
   {
    "id": "c:SL_Bat_WindDark+SL_ElecChicken_WindElectric>SL_Crow_WindDark",
@@ -50,6 +50,16 @@
    "m": "Anel de Ladyf (Ladif's Ring)",
    "l": "31",
    "ch": 15,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Beholder_DarkMagic+SL_Bushtit_WindLight>SL_Crow_WindDark",
+   "r": "SL_Crow_WindDark",
+   "a": "SL_Beholder_DarkMagic",
+   "b": "SL_Bushtit_WindLight",
+   "m": "Kobolt's Crystal",
+   "l": "31",
+   "ch": null,
    "n": 1
   },
   {
@@ -149,7 +159,7 @@
    "b": "SL_Embers_MagicFire",
    "m": "",
    "l": "16",
-   "ch": 50,
+   "ch": 77,
    "n": 1
   },
   {
@@ -161,6 +171,213 @@
    "l": "22",
    "ch": 100,
    "n": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Bass_Water>SL_Eel_WaterPower",
+   "r": "SL_Eel_WaterPower",
+   "a": "SL_Tricky_Power",
+   "b": "SL_Bass_Water",
+   "m": "Duto de Slick (Slick's Vent)",
+   "l": "10",
+   "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_HermitCrab_WaterSteel>SL_Eel_WaterPower",
+   "r": "SL_Eel_WaterPower",
+   "a": "SL_Tricky_Power",
+   "b": "SL_HermitCrab_WaterSteel",
+   "m": "Duto de Slick (Slick's Vent)",
+   "l": "10",
+   "ch": 100,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterPower+SL_Bass_Water>?",
+   "r": null,
+   "a": "SL_Eel_WaterPower",
+   "b": "SL_Bass_Water",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterPower+SL_Mandrake_Grass>?",
+   "r": null,
+   "a": "SL_Eel_WaterPower",
+   "b": "SL_Mandrake_Grass",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterPower+SL_Tricky_Power>?",
+   "r": null,
+   "a": "SL_Eel_WaterPower",
+   "b": "SL_Tricky_Power",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Eel_WaterPower>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Eel_WaterPower",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Lizard_Ground>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Lizard_Ground",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Mandrake_Grass>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Mandrake_Grass",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Slime_Fire>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Slime_Fire",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Tricky_Power>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Tricky_Power",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Tricky_Wind>?",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Tricky_Wind",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "ts": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterPower+SL_Bass_Water>x",
+   "r": null,
+   "a": "SL_Eel_WaterPower",
+   "b": "SL_Bass_Water",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Eel_WaterPower+SL_Tricky_Power>x",
+   "r": null,
+   "a": "SL_Eel_WaterPower",
+   "b": "SL_Tricky_Power",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Eel_WaterPower>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Eel_WaterPower",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Lizard_Ground>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Lizard_Ground",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Mandrake_Grass>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Mandrake_Grass",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Slime_Fire>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Slime_Fire",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Tricky_Power>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Tricky_Power",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Tricky_Power+SL_Tricky_Wind>x",
+   "r": null,
+   "a": "SL_Tricky_Power",
+   "b": "SL_Tricky_Wind",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
   }
  ],
  "pc": {
@@ -223,6 +440,10 @@
   "SL_Rat_PoisonGround|SL_Honet_WindElectric|SL_LightningBug_GroundElectric|Kobold's Crystal": {
    "ch": 40,
    "n": 1
+  },
+  "SL_Tricky_Power|SL_HermitCrab_WaterPower|SL_Eel_WaterPower|Slick's Vent": {
+   "ch": 100,
+   "n": 1
   }
  },
  "pt": {
@@ -273,7 +494,8 @@
   }
  },
  "num": {
-  "SL_Ghost_Magic": 115
+  "SL_Ghost_Magic": 115,
+  "SL_SlimeM_Water": 7
  },
  "loc": {
   "Caminho dos Fundos de Noecheon 1": [
@@ -318,6 +540,9 @@
   ],
   "Sopé do Penhasco Negro": [
    "SL_Nepenthes_GrassDark"
+  ],
+  "Trilha da Floresta": [
+   "SL_Tricky_Dark"
   ],
   "Trilha do Monte Noecheon 1": [
    "SL_Dandelion_GrassWind"
@@ -387,6 +612,24 @@
     "n": 1
    }
   },
+  "SL_ElecChicken_WindFire": {
+   "Dash_Flame": {
+    "l": 9,
+    "n": 1
+   },
+   "FlameSwing": {
+    "l": 8,
+    "n": 1
+   },
+   "WindBall": {
+    "l": 1,
+    "n": 1
+   },
+   "WindBlade": {
+    "l": 12,
+    "n": 1
+   }
+  },
   "SL_Mandrake_Grass": {
    "DrainGrass": {
     "l": 27,
@@ -408,6 +651,12 @@
   "SL_Tricky_Ice": {
    "IceSpread": {
     "l": 11,
+    "n": 1
+   }
+  },
+  "SL_Tricky_Power": {
+   "PowerDrive": {
+    "l": 8,
     "n": 1
    }
   }
