@@ -94,6 +94,18 @@ function maisEnviada(a, aprovada) {
   for (let i = a.length - 1; i >= 0; i--) if (empate.includes(arred(a[i]))) return arred(a[i]);
 }
 let ANTES = null; try { ANTES = JSON.parse(fs.readFileSync(path.join(RAIZ, 'comunidade.json'), 'utf8')) } catch {}
+// material digitado quase igual a um item da lista (ex.: "Kobolt's Crystal"): vira o item certo, no formato do app "PT (EN)".
+// Só erro pequeno (até 2 letras num nome de 8 ou mais) e só quando um único item fica tão perto; o resto passa como veio
+function lev(a, b) { const d = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) { let p = d[0]; d[0] = i; for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, p + (a[i - 1] === b[j - 1] ? 0 : 1)); p = t } }
+  return d[b.length] }
+function corrigeMaterial(m) {
+  const nI = s => norm(s || '').replace(/[^a-z0-9]+/g, ' ').trim(), partes = (/^(.*?)\s*\(([^()]*)\)\s*$/.exec(m || '') || [null, m]).slice(1).filter(Boolean).map(nI);
+  if (!partes.length || partes.every(p => p.length < 8)) return m;
+  const nomes = i => [nI(i.pt), nI(i.en), nI(i.k)].filter(Boolean);
+  if ((D.itens || []).some(i => nomes(i).some(n => partes.includes(n)))) return m; // já é um item
+  const perto = (D.itens || []).filter(i => nomes(i).some(n => partes.some(p => p.length >= 8 && lev(p, n) <= 2)));
+  return perto.length === 1 ? (perto[0].pt && perto[0].en ? `${perto[0].pt} (${perto[0].en})` : perto[0].en || perto[0].pt) : m }
 function maisCitado(lista) { const n = new Map(); for (const v of lista) if (v) n.set(v, (n.get(v) || 0) + 1); let best = '', bn = 0; for (const [v, c] of n) if (c > bn || (c === bn && v < best)) { best = v; bn = c } return best }
 
 async function lerEnvios() {
@@ -156,7 +168,7 @@ async function lerEnvios() {
         (naoCombina.get(k) || naoCombina.set(k, { a: c.a, b: c.b, quem: new Set() }).get(k)).quem.add(autor); continue }
       if (c && c.r == null && SLIMES.has(c.a) && SLIMES.has(c.b)) { const k = parT(c.a, c.b); if (BQ_COMBO.has('c:' + k + '>?')) continue;
         const n = testadas.get(k) || testadas.set(k, { a: c.a, b: c.b, quem: new Set(), m: [] }).get(k);
-        if (!n.quem.has(autor)) { n.quem.add(autor); n.m.push(txt(c.m, 60)) } continue }
+        if (!n.quem.has(autor)) { n.quem.add(autor); n.m.push(corrigeMaterial(txt(c.m, 60))) } continue }
       if (!c || !SLIMES.has(c.r) || !SLIMES.has(c.a) || !SLIMES.has(c.b) || c.r === c.a || c.r === c.b) continue; // resultado nunca é um dos slimes
       const k = par(c.a, c.b, c.r), base = baseIdx.get(k);
       if (TESTE_IDX.has(k)) confirmadas.add(cidBase(TESTE_IDX.get(k)));
@@ -164,7 +176,7 @@ async function lerEnvios() {
       if (base) continue; // na base: só conta como relato de chance (abaixo, um por pessoa)
       const n = novos.get(k) || novos.set(k, { a: c.a, b: c.b, r: c.r, quem: new Set(), m: [], l: [], ch: [] }).get(k);
       if (n.quem.has(autor)) continue;
-      n.quem.add(autor); n.m.push(txt(c.m, 60)); n.l.push(txt(c.l, 10));
+      n.quem.add(autor); n.m.push(corrigeMaterial(txt(c.m, 60))); n.l.push(txt(c.l, 10));
     }
     const ant = relatos(anterior.get(autor) || {});
     for (const [id, vals] of relatos(p)) { if (BQ_COMBO.has(id)) continue; const ch = escolhe(vals, ant.get(id));
