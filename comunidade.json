@@ -1,6 +1,6 @@
 {
- "gerado": "2026-11-02T02:42:50.307Z",
- "pessoas": 6,
+ "gerado": "2026-11-14T03:37:34.226Z",
+ "pessoas": 7,
  "combos": [
   {
    "id": "c:SL_Bass_WaterGround+SL_Embers_MagicIce>SL_Carp_WaterMagic",
@@ -290,6 +290,28 @@
    "ch": null,
    "n": 1,
    "ts": 1
+  },
+  {
+   "id": "c:SL_Cattle_PowerLight+SL_Embers_MagicIce>x",
+   "r": null,
+   "a": "SL_Cattle_PowerLight",
+   "b": "SL_Embers_MagicIce",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
+  },
+  {
+   "id": "c:SL_Cattle_PowerLight+SL_Tricky_Ice>x",
+   "r": null,
+   "a": "SL_Cattle_PowerLight",
+   "b": "SL_Tricky_Ice",
+   "m": "",
+   "l": "",
+   "ch": null,
+   "n": 1,
+   "nc": 1
   },
   {
    "id": "c:SL_Eel_WaterPower+SL_Bass_Water>x",
