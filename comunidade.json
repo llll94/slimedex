@@ -1,5 +1,5 @@
 {
- "gerado": "2026-11-14T03:37:34.226Z",
+ "gerado": "2026-11-28T14:02:09.826Z",
  "pessoas": 7,
  "combos": [
   {
@@ -93,6 +93,16 @@
    "n": 1
   },
   {
+   "id": "c:SL_Dandelion_GrassWind+SL_Wisp_LightElectric>SL_ElecChicken_WindElectric",
+   "r": "SL_ElecChicken_WindElectric",
+   "a": "SL_Dandelion_GrassWind",
+   "b": "SL_Wisp_LightElectric",
+   "m": "Pena de Fluffy (Fluffy's Feather)",
+   "l": "<=21",
+   "ch": 33,
+   "n": 1
+  },
+  {
    "id": "c:SL_ElecChicken_WindFire+SL_Wisp_Light>SL_Bushtit_WindLight",
    "r": "SL_Bushtit_WindLight",
    "a": "SL_ElecChicken_WindFire",
@@ -113,6 +123,16 @@
    "n": 1
   },
   {
+   "id": "c:SL_Mole_GroundSteel+SL_SlimeSM_Water>SL_Bass_WaterGround",
+   "r": "SL_Bass_WaterGround",
+   "a": "SL_Mole_GroundSteel",
+   "b": "SL_SlimeSM_Water",
+   "m": "Escama de Lizard (Lizard's Scale)",
+   "l": "",
+   "ch": null,
+   "n": 1
+  },
+  {
    "id": "c:SL_Rat_PoisonDark+SL_Honet_WindElectric>SL_Bat_WindDark",
    "r": "SL_Bat_WindDark",
    "a": "SL_Rat_PoisonDark",
@@ -120,6 +140,16 @@
    "m": "Asa Demoníaca (Devil Wing)",
    "l": "22",
    "ch": null,
+   "n": 1
+  },
+  {
+   "id": "c:SL_Rat_PoisonGround+SL_Eel_WaterPower>SL_Bass_WaterGround",
+   "r": "SL_Bass_WaterGround",
+   "a": "SL_Rat_PoisonGround",
+   "b": "SL_Eel_WaterPower",
+   "m": "Escama de Lizard (Lizard's Scale)",
+   "l": "25>",
+   "ch": 8.3,
    "n": 1
   },
   {
@@ -191,17 +221,6 @@
    "l": "10",
    "ch": 100,
    "n": 1
-  },
-  {
-   "id": "c:SL_Eel_WaterPower+SL_Bass_Water>?",
-   "r": null,
-   "a": "SL_Eel_WaterPower",
-   "b": "SL_Bass_Water",
-   "m": "",
-   "l": "",
-   "ch": null,
-   "n": 1,
-   "ts": 1
   },
   {
    "id": "c:SL_Eel_WaterPower+SL_Mandrake_Grass>?",
@@ -427,6 +446,10 @@
    "ch": 92,
    "n": 1
   },
+  "SL_Dandelion_GrassWind|SL_Wisp_Light||": {
+   "ch": 38.2,
+   "n": 1
+  },
   "SL_ElecChicken_WindElectric|SL_Wisp_LightElectric||": {
    "ch": 95,
    "n": 1
@@ -557,6 +580,10 @@
   "Monte Noecheon 3": [
    "-SL_Honet_Wind"
   ],
+  "Monte Noecheon 6": [
+   "SL_Bass_Water",
+   "SL_Eel_WaterElectric"
+  ],
   "Monte Noecheon 7": [
    "SL_Honet_WindElectric"
   ],
@@ -577,7 +604,8 @@
   ]
  },
  "per": {
-  "SL_Nepenthes_GrassDark": "noite"
+  "SL_Nepenthes_GrassDark": "noite",
+  "SL_Tricky_Ice": "ambos"
  },
  "conf": [
   "SL_Lizard_Ground|SL_Bass_WaterPoison|SL_Rat_PoisonGround|Tweety's Hide"
